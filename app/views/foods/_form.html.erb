@@ -1,0 +1,90 @@
+<%= form_with model: food, local: true do |form| %>
+  <% if food.errors.any? %>
+    <div class="alert alert-danger">
+      <h4><%= pluralize(food.errors.count, "erro") %> impediram o cadastro:</h4>
+      <ul class="mb-0">
+        <% food.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="row">
+    <div class="col-md-8">
+      <div class="mb-3">
+        <%= form.label :name, "Nome do Alimento", class: "form-label" %>
+        <%= form.text_field :name, class: "form-control", placeholder: "Ex: Frango (peito sem pele)" %>
+      </div>
+    </div>
+    
+    <div class="col-md-4">
+      <div class="mb-3">
+        <%= form.label :category, "Categoria", class: "form-label" %>
+        <%= form.select :category, options_for_select([
+          ['Proteínas', 'Protein'],
+          ['Carboidratos', 'Carbs'],
+          ['Vegetais', 'Vegetables'],
+          ['Frutas', 'Fruits'],
+          ['Gorduras', 'Fats'],
+          ['Suplementos', 'Supplements'],
+          ['Laticínios', 'Dairy'],
+          ['Grãos', 'Grains']
+        ], food.category), { prompt: "Selecione..." }, { class: "form-select" } %>
+      </div>
+    </div>
+  </div>
+
+  <div class="alert alert-info">
+    <strong>Atenção:</strong> Informe os valores nutricionais para <strong>100 gramas</strong> do alimento.
+  </div>
+
+  <div class="row">
+    <div class="col-md-3">
+      <div class="mb-3">
+        <%= form.label :calories_per_100g, "Calorias por 100g", class: "form-label" %>
+        <div class="input-group">
+          <%= form.number_field :calories_per_100g, step: 0.1, class: "form-control" %>
+          <span class="input-group-text">kcal</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-3">
+      <div class="mb-3">
+        <%= form.label :protein_per_100g, "Proteína por 100g", class: "form-label" %>
+        <div class="input-group">
+          <%= form.number_field :protein_per_100g, step: 0.1, class: "form-control" %>
+          <span class="input-group-text">g</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-3">
+      <div class="mb-3">
+        <%= form.label :carbs_per_100g, "Carboidratos por 100g", class: "form-label" %>
+        <div class="input-group">
+          <%= form.number_field :carbs_per_100g, step: 0.1, class: "form-control" %>
+          <span class="input-group-text">g</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-3">
+      <div class="mb-3">
+        <%= form.label :fat_per_100g, "Gorduras por 100g", class: "form-label" %>
+        <div class="input-group">
+          <%= form.number_field :fat_per_100g, step: 0.1, class: "form-control" %>
+          <span class="input-group-text">g</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mb-3">
+    <%= form.submit food.persisted? ? "Atualizar Alimento" : "Criar Alimento", 
+                    class: "btn btn-success me-2" %>
+    <%= link_to "Cancelar", food.persisted? ? food : foods_path, 
+                class: "btn btn-secondary" %>
+  </div>
+<% end %>

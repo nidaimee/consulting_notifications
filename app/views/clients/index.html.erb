@@ -1,0 +1,40 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h1>Meus Clientes</h1>
+  <%= link_to "Novo Cliente", new_client_path, class: "btn btn-success" %>
+</div>
+
+<% if @clients.any? %>
+  <div class="row">
+    <% @clients.each do |client| %>
+      <div class="col-md-6 col-lg-4 mb-3">
+        <div class="card">
+          <div class="card-header d-flex justify-content-between">
+            <strong><%= client.name %></strong>
+            <span class="badge bg-<%= client.status == 'active' ? 'success' : client.status == 'completed' ? 'primary' : 'secondary' %>">
+              <%= client.status.capitalize %>
+            </span>
+          </div>
+          <div class="card-body">
+            <p class="card-text">
+              <strong>Telefone:</strong> <%= client.phone_number %><br>
+              <strong>Período:</strong> <%= client.start_date.strftime('%d/%m/%Y') %> a <%= client.end_date.strftime('%d/%m/%Y') %><br>
+              <strong>Valor:</strong> R$ <%= number_with_precision(client.paid_amount, precision: 2, delimiter: '.', separator: ',') %>
+            </p>
+            <div class="btn-group w-100">
+              <%= link_to "Ver", client, class: "btn btn-primary btn-sm" %>
+              <%= link_to "Editar", edit_client_path(client), class: "btn btn-warning btn-sm" %>
+              <%= link_to "Excluir", client, method: :delete, 
+                          confirm: "Tem certeza?", class: "btn btn-danger btn-sm" %>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <div class="text-center py-5">
+    <h4 class="text-muted">Nenhum cliente cadastrado ainda</h4>
+    <p class="text-muted">Comece cadastrando seu primeiro cliente!</p>
+    <%= link_to "Cadastrar Primeiro Cliente", new_client_path, class: "btn btn-success btn-lg" %>
+  </div>
+<% end %>

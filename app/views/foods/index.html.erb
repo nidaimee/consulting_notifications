@@ -1,0 +1,55 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h1>Base de Alimentos</h1>
+  <%= link_to "Novo Alimento", new_food_path, class: "btn btn-success" %>
+</div>
+
+<% if @foods.any? %>
+  <% @categories.each do |category| %>
+    <div class="card mb-4">
+      <div class="card-header">
+        <h5 class="mb-0"><%= category || "Sem Categoria" %></h5>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-sm">
+            <thead>
+              <tr>
+                <th>Alimento</th>
+                <th>Calorias/100g</th>
+                <th>Proteína/100g</th>
+                <th>Carb/100g</th>
+                <th>Gordura/100g</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @foods.where(category: category).each do |food| %>
+                <tr>
+                  <td><strong><%= food.name %></strong></td>
+                  <td><%= food.calories_per_100g %>kcal</td>
+                  <td class="text-primary"><%= food.protein_per_100g %>g</td>
+                  <td class="text-warning"><%= food.carbs_per_100g %>g</td>
+                  <td class="text-danger"><%= food.fat_per_100g %>g</td>
+                  <td>
+                    <div class="btn-group btn-group-sm">
+                      <%= link_to "Ver", food, class: "btn btn-outline-primary btn-sm" %>
+                      <%= link_to "Editar", edit_food_path(food), class: "btn btn-outline-warning btn-sm" %>
+                      <%= link_to "Excluir", food, method: :delete, 
+                                  confirm: "Tem certeza?", class: "btn btn-outline-danger btn-sm" %>
+                    </div>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  <% end %>
+<% else %>
+  <div class="text-center py-5">
+    <h4 class="text-muted">Nenhum alimento cadastrado ainda</h4>
+    <p class="text-muted">Comece criando sua base de alimentos!</p>
+    <%= link_to "Cadastrar Primeiro Alimento", new_food_path, class: "btn btn-success btn-lg" %>
+  </div>
+<% end %>

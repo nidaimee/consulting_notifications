@@ -1,0 +1,50 @@
+<%= form_with model: [@client, diet], local: true do |form| %>
+  <% if diet.errors.any? %>
+    <div class="alert alert-danger">
+      <h4><%= pluralize(diet.errors.count, "erro") %> impediram o cadastro:</h4>
+      <ul class="mb-0">
+        <% diet.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="row">
+    <div class="col-md-6">
+      <div class="mb-3">
+        <%= form.label :name, "Nome da Dieta", class: "form-label" %>
+        <%= form.text_field :name, class: "form-control", placeholder: "Ex: Café da Manhã" %>
+      </div>
+    </div>
+    
+    <div class="col-md-6">
+      <div class="mb-3">
+        <%= form.label :meal_type, "Tipo de Refeição", class: "form-label" %>
+        <%= form.select :meal_type, options_for_select([
+          ['Café da Manhã', 'breakfast'],
+          ['Lanche da Manhã', 'morning_snack'],
+          ['Almoço', 'lunch'],
+          ['Lanche da Tarde', 'afternoon_snack'],
+          ['Jantar', 'dinner'],
+          ['Ceia', 'supper'],
+          ['Pré-treino', 'pre_workout'],
+          ['Pós-treino', 'post_workout']
+        ], diet.meal_type), { prompt: "Selecione..." }, { class: "form-select" } %>
+      </div>
+    </div>
+  </div>
+
+  <div class="mb-3">
+    <%= form.label :notes, "Observações", class: "form-label" %>
+    <%= form.text_area :notes, rows: 3, class: "form-control", 
+                       placeholder: "Observações sobre esta refeição..." %>
+  </div>
+
+  <div class="mb-3">
+    <%= form.submit diet.persisted? ? "Atualizar Dieta" : "Criar Dieta", 
+                    class: "btn btn-success me-2" %>
+    <%= link_to "Cancelar", diet.persisted? ? client_diet_path(@client, diet) : client_diets_path(@client), 
+                class: "btn btn-secondary" %>
+  </div>
+<% end %>

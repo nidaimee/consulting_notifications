@@ -1,0 +1,205 @@
+<div class="row mb-4">
+  <div class="col-md-8">
+    <h1><%= @diet.name %> - <%= @client.name %></h1>
+    <p class="text-muted">
+      <%= @diet.meal_type.capitalize %> | 
+      <span class="text-warning"><strong><%= @diet.total_calories.round(1) %> kcal</strong></span>
+    </p>
+  </div>
+  <div class="col-md-4 text-end">
+    <%= link_to "Editar Dieta", edit_client_diet_path(@client, @diet), class: "btn btn-warning" %>
+    <%= link_to "Voltar", client_diets_path(@client), class: "btn btn-secondary" %>
+  </div>
+</div>
+
+<!-- TABELA PRINCIPAL DE MONTAGEM DA DIETA -->
+<div class="card">
+  <div class="card-header bg-primary text-white">
+    <h5 class="mb-0">🥗 Montagem da Dieta</h5>
+  </div>
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-sm mb-0">
+        <thead class="table-dark">
+          <tr>
+            <th width="10%">Quantidade</th>
+            <th width="30%">Alimento</th>
+            <th width="12%">Proteína (g)</th>
+            <th width="12%">Carbs (g)</th>
+            <th width="12%">Gordura (g)</th>
+            <th width="12%">Calorias</th>
+            <th width="12%">Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if @diet.diet_foods.any? %>
+            <% @diet.diet_foods.includes(:food).each do |diet_food| %>
+              <tr>
+                <td><strong class="text-primary"><%= diet_food.quantity_grams.to_i %>g</strong></td>
+                <td><%= diet_food.food.name %></td>
+                <td class="text-primary"><%= diet_food.protein.round(1) %></td>
+                <td class="text-info"><%= diet_food.carbs.round(1) %></td>
+                <td class="text-danger"><%= diet_food.fat.round(1) %></td>
+                <td class="text-warning"><strong><%= diet_food.calories.round(1) %></strong></td>
+                <td>
+                  <%= link_to "×", client_diet_diet_food_path(@client, @diet, diet_food), 
+                              method: :delete, 
+                              confirm: "Remover #{diet_food.food.name}?",
+                              class: "btn btn-danger btn-sm" %>
+                </td>
+              </tr>
+            <% end %>
+          <% else %>
+            <tr>
+              <td colspan="7" class="text-center text-muted py-4">
+                Nenhum alimento adicionado ainda. Use o formulário abaixo para começar!
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+        <tfoot class="table-success">
+          <tr class="fw-bold">
+            <td>TOTAL</td>
+            <td>-</td>
+            <td class="text-primary"><%= @diet.total_protein.round(1) %>g</td>
+            <td class="text-info"><%= @diet.total_carbs.round(1) %>g</td>
+            <td class="text-danger"><%= @diet.total_fat.round(1) %>g</td>
+            <td class="text-warning fs-5"><%= @diet.total_calories.round(1) %> kcal</td>
+            <td>-</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- FORMULÁRIO PARA ADICIONAR ALIMENTO -->
+<div class="card mt-4">
+  <div class="card-header bg-success text-white">
+    <h5 class="mb-0">➕ Adicionar Alimento</h5>
+  </div>
+  <div class="card-body">
+    <%= form_with url: add_food_client_diet_path(@client, @diet), method: :post, local: true do |form| %>
+      <div class="row align-items-end">
+        <div class="col-md-4">
+          <%= form.label :food_id, "Alimento", class: "form-label" %>
+          <%= form.select :food_id, 
+                          options_from_collection_for_select(@available_foods, :id, :name), 
+                          { prompt: "Selecione um alimento..." }, 
+                          { class: "form-select", id: "food_select" } %>
+        </div>
+        <div class="col-md-3">
+          <%= form.label :quantity_grams, "Quantidade (gramas)", class: "form-label" %>
+          <%= form.number_field :quantity_grams, 
+                                min: 1, step: 1, 
+                                class: "form-control", 
+                                placeholder: "Ex: 150",
+                                id: "quantity_input" %>
+        </div>
+        <div class="col-md-3">
+          <div id="nutrition_preview" class="alert alert-info py-2" style="display: none;">
+            <small><strong>Prévia:</strong><br>
+            <span id="calculated_values"></span></small>
+          </div>
+        </div>
+        <div class="col-md-2">
+          <%= form.submit "Adicionar", class: "btn btn-success w-100" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<!-- RESUMO NUTRICIONAL -->
+<div class="row mt-4">
+  <div class="col-md-3">
+    <div class="card bg-warning text-white text-center">
+      <div class="card-body">
+        <h3><%= @diet.total_calories.round(1) %></h3>
+        <p class="mb-0">Total Kcal</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card bg-primary text-white text-center">
+      <div class="card-body">
+        <h3><%= @diet.total_protein.round(1) %>g</h3>
+        <p class="mb-0">Proteínas</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card bg-info text-white text-center">
+      <div class="card-body">
+        <h3><%= @diet.total_carbs.round(1) %>g</h3>
+        <p class="mb-0">Carboidratos</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card bg-danger text-white text-center">
+      <div class="card-body">
+        <h3><%= @diet.total_fat.round(1) %>g</h3>
+        <p class="mb-0">Gorduras</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- JAVASCRIPT PARA CÁLCULO EM TEMPO REAL -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const foodSelect = document.getElementById('food_select');
+  const quantityInput = document.getElementById('quantity_input');
+  const nutritionPreview = document.getElementById('nutrition_preview');
+  const calculatedValues = document.getElementById('calculated_values');
+  
+  // Base de dados dos alimentos (será preenchida via Rails)
+  const foodsData = {
+    <% @available_foods.each do |food| %>
+      <%= food.id %>: {
+        name: "<%= food.name %>",
+        calories: <%= food.calories_per_100g %>,
+        protein: <%= food.protein_per_100g %>,
+        carbs: <%= food.carbs_per_100g %>,
+        fat: <%= food.fat_per_100g %>
+      },
+    <% end %>
+  };
+  
+  function calculateNutrition() {
+    const foodId = foodSelect.value;
+    const quantity = parseFloat(quantityInput.value);
+    
+    if (!foodId || !quantity || quantity <= 0) {
+      nutritionPreview.style.display = 'none';
+      return;
+    }
+    
+    const food = foodsData[foodId];
+    if (!food) {
+      nutritionPreview.style.display = 'none';
+      return;
+    }
+    
+    // Calcular proporcionalmente (quantidade * valor_por_100g / 100)
+    const calories = (quantity * food.calories / 100).toFixed(1);
+    const protein = (quantity * food.protein / 100).toFixed(1);
+    const carbs = (quantity * food.carbs / 100).toFixed(1);
+    const fat = (quantity * food.fat / 100).toFixed(1);
+    
+    calculatedValues.innerHTML = `
+      <span class="text-warning">${calories} kcal</span> | 
+      <span class="text-primary">P: ${protein}g</span> | 
+      <span class="text-info">C: ${carbs}g</span> | 
+      <span class="text-danger">G: ${fat}g</span>
+    `;
+    
+    nutritionPreview.style.display = 'block';
+  }
+  
+  // Event listeners para cálculo em tempo real
+  foodSelect.addEventListener('change', calculateNutrition);
+  quantityInput.addEventListener('input', calculateNutrition);
+});
+</script>

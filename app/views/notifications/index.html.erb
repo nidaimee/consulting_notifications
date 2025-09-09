@@ -1,0 +1,8 @@
+<h1>Histórico de notificações</h1>
+<ul>
+  <% @notifications.each do |n| %>
+    <li>
+      <%= n.sent_at.strftime("%d/%m/%Y %H:%M") %> - <%= n.client.name %> - <%= n.medium %> - <%= n.message %>
+    </li>
+  <% end %>
+</ul>

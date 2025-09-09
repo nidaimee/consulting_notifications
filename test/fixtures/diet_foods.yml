@@ -1,0 +1,19 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  diet: one
+  food: one
+  quantity_grams: 9.99
+  calories: 9.99
+  protein: 9.99
+  carbs: 9.99
+  fat: 9.99
+
+two:
+  diet: two
+  food: two
+  quantity_grams: 9.99
+  calories: 9.99
+  protein: 9.99
+  carbs: 9.99
+  fat: 9.99
