@@ -19,19 +19,6 @@
     </div>
     
     <div class="col-md-6">
-      <div class="mb-3">
-        <%= form.label :meal_type, "Tipo de Refeição", class: "form-label" %>
-        <%= form.select :meal_type, options_for_select([
-          ['Café da Manhã', 'breakfast'],
-          ['Lanche da Manhã', 'morning_snack'],
-          ['Almoço', 'lunch'],
-          ['Lanche da Tarde', 'afternoon_snack'],
-          ['Jantar', 'dinner'],
-          ['Ceia', 'supper'],
-          ['Pré-treino', 'pre_workout'],
-          ['Pós-treino', 'post_workout']
-        ], diet.meal_type), { prompt: "Selecione..." }, { class: "form-select" } %>
-      </div>
     </div>
   </div>
 

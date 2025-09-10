@@ -7,7 +7,7 @@
   <div class="col-md-6 text-end">
     <!-- BOTÃO PARA GERAR PDF -->
    
-    <%= link_to "Nova Dieta", new_client_diet_path(@client), class: "btn btn-primary me-2" %>
+    <%= link_to "Nova Refeição", new_client_diet_path(@client), class: "btn btn-primary me-2" %>
     <%= link_to "Voltar ao Cliente", @client, class: "btn btn-secondary" %>
   </div>
 </div>
@@ -20,8 +20,7 @@
         <div class="card h-100">
           <div class="card-header bg-primary text-white">
             <div class="d-flex justify-content-between align-items-center">
-              <h5 class="mb-0"><%= diet.name %></h5>
-              <span class="badge bg-light text-dark"><%= diet.meal_type.capitalize %></span>
+              <h5 class="mb-0"><%= diet.name %></h5></span>
             </div>
           </div>
           <div class="card-body">
@@ -73,8 +72,7 @@
           </div>
           <div class="card-footer">
             <div class="btn-group w-100">
-              <%= link_to "Montar", client_diet_path(@client, diet), class: "btn btn-primary btn-sm" %>
-              <%= link_to "Editar", edit_client_diet_path(@client, diet), class: "btn btn-warning btn-sm" %>
+              <%= link_to "Editar", client_diet_path(@client, diet), class: "btn btn-warning btn-sm" %>
               <%= link_to "×", client_diet_path(@client, diet), method: :delete, 
                           confirm: "Excluir #{diet.name}?", class: "btn btn-danger btn-sm" %>
             </div>

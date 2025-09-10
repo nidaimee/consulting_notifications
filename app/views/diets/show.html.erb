@@ -1,139 +1,159 @@
-<!-- ATUALIZAR app/views/diets/show.html.erb PARA INCLUIR SUBSTITUIÇÕES -->
+<!-- app/views/diets/show.html.erb -->
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card">
+        <!-- Cabeçalho -->
+        <div class="card-header bg-primary text-white">
+          <h3><%= @diet.name %></h3>
+          <p class="mb-0">Cliente: <%= @client.name %></p>
+        </div>
 
-<!-- TABELA PRINCIPAL COM SUBSTITUIÇÕES -->
-<div class="card">
-  <div class="card mt-4">
-  <div class="card-header bg-success text-white">
-    <h5 class="mb-0">➕ Adicionar Alimento Principal</h5>
-  </div>
-  <div class="card-body">
-    <%= form_with url: add_food_client_diet_path(@client, @diet), method: :post, local: true do |form| %>
-      <div class="row align-items-end">
-        <div class="col-md-4">
-          <%= form.label :food_id, "Alimento", class: "form-label" %>
-          <%= form.select :food_id, 
-                          options_from_collection_for_select(@available_foods, :id, :name), 
-                          { prompt: "Selecione um alimento..." }, 
-                          { class: "form-select", id: "food_select_main" } %>
-        </div>
-        <div class="col-md-3">
-          <%= form.label :quantity_grams, "Quantidade (gramas)", class: "form-label" %>
-          <%= form.number_field :quantity_grams, 
-                                min: 1, step: 1, 
-                                class: "form-control", 
-                                placeholder: "Ex: 150",
-                                id: "quantity_input_main" %>
-        </div>
-        <div class="col-md-3">
-          <div id="nutrition_preview_main" class="alert alert-info py-2" style="display: none;">
-            <small><strong>Prévia:</strong><br>
-            <span id="calculated_values_main"></span></small>
+        <div class="card-body">
+          <% if @diet.notes.present? %>
+            <div class="alert alert-info">
+              <strong>Observações:</strong> <%= @diet.notes %>
+            </div>
+          <% end %>
+
+          <!-- Tabela principal com alimentos + substituições -->
+          <div class="table-responsive">
+            <table class="table table-sm table-striped">
+              <thead class="table-dark">
+                <tr>
+                  <th width="10%">Quantidade</th>
+                  <th width="30%">Alimento</th>
+                  <th width="12%">Proteína (g)</th>
+                  <th width="12%">Carbs (g)</th>
+                  <th width="12%">Gordura (g)</th>
+                  <th width="12%">Calorias</th>
+                  <th width="12%">Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% if @diet.diet_foods.any? %>
+                  <% @diet.diet_foods.includes(:food, :food_substitutions).each do |diet_food| %>
+                    <!-- Alimento principal -->
+                    <tr>
+                      <td><strong class="text-primary"><%= diet_food.quantity_grams.to_i %>g</strong></td>
+                      <td>
+                        <strong><%= diet_food.food.name %></strong>
+                        <% if diet_food.food_substitutions.any? %>
+                          <span class="badge bg-info ms-2">
+                            <%= diet_food.food_substitutions.count %> substituição(ões)
+                          </span>
+                        <% end %>
+                      </td>
+                      <td class="text-primary"><%= diet_food.protein.round(1) %></td>
+                      <td class="text-info"><%= diet_food.carbs.round(1) %></td>
+                      <td class="text-danger"><%= diet_food.fat.round(1) %></td>
+                      <td class="text-warning"><strong><%= diet_food.calories.round(1) %></strong></td>
+                      <td>
+                        <div class="btn-group btn-group-sm">
+                          <!-- Botão para adicionar substituição -->
+                          <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#substitutionModal<%= diet_food.id %>">+</button>
+                          <!-- Botão para remover -->
+                          <%= button_to "X", client_diet_diet_food_path(@client, @diet, diet_food),
+                                        method: :delete,
+                                        data: { confirm: "Tem certeza? Esta ação não pode ser desfeita." },
+                                        class: "btn btn-danger btn-sm" %>
+                        </div>
+                      </td>
+                    </tr>
+
+                    <!-- Substituições -->
+                    <% diet_food.food_substitutions.includes(:substitute_food).each do |substitution| %>
+                      <tr class="table-light">
+                        <td><span class="text-muted"><%= substitution.quantity_grams.to_i %>g</span></td>
+                        <td class="ps-4">
+                          <em class="text-muted">↪ <%= substitution.substitute_food.name %></em>
+                          <small class="text-success d-block">SUBSTITUIÇÃO</small>
+                        </td>
+                        <td class="text-muted"><%= substitution.calculated_protein.round(1) %></td>
+                        <td class="text-muted"><%= substitution.calculated_carbs.round(1) %></td>
+                        <td class="text-muted"><%= substitution.calculated_fat.round(1) %></td>
+                        <td class="text-muted"><%= substitution.calculated_calories.round(1) %></td>
+                        <td>
+                          <%= button_to "Remover", remove_substitution_client_diet_path(@client, @diet, substitution_id: substitution.id),
+                                        method: :delete,
+                                        data: { turbo_confirm: "Tem certeza?" },
+                                        class: "btn btn-sm btn-danger" %>
+                        </td>
+                      </tr>
+                    <% end %>
+                  <% end %>
+                <% else %>
+                  <tr>
+                    <td colspan="7" class="text-center text-muted py-4">
+                      Nenhum alimento adicionado ainda. Use o formulário abaixo para começar!
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+              <tfoot class="table-success">
+                <tr class="fw-bold">
+                  <td>TOTAL</td>
+                  <td>-</td>
+                  <td class="text-primary"><%= @diet.total_protein.round(1) %>g</td>
+                  <td class="text-info"><%= @diet.total_carbs.round(1) %>g</td>
+                  <td class="text-danger"><%= @diet.total_fat.round(1) %>g</td>
+                  <td class="text-warning fs-5"><%= @diet.total_calories.round(1) %> kcal</td>
+                  <td>-</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+
+          <!-- Formulário para adicionar novo alimento -->
+          <div class="card mt-4">
+            <div class="card-header bg-success text-white">
+              <h5 class="mb-0">➕ Adicionar Alimento Principal</h5>
+            </div>
+            <div class="card-body">
+              <%= form_with url: add_food_client_diet_path(@client, @diet), method: :post, local: true do |form| %>
+                <div class="row align-items-end">
+                  <div class="col-md-4">
+                    <%= form.label :food_id, "Alimento", class: "form-label" %>
+                    <%= form.select :food_id, options_from_collection_for_select(@available_foods, :id, :name),
+                                    { prompt: "Selecione um alimento..." },
+                                    { class: "form-select", id: "food_select_main" } %>
+                  </div>
+                  <div class="col-md-3">
+                    <%= form.label :quantity_grams, "Quantidade (gramas)", class: "form-label" %>
+                    <%= form.number_field :quantity_grams, min: 1, step: 1,
+                                          class: "form-control", placeholder: "Ex: 150",
+                                          id: "quantity_input_main" %>
+                  </div>
+                  <div class="col-md-3">
+                    <div id="nutrition_preview_main" class="alert alert-info py-2" style="display: none;">
+                      <small><strong>Prévia:</strong><br>
+                      <span id="calculated_values_main"></span></small>
+                    </div>
+                  </div>
+                  <div class="col-md-2">
+                    <%= form.submit "Adicionar", class: "btn btn-success w-100" %>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          </div>
+
+          <!-- Ações -->
+          <div class="mt-4 d-flex gap-2">
+            <%= link_to "Voltar", client_diets_path(@client), class: "btn btn-secondary" %>
+            <%= link_to "Editar", edit_client_diet_path(@client, @diet), class: "btn btn-warning" %>
+            <%= button_to "Excluir", client_diet_path(@client, @diet),
+                          method: :delete,
+                          data: { turbo_confirm: "Tem certeza? Esta ação não pode ser desfeita." },
+                          class: "btn btn-danger" %>
           </div>
         </div>
-        <div class="col-md-2">
-          <%= form.submit "Adicionar", class: "btn btn-success w-100" %>
-        </div>
       </div>
-    <% end %>
-  </div>
-</div>
-  <div class="card-header bg-primary text-white">
-    <h5 class="mb-0">🥗 Montagem da Dieta</h5>
-  </div>
-  <div class="card-body p-0">
-    <div class="table-responsive">
-      <table class="table table-sm mb-0">
-        <thead class="table-dark">
-          <tr>
-            <th width="10%">Quantidade</th>
-            <th width="30%">Alimento</th>
-            <th width="12%">Proteína (g)</th>
-            <th width="12%">Carbs (g)</th>
-            <th width="12%">Gordura (g)</th>
-            <th width="12%">Calorias</th>
-            <th width="12%">Ações</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% if @diet.diet_foods.any? %>
-            <% @diet.diet_foods.includes(:food, :food_substitutions).each do |diet_food| %>
-              <!-- ALIMENTO PRINCIPAL -->
-              <tr>
-                <td><strong class="text-primary"><%= diet_food.quantity_grams.to_i %>g</strong></td>
-                <td>
-                  <strong><%= diet_food.food.name %></strong>
-                  <% if diet_food.food_substitutions.any? %>
-                    <span class="badge bg-info ms-2">
-                      <%= diet_food.food_substitutions.count %> substituição(ões)
-                    </span>
-                  <% end %>
-                </td>
-                <td class="text-primary"><%= diet_food.protein.round(1) %></td>
-                <td class="text-info"><%= diet_food.carbs.round(1) %></td>
-                <td class="text-danger"><%= diet_food.fat.round(1) %></td>
-                <td class="text-warning"><strong><%= diet_food.calories.round(1) %></strong></td>
-                <td>
-                  <div class="btn-group btn-group-sm">
-                    <!-- Botão para adicionar substituição -->
-                    <button class="btn btn-success btn-sm" data-bs-toggle="modal" 
-                            data-bs-target="#substitutionModal<%= diet_food.id %>">
-                      +
-                    </button>
-                    <!-- Botão para remover alimento -->
-                    <%= link_to "×", client_diet_diet_food_path(@client, @diet, diet_food), 
-                                method: :delete, 
-                                confirm: "Remover #{diet_food.food.name}?",
-                                class: "btn btn-danger btn-sm" %>
-                  </div>
-                </td>
-              </tr>
-              
-              <!-- SUBSTITUIÇÕES DO ALIMENTO -->
-              <% diet_food.food_substitutions.includes(:substitute_food).each do |substitution| %>
-                <tr class="table-light">
-                  <td><span class="text-muted"><%= substitution.quantity_grams.to_i %>g</span></td>
-                  <td class="ps-4">
-                    <em class="text-muted">↪ <%= substitution.substitute_food.name %></em>
-                    <small class="text-success d-block">SUBSTITUIÇÃO</small>
-                  </td>
-                  <td class="text-muted"><%= substitution.calculated_protein.round(1) %></td>
-                  <td class="text-muted"><%= substitution.calculated_carbs.round(1) %></td>
-                  <td class="text-muted"><%= substitution.calculated_fat.round(1) %></td>
-                  <td class="text-muted"><%= substitution.calculated_calories.round(1) %></td>
-                  <td>
-                    <%= link_to "×", remove_substitution_client_diet_path(@client, @diet, substitution_id: substitution.id), 
-                      method: :delete, 
-                      confirm: "Remover substituição?",
-                      class: "btn btn-outline-danger btn-sm" %>
-                  </td>
-                </tr>
-              <% end %>
-            <% end %>
-          <% else %>
-            <tr>
-              <td colspan="7" class="text-center text-muted py-4">
-                Nenhum alimento adicionado ainda. Use o formulário abaixo para começar!
-              </td>
-            </tr>
-          <% end %>
-        </tbody>
-        <tfoot class="table-success">
-          <tr class="fw-bold">
-            <td>TOTAL</td>
-            <td>-</td>
-            <td class="text-primary"><%= @diet.total_protein.round(1) %>g</td>
-            <td class="text-info"><%= @diet.total_carbs.round(1) %>g</td>
-            <td class="text-danger"><%= @diet.total_fat.round(1) %>g</td>
-            <td class="text-warning fs-5"><%= @diet.total_calories.round(1) %> kcal</td>
-            <td>-</td>
-          </tr>
-        </tfoot>
-      </table>
     </div>
   </div>
 </div>
 
-<!-- MODAIS PARA ADICIONAR SUBSTITUIÇÕES -->
+<!-- Modais para substituições -->
 <% @diet.diet_foods.each do |diet_food| %>
   <div class="modal fade" id="substitutionModal<%= diet_food.id %>" tabindex="-1">
     <div class="modal-dialog">
@@ -145,32 +165,22 @@
         <%= form_with url: add_substitution_client_diet_path(@client, @diet), method: :post, local: true do |form| %>
           <div class="modal-body">
             <%= form.hidden_field :diet_food_id, value: diet_food.id %>
-            
             <div class="mb-3">
               <label class="form-label">Alimento Substituto</label>
-              <%= form.select :substitute_food_id, 
-                              options_from_collection_for_select(@available_foods, :id, :name), 
-                              { prompt: "Selecione um alimento..." }, 
+              <%= form.select :substitute_food_id, options_from_collection_for_select(@available_foods, :id, :name),
+                              { prompt: "Selecione um alimento..." },
                               { class: "form-select" } %>
             </div>
-            
             <div class="mb-3">
               <label class="form-label">Quantidade (gramas)</label>
-              <%= form.number_field :quantity_grams, 
-                                    min: 1, step: 1, 
-                                    class: "form-control", 
-                                    placeholder: "Ex: 100" %>
+              <%= form.number_field :quantity_grams, min: 1, step: 1, class: "form-control", placeholder: "Ex: 100" %>
               <div class="form-text">
                 Quantidade equivalente para substituir <%= diet_food.quantity_grams.to_i %>g de <%= diet_food.food.name %>
               </div>
             </div>
-            
             <div class="mb-3">
               <label class="form-label">Observações (opcional)</label>
-              <%= form.text_area :notes, 
-                                 rows: 2, 
-                                 class: "form-control", 
-                                 placeholder: "Ex: Preferir integral, pode ser usado no jantar..." %>
+              <%= form.text_area :notes, rows: 2, class: "form-control", placeholder: "Ex: Preferir integral, pode ser usado no jantar..." %>
             </div>
           </div>
           <div class="modal-footer">
@@ -182,14 +192,15 @@
     </div>
   </div>
 <% end %>
+
+<!-- Script para cálculo nutricional em tempo real -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   const foodSelectMain = document.getElementById('food_select_main');
   const quantityInputMain = document.getElementById('quantity_input_main');
   const nutritionPreviewMain = document.getElementById('nutrition_preview_main');
   const calculatedValuesMain = document.getElementById('calculated_values_main');
-  
-  // Base de dados dos alimentos (será preenchida via Rails)
+
   const foodsData = {
     <% @available_foods.each do |food| %>
       <%= food.id %>: {
@@ -201,45 +212,37 @@ document.addEventListener('DOMContentLoaded', function() {
       },
     <% end %>
   };
-  
+
   function calculateNutritionMain() {
-    if (!foodSelectMain || !quantityInputMain) return;
-    
     const foodId = foodSelectMain.value;
     const quantity = parseFloat(quantityInputMain.value);
-    
+
     if (!foodId || !quantity || quantity <= 0) {
-      if (nutritionPreviewMain) nutritionPreviewMain.style.display = 'none';
+      nutritionPreviewMain.style.display = 'none';
       return;
     }
-    
+
     const food = foodsData[foodId];
     if (!food) {
-      if (nutritionPreviewMain) nutritionPreviewMain.style.display = 'none';
+      nutritionPreviewMain.style.display = 'none';
       return;
     }
-    
-    // Calcular proporcionalmente (quantidade * valor_por_100g / 100)
+
     const calories = (quantity * food.calories / 100).toFixed(1);
     const protein = (quantity * food.protein / 100).toFixed(1);
     const carbs = (quantity * food.carbs / 100).toFixed(1);
     const fat = (quantity * food.fat / 100).toFixed(1);
-    
-    if (calculatedValuesMain) {
-      calculatedValuesMain.innerHTML = `
-        <span class="text-warning">${calories} kcal</span> | 
-        <span class="text-primary">P: ${protein}g</span> | 
-        <span class="text-info">C: ${carbs}g</span> | 
-        <span class="text-danger">G: ${fat}g</span>
-      `;
-    }
-    
-    if (nutritionPreviewMain) {
-      nutritionPreviewMain.style.display = 'block';
-    }
+
+    calculatedValuesMain.innerHTML = `
+      <span class="text-warning">${calories} kcal</span> |
+      <span class="text-primary">P: ${protein}g</span> |
+      <span class="text-info">C: ${carbs}g</span> |
+      <span class="text-danger">G: ${fat}g</span>
+    `;
+
+    nutritionPreviewMain.style.display = 'block';
   }
-  
-  // Event listeners para cálculo em tempo real (alimento principal)
+
   if (foodSelectMain) foodSelectMain.addEventListener('change', calculateNutritionMain);
   if (quantityInputMain) quantityInputMain.addEventListener('input', calculateNutritionMain);
 });

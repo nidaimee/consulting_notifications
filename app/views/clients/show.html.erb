@@ -40,7 +40,7 @@
         <p><strong>Total de Dietas:</strong> <%= @total_diets %></p>
         <p><strong>Total de Calorias:</strong> <%= @total_calories.round(1) %> kcal</p>
         <%= link_to "Ver Dietas", client_diets_path(@client), class: "btn btn-success" %>
-        <%= link_to "Nova Dieta", new_client_diet_path(@client), class: "btn btn-primary" %>
+        <%= link_to "Nova Refeição", new_client_diet_path(@client), class: "btn btn-primary" %>
       </div>
     </div>
   </div>
@@ -59,7 +59,7 @@
               <div class="card-body">
                 <h6 class="card-title"><%= diet.name %></h6>
                 <p class="card-text">
-                  <strong>Tipo:</strong> <%= diet.meal_type.capitalize %><br>
+                  <strong>Tipo:</strong> <br>
                   <strong>Calorias:</strong> <%= diet.total_calories.round(1) %> kcal
                 </p>
                 <%= link_to "Ver Dieta", client_diet_path(@client, diet), class: "btn btn-sm btn-primary" %>

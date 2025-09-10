@@ -14,7 +14,8 @@ Rails.application.routes.draw do
         post :add_substitution
         delete :remove_substitution
       end
-      resources :diet_foods, only: [ :destroy ], path: "foods"
+      resources :food_substitutions, only: [ :create, :destroy ]
+      resources :diet_foods, only: [ :create, :destroy, :update ], path: "foods"
     end
   end
 

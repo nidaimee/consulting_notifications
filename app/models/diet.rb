@@ -5,7 +5,6 @@ class Diet < ApplicationRecord
   has_many :foods, through: :diet_foods
 
   validates :name, presence: true
-  validates :meal_type, presence: true
 
   def foods_list
     diet_foods.includes(:food).map { |df| df.food.name }.join(", ")

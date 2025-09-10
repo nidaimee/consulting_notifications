@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_09_182755) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_10_011717) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -25,7 +25,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_09_182755) do
     t.decimal "paid_amount"
     t.date "end_date"
     t.text "note"
-    t.bigint "user_id", null: false
+    t.bigint "user_id"
     t.string "status", default: "active", null: false
     t.index ["user_id"], name: "index_clients_on_user_id"
   end
@@ -52,9 +52,34 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_09_182755) do
     t.date "created_date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "user_id", null: false
+    t.bigint "user_id"
     t.index ["client_id"], name: "index_diets_on_client_id"
     t.index ["user_id"], name: "index_diets_on_user_id"
+  end
+
+  create_table "food_categories", force: :cascade do |t|
+    t.string "key", null: false
+    t.string "name", null: false
+    t.string "color"
+    t.text "description"
+    t.integer "display_order", default: 0
+    t.boolean "active", default: true
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["display_order"], name: "index_food_categories_on_display_order"
+    t.index ["key"], name: "index_food_categories_on_key", unique: true
+  end
+
+  create_table "food_equivalences", force: :cascade do |t|
+    t.string "category", null: false
+    t.string "food_name", null: false
+    t.decimal "portion_grams", precision: 8, scale: 2, null: false
+    t.string "portion_unit"
+    t.text "notes"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["category"], name: "index_food_equivalences_on_category"
+    t.index ["food_name"], name: "index_food_equivalences_on_food_name"
   end
 
   create_table "food_substitutions", force: :cascade do |t|
@@ -64,7 +89,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_09_182755) do
     t.text "notes"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["diet_food_id", "substitute_food_id"], name: "index_food_substitutions_on_diet_food_and_substitute"
     t.index ["diet_food_id"], name: "index_food_substitutions_on_diet_food_id"
     t.index ["substitute_food_id"], name: "index_food_substitutions_on_substitute_food_id"
   end
@@ -78,7 +102,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_09_182755) do
     t.string "category"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "user_id", null: false
+    t.bigint "user_id"
+    t.decimal "portion_grams", precision: 8, scale: 2
+    t.string "portion_unit"
+    t.index ["category"], name: "index_foods_on_category"
     t.index ["user_id"], name: "index_foods_on_user_id"
   end
 

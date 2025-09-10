@@ -4,7 +4,7 @@
 <% if @diets.any? %>
   <h2>Dietas:</h2>
   <% @diets.each do |diet| %>
-    <h3><%= diet.name %> - <%= diet.meal_type %></h3>
+    <h3><%= diet.name %> </h3>
     
     <% if diet.diet_foods.any? %>
       <table border="1" style="border-collapse: collapse; width: 100%;">
