@@ -1,11 +1,6 @@
-# ===============================================
-# CORRIGIR CONTROLLER DE DIETS - PARÂMETROS
-# ===============================================
-
-# app/controllers/diets_controller.rb
 class DietsController < ApplicationController
   before_action :set_client
-  before_action :set_diet, only: [ :show, :edit, :update, :destroy, :add_food ]
+  before_action :set_diet, only: [ :show, :edit, :update, :destroy, :add_food, :add_substitution, :remove_substitution ]
 
   def index
     @diets = @client.diets.order(:meal_type)
@@ -81,6 +76,37 @@ class DietsController < ApplicationController
     redirect_to [ @client, @diet ], alert: "Alimento não encontrado."
   rescue => e
     redirect_to [ @client, @diet ], alert: "Erro ao adicionar alimento: #{e.message}"
+  end
+
+  def add_substitution
+    @diet_food = @diet.diet_foods.find(params[:diet_food_id])
+    @substitute_food = current_user.foods.find(params[:substitute_food_id])
+
+    @substitution = @diet_food.food_substitutions.build(
+      substitute_food: @substitute_food,
+      quantity_grams: params[:quantity_grams],
+      notes: params[:notes]
+    )
+
+    if @substitution.save
+      redirect_to [ @client, @diet ], notice: "Substituição adicionada com sucesso."
+    else
+      redirect_to [ @client, @diet ], alert: "Erro ao adicionar substituição: #{@substitution.errors.full_messages.join(', ')}"
+    end
+  rescue ActiveRecord::RecordNotFound
+    redirect_to [ @client, @diet ], alert: "Alimento não encontrado."
+  rescue => e
+    redirect_to [ @client, @diet ], alert: "Erro ao adicionar substituição: #{e.message}"
+  end
+
+  def remove_substitution
+    @substitution = FoodSubstitution.find(params[:substitution_id])
+    @substitution.destroy
+    redirect_to [ @client, @diet ], notice: "Substituição removida com sucesso."
+  rescue ActiveRecord::RecordNotFound
+    redirect_to [ @client, @diet ], alert: "Substituição não encontrada."
+  rescue => e
+    redirect_to [ @client, @diet ], alert: "Erro ao remover substituição: #{e.message}"
   end
 
   private

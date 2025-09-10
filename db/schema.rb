@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_09_143428) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_09_182755) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -57,6 +57,18 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_09_143428) do
     t.index ["user_id"], name: "index_diets_on_user_id"
   end
 
+  create_table "food_substitutions", force: :cascade do |t|
+    t.bigint "diet_food_id", null: false
+    t.bigint "substitute_food_id", null: false
+    t.decimal "quantity_grams", precision: 8, scale: 2, null: false
+    t.text "notes"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["diet_food_id", "substitute_food_id"], name: "index_food_substitutions_on_diet_food_and_substitute"
+    t.index ["diet_food_id"], name: "index_food_substitutions_on_diet_food_id"
+    t.index ["substitute_food_id"], name: "index_food_substitutions_on_substitute_food_id"
+  end
+
   create_table "foods", force: :cascade do |t|
     t.string "name"
     t.decimal "calories_per_100g"
@@ -91,5 +103,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_09_143428) do
   add_foreign_key "diet_foods", "foods"
   add_foreign_key "diets", "clients"
   add_foreign_key "diets", "users"
+  add_foreign_key "food_substitutions", "diet_foods"
+  add_foreign_key "food_substitutions", "foods", column: "substitute_food_id"
   add_foreign_key "foods", "users"
 end

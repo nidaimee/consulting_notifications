@@ -1,14 +1,18 @@
+<!-- app/views/diets/index.html.erb -->
 <div class="row mb-4">
-  <div class="col-md-8">
+  <div class="col-md-6">
     <h1>Dietas de <%= @client.name %></h1>
     <p class="text-muted">Total de Calorias do Dia: <strong><%= @daily_total_calories.round(1) %> kcal</strong></p>
   </div>
-  <div class="col-md-4 text-end">
-    <%= link_to "Nova Dieta", new_client_diet_path(@client), class: "btn btn-success" %>
+  <div class="col-md-6 text-end">
+    <!-- BOTÃO PARA GERAR PDF -->
+   
+    <%= link_to "Nova Dieta", new_client_diet_path(@client), class: "btn btn-primary me-2" %>
     <%= link_to "Voltar ao Cliente", @client, class: "btn btn-secondary" %>
   </div>
 </div>
 
+<!-- CARDS DAS DIETAS -->
 <% if @diets.any? %>
   <div class="row">
     <% @diets.each do |diet| %>
@@ -21,23 +25,33 @@
             </div>
           </div>
           <div class="card-body">
-            <div class="row text-center">
+            <!-- ESTATÍSTICAS PRINCIPAIS -->
+            <div class="row text-center mb-3">
               <div class="col-6">
                 <h4 class="text-warning"><%= diet.total_calories.round(1) %></h4>
                 <small>kcal</small>
               </div>
               <div class="col-6">
-                <small>Alimentos</small>
-                <% if diet.diet_foods.any? %>
-                  <div class="small text-muted mt-1">
-                    <%= diet.diet_foods.includes(:food).limit(4).map { |df| df.food.name.split(',').first }.join(", ") %>
-                    
-                  </div>
-                <% end %>
+                <h6><%= diet.diet_foods.count %></h6>
+                <small>alimentos</small>
+                <!-- LISTA COMPACTA DOS ALIMENTOS -->
+                <div class="mt-1">
+                  <% if diet.diet_foods.any? %>
+                    <small class="text-muted d-block" style="font-size: 0.75rem;">
+                      <%= diet.diet_foods.includes(:food).limit(2).map { |df| "#{df.quantity_grams.to_i}g #{df.food.name.split(',').first}" }.join(", ") %>
+                      <% if diet.diet_foods.count > 2 %>
+                        <span class="text-primary">... +<%= diet.diet_foods.count - 2 %></span>
+                      <% end %>
+                    </small>
+                  <% else %>
+                    <small class="text-muted fst-italic">vazio</small>
+                  <% end %>
+                </div>
               </div>
             </div>
             
-            <div class="row mt-2 text-center">
+            <!-- MACRONUTRIENTES -->
+            <div class="row text-center mb-2">
               <div class="col-4">
                 <span class="text-primary"><%= diet.total_protein.round(1) %>g</span><br>
                 <small>Proteína</small>
@@ -52,22 +66,75 @@
               </div>
             </div>
             
+            <!-- OBSERVAÇÕES (SE HOUVER) -->
             <% if diet.notes.present? %>
-              <p class="mt-3 mb-0"><small class="text-muted"><%= diet.notes %></small></p>
+              <p class="mb-0"><small class="text-muted"><%= diet.notes.truncate(40) %></small></p>
             <% end %>
           </div>
           <div class="card-footer">
             <div class="btn-group w-100">
-              <%= link_to "Montar Dieta", client_diet_path(@client, diet), class: "btn btn-primary btn-sm" %>
+              <%= link_to "Montar", client_diet_path(@client, diet), class: "btn btn-primary btn-sm" %>
               <%= link_to "Editar", edit_client_diet_path(@client, diet), class: "btn btn-warning btn-sm" %>
-              <%= link_to "Excluir", client_diet_path(@client, diet), method: :delete, 
-                          confirm: "Tem certeza?", class: "btn btn-danger btn-sm" %>
+              <%= link_to "×", client_diet_path(@client, diet), method: :delete, 
+                          confirm: "Excluir #{diet.name}?", class: "btn btn-danger btn-sm" %>
             </div>
           </div>
         </div>
       </div>
     <% end %>
   </div>
+
+  <!-- RESUMO TOTAL DO DIA -->
+  <div class="row mt-4">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+          <h5 class="mb-0">📊 Resumo Total do Dia</h5>
+          <!-- BOTÃO PDF NO RESUMO TAMBÉM -->
+          <%= link_to "📄 PDF Completo", diet_pdf_client_path(@client, format: :pdf), 
+                      class: "btn btn-light btn-sm", target: "_blank" %>
+        </div>
+        <div class="card-body">
+          <div class="row text-center">
+            <div class="col-md-3">
+              <div class="bg-warning text-white p-3 rounded">
+                <h3><%= @daily_total_calories.round(1) %></h3>
+                <p class="mb-0">Total Kcal</p>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="bg-primary text-white p-3 rounded">
+                <h3><%= @diets.sum(&:total_protein).round(1) %>g</h3>
+                <p class="mb-0">Proteínas</p>
+                <small>
+                  <%= ((@diets.sum(&:total_protein) * 4) / @daily_total_calories * 100).round(1) %>% das kcal
+                </small>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="bg-info text-white p-3 rounded">
+                <h3><%= @diets.sum(&:total_carbs).round(1) %>g</h3>
+                <p class="mb-0">Carboidratos</p>
+                <small>
+                  <%= ((@diets.sum(&:total_carbs) * 4) / @daily_total_calories * 100).round(1) %>% das kcal
+                </small>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="bg-danger text-white p-3 rounded">
+                <h3><%= @diets.sum(&:total_fat).round(1) %>g</h3>
+                <p class="mb-0">Gorduras</p>
+                <small>
+                  <%= ((@diets.sum(&:total_fat) * 9) / @daily_total_calories * 100).round(1) %>% das kcal
+                </small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 <% else %>
   <div class="text-center py-5">
     <h4 class="text-muted">Nenhuma dieta criada ainda</h4>
@@ -75,3 +142,17 @@
     <%= link_to "Criar Primeira Dieta", new_client_diet_path(@client), class: "btn btn-success btn-lg" %>
   </div>
 <% end %>
+
+<!-- ESTILO PARA BOTÕES PDF -->
+<style>
+.btn-success {
+  background: linear-gradient(135deg, #28a745, #20c997);
+  border: none;
+  font-weight: 600;
+}
+
+.btn-success:hover {
+  background: linear-gradient(135deg, #20c997, #28a745);
+  transform: translateY(-1px);
+}
+</style>
