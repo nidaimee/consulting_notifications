@@ -47,6 +47,18 @@
         <%= form.number_field :paid_amount, step: 0.01, class: "form-control" %>
       </div>
     </div>
+    <div class="mb-3">
+      <%= form.label :plan_type, "Tipo de Plano", class: "form-label" %>
+      <%= form.select :plan_type, 
+            options_for_select([
+              ['Mensal', 'monthly'],
+              ['Trimestral', 'quarterly'],
+              ['Semestral', 'semiannual'],
+              ['Anual', 'annual']
+            ], form.object.plan_type),
+            { include_blank: "Selecione um plano" },
+            class: "form-select" %>
+    </div>
   </div>
 
   <div class="row">
@@ -64,13 +76,14 @@
 
   <div class="mb-3">
     <%= form.label :note, "Observações", class: "form-label" %>
-    <%= form.text_area :note, rows: 4, class: "form-control" %>
+    <%= form.text_area :note, rows: 4, class: "form-control", 
+    placeholder: "Adicione observações sobre as recomendações do que você pretende para o seu paciente (cardio, modo de preparo, quantidade de água consumida e recomendações gerais...)" %>
   </div>
-
+  
   <div class="mb-3">
     <%= form.submit client.persisted? ? "Atualizar Cliente" : "Criar Cliente", 
                     class: "btn btn-success me-2" %>
-    <%= link_to "Cancelar", client.persisted? ? client : clients_path, 
+    <%= link_to "Voltar", client.persisted? ? client : clients_path, 
                 class: "btn btn-secondary" %>
   </div>
 <% end %>

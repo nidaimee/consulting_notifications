@@ -18,55 +18,62 @@
         <strong>📋 Data da Prescrição:</strong> <%= Date.current.strftime('%d/%m/%Y') %>
       </div>
     </div>
-    <% if @client.note.present? %>
-      <div class="client-notes">
-        <strong>📝 Observações:</strong> <%= @client.note %>
-      </div>
-    <% end %>
+   <% if @client.note.present? %>
+  <div class="client-notes">
+    <strong>📝 Observações:</strong>
+    <ul>
+      <% @client.note.split("\n").each do |linha| %>
+        <li style="list-style-type: none;"><%= linha.strip %></li>
+
+      <% end %>
+    </ul>
+  </div>
+<% end %>
   </div>
 </div>
 
-<div class="instructions">
-  <h3>💡 Instruções Importantes:</h3>
-  <ul>
-    <li>Siga as orientações de horários sugeridos para cada refeição</li>
-    <li>As quantidades devem ser respeitadas conforme prescrito</li>
-    <li>Beba pelo menos 2 litros de água por dia</li>
-    <li>Em caso de dúvidas, entre em contato com seu nutricionista</li>
-  </ul>
-</div>
-
 <% 
-meal_types = [
-  { key: 'breakfast', name: 'Café da Manhã', time: '8:00', icon: '🌅' },
-  { key: 'morning_snack', name: 'Lanche da Manhã', time: '10:00', icon: '🍎' },
-  { key: 'lunch', name: 'Almoço', time: '12:00', icon: '🍽️' },
-  { key: 'afternoon_snack', name: 'Lanche da Tarde', time: '15:00', icon: '🥤' },
-  { key: 'dinner', name: 'Jantar', time: '19:00', icon: '🌙' },
-  { key: 'supper', name: 'Ceia', time: '22:00', icon: '🌜' }
-]
+# Mapeamento de meal_types e nomes customizados
+meal_type_mapping = {
+  'breakfast' => { name: 'Café da Manhã', time: '8:00', icon: '🌅' },
+  'morning_snack' => { name: 'Lanche da Manhã', time: '10:00', icon: '🍎' },
+  'lunch' => { name: 'Almoço', time: '12:00', icon: '🍽️' },
+  'afternoon_snack' => { name: 'Lanche da Tarde', time: '15:00', icon: '🥤' },
+  'dinner' => { name: 'Jantar', time: '19:00', icon: '🌙' },
+  'supper' => { name: 'Ceia', time: '22:00', icon: '🌜' }
+}
+
+# Filtrar dietas que têm alimentos
+diets_with_foods = @diets.select { |d| d.diet_foods.any? }
 %>
 
 <div class="meals-container">
-  <% 
-    # Filtrar apenas refeições que têm alimentos
-    filled_meals = meal_types.select do |meal_info|
-      diet = @diets.find { |d| d.meal_type == meal_info[:key] }
-      diet && diet.diet_foods.any?
-    end
-  %>
-  
-  <% if filled_meals.any? %>
-    <% filled_meals.each_with_index do |meal_info, index| %>
-      <% diet = @diets.find { |d| d.meal_type == meal_info[:key] } %>
+  <% if diets_with_foods.any? %>
+    <% diets_with_foods.each_with_index do |diet, index| %>
+      <% 
+      # Determinar nome e ícone da refeição
+      if diet.meal_type.present? && meal_type_mapping[diet.meal_type]
+        meal_info = meal_type_mapping[diet.meal_type]
+        meal_name = meal_info[:name]
+        meal_time = meal_info[:time]
+        meal_icon = meal_info[:icon]
+      else
+        # Se não tiver meal_type ou for customizado, usar o nome da dieta
+        meal_name = diet.name
+        meal_time = ''
+        meal_icon = '🍴'
+      end
+      %>
       
       <div class="meal-section">
         <div class="meal-header">
           <div class="meal-title">
-            <span class="meal-icon"><%= meal_info[:icon] %></span>
-            <span class="meal-name"><%= meal_info[:name] %></span>
+            <span class="meal-icon"><%= meal_icon %></span>
+            <span class="meal-name"><%= meal_name %></span>
           </div>
-          <div class="meal-time"><%= meal_info[:time] %></div>
+          <% if meal_time.present? %>
+            <div class="meal-time"><%= meal_time %></div>
+          <% end %>
         </div>
         
         <div class="meal-content">
@@ -87,8 +94,8 @@ meal_types = [
         </div>
       </div>
       
-      <% # Page break após 3 refeições (se houver mais) %>
-      <% if index == 2 && filled_meals.length > 3 %>
+      <% # Page break após 3 refeições %>
+      <% if index == 2 && diets_with_foods.length > 7 %>
         <div class="page-break"></div>
       <% end %>
     <% end %>
@@ -103,123 +110,172 @@ meal_types = [
   <% end %>
 </div>
 
+<!-- SEÇÃO DE SUBSTITUIÇÕES -->
 <%
-# Coletar todos os alimentos únicos da dieta para determinar quais tabelas mostrar
-all_foods = []
+# Coletar todas as substituições cadastradas manualmente com informação da refeição
+all_manual_substitutions = {}
+has_manual_substitutions = false
+
 @diets.each do |diet|
-  diet.diet_foods.includes(:food).each do |diet_food|
-    all_foods << diet_food.food.name.downcase
+  # Determinar nome da refeição
+  meal_name = if diet.meal_type.present? && meal_type_mapping[diet.meal_type]
+                meal_type_mapping[diet.meal_type][:name]
+              else
+                diet.name
+              end
+  
+  diet.diet_foods.includes(:food_substitutions => :substitute_food).each do |diet_food|
+    if diet_food.food_substitutions.any?
+      has_manual_substitutions = true
+      all_manual_substitutions[diet_food.id] = {
+        food: diet_food.food,
+        quantity: diet_food.quantity_grams,
+        substitutions: diet_food.food_substitutions,
+        meal_name: meal_name
+      }
+    end
   end
 end
-all_foods = all_foods.uniq
-
-# Definir as tabelas de substituição
-substitution_tables = {
-  vegetables_a: {
-    title: "VEGETAIS A (LIVRES)",
-    show_if: -> { all_foods.any? { |f| f.match?(/acelga|agrião|abobrinha|brócolis|cebola|chicória|espinafre|mostarda|palmito|repolho|rúcula|tomate|alface|aspargo|berinjela|cogumelo|couve|couve-flor|pepino|rabanete|pimentão/) } },
-    items: [
-      ["ACELGA", "ABOBRINHA", "BRÓCOLIS", "ESPINAFRE", "REPOLHO", "ALFACE", "COGUMELOS", "PEPINO"],
-      ["AGRIÃO", "", "CEBOLA", "MOSTARDA", "RÚCULA", "ASPARGO", "COUVE", "RABANETE"],
-      ["", "", "CHICÓRIA", "PALMITO", "TOMATE", "BERINJELA", "COUVE-FLOR", "PIMENTÃO"]
-    ]
-  },
-  vegetables_b: {
-    title: "VEGETAIS B",
-    show_if: -> { all_foods.any? { |f| f.match?(/abóbora|beterraba|cenoura|chuchu|nabo|quiabo|shimeji|shitake|vagem/) } },
-    items: [
-      ["ABÓBORA CABOTIÁ", "", "CHUCHU", "", "SHIMEJI", "", "", ""],
-      ["BETERRABA", "", "NABO", "", "SHITAKE", "", "", ""],
-      ["CENOURA", "", "QUIABO", "", "VAGEM", "", "", ""]
-    ]
-  },
-  proteins_1: {
-    title: "PROTEÍNAS 1",
-    show_if: -> { all_foods.any? { |f| f.match?(/carne|frango|peixe|ovo|atum|sardinha|salmão|tilápia|pescada|patinho|músculo|lagarto|filé mignon|coxa|sobrecoxa/) } },
-    items: [
-      ["83g CARNE VERMELHA MAGRA SEM GORDURA (PATINHO, PALETA, MÚSCULO, LAGARTO, FILÉ MIGNON, COXÃO MOLE E COXÃO DURO)", "110g PEIXE ASSADO, GRELHADO OU COZIDO SEM ÓLEO (ATUM, SARDINHA, BACALHAU, PESCADO, TILÁPIA E PESCADA)"],
-      ["87g CARNE SUÍNA MAGRA SEM GORDURA (FILÉ MIGNON SUÍNO E LOMBO)", "115g PEITO DE FRANGO (GRELHADO, COZIDO OU DESFIADO)"]
-    ]
-  },
-  dairy: {
-    title: "DERIVADOS",
-    show_if: -> { all_foods.any? { |f| f.match?(/requeijão|queijo|ricota|muçarela|prato|cottage|iogurte|creme/) } },
-    items: [
-      ["30g REQUEIJÃO CREMOSO", "29g QUEIJO MINAS FRESCAL", "86g QUEIJO TIPO COTTAGE"],
-      ["56g CREME DE RICOTA", "23g QUEIJO MUÇARELA", "60g IOGURTE GREGO DESNATADO"],
-      ["23g QUEIJO COALHO", "22g QUEIJO PRATO", "15g PASTA DE AMENDOIM"]
-    ]
-  },
-  fruits: {
-    title: "FRUTAS",
-    show_if: -> { all_foods.any? { |f| f.match?(/banana|abacaxi|ameixa|caju|caqui|goiaba|kiwi|laranja|maçã|mamão|manga|melancia|melão|morango|tangerina|pera|pêssego|uva|maracujá|amora|jabuticaba/) } },
-    items: [
-      ["60g BANANA (PRATA, MAÇÃ OU NANICA)", "118g KIWI", "83g MANGA", "114g UVA RUBI / ITÁLIA"],
-      ["125g ABACAXI", "164g LARANJA PERA", "185g MELANCIA", "90g MARACUJÁ"],
-      ["115g AMEIXA CRUA", "96g MAÇÃ ARGENTINA", "205g MELÃO", "100g AMORA"],
-      ["140g CAJU CRU", "109g MAÇÃ FUJI", "200g MORANGO", "150g TANGERINA"],
-      ["84g CAQUI", "133g MAMÃO FORMOSA", "113g PERA WILLIANS", "100g JABUTICABA"],
-      ["111g GOIABA", "150g MAMÃO PAPAIA", "166g PÊSSEGO", "CASO QUEIRA ALGUMA EM ESPECÍFICO: 50 PEDIR"]
-    ]
-  }
-}
-
-# Verificar quais tabelas devem ser mostradas
-tables_to_show = substitution_tables.select { |key, table| table[:show_if].call }
 %>
 
-<% if tables_to_show.any? %>
-  <div class="page-break"></div>
+<!-- Sempre adicionar quebra de página antes das substituições -->
+<div class="page-break"></div>
+
+<div class="substitutions-section">
+  <div class="substitutions-header">
+    <h2>TABELA DE SUBSTITUIÇÕES</h2>
+    <p>OPÇÕES EQUIVALENTES PARA CADA ALIMENTO</p>
+  </div>
   
-  <div class="substitutions-section">
-    <div class="substitutions-header">
-      <h2>LISTA DE SUBSTITUIÇÕES (PORÇÕES)</h2>
-      <p>CADA PESO EQUIVALE A 1 PORÇÃO</p>
+  <% # Mostrar substituições cadastradas manualmente primeiro %>
+  <% if has_manual_substitutions %>
+    <div class="custom-substitutions">
+      <h3>SUBSTITUIÇÕES PERSONALIZADAS</h3>
+      
+      <div class="substitutions-compact">
+        <% # Agrupar por refeição %>
+        <% substitutions_by_meal = all_manual_substitutions.group_by { |_, data| data[:meal_name] } %>
+        
+        <% substitutions_by_meal.each do |meal_name, meal_substitutions| %>
+          <div class="meal-substitution-group">
+            <div class="meal-sub-header">
+              <h4><%= meal_name.upcase %></h4>
+            </div>
+            <% meal_substitutions.each do |diet_food_id, data| %>
+              <div class="sub-row">
+                <span class="sub-original">
+                  <%= data[:food].name %>
+                  <span class="sub-qty-badge"><%= data[:quantity].to_i %>g</span>
+                </span>
+                <span class="sub-arrow">→</span>
+                <span class="sub-options">
+                  <% data[:substitutions].each_with_index do |sub, idx| %>
+                    <span class="sub-opt-qty"><%= sub.quantity_grams.to_i %>g</span>
+                    <%= sub.substitute_food.name %><%= idx < data[:substitutions].count - 1 ? ' ou' : '' %>
+                  <% end %>
+                </span>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
     </div>
     
-    <% if all_foods.any? { |f| f.match?(/alimentos já preparados|preparados/) } %>
-      <div class="warning-box">
-        <strong>⚠️ PESAR OS ALIMENTOS JÁ PREPARADOS</strong>
-      </div>
-    <% end %>
+    <div class="section-divider"></div>
+  <% end %>
+  
+  <% # TABELAS FIXAS DE SUBSTITUIÇÕES %>
+  <div class="standard-substitutions">
+   
     
-    <% tables_to_show.each do |key, table| %>
-      <div class="substitution-table">
-        <h3 class="table-title"><%= table[:title] %></h3>
-        <table>
-          <tbody>
-            <% table[:items].each do |row| %>
-              <tr>
-                <% row.each do |item| %>
-                  <td><%= item %></td>
-                <% end %>
-              </tr>
-            <% end %>
-          </tbody>
-        </table>
+    <!-- VEGETAIS A (LIVRES) -->
+    <div class="substitution-table">
+      <h4 class="table-title">🥬 VEGETAIS A (CONSUMO LIVRE)</h4>
+      <table>
+        <tbody>
+          <tr>
+            <td>ACELGA</td>
+            <td>ABOBRINHA</td>
+            <td>BRÓCOLIS</td>
+            <td>ESPINAFRE</td>
+            <td>REPOLHO</td>
+            <td>ALFACE</td>
+            <td>COGUMELOS</td>
+            <td>PEPINO</td>
+          </tr>
+          <tr>
+            <td>AGRIÃO</td>
+            <td>JILÓ</td>
+            <td>CEBOLA</td>
+            <td>MOSTARDA</td>
+            <td>RÚCULA</td>
+            <td>ASPARGO</td>
+            <td>COUVE</td>
+            <td>RABANETE</td>
+          </tr>
+          <tr>
+            <td>ALCACHOFRA</td>
+            <td>AIPO</td>
+            <td>CHICÓRIA</td>
+            <td>PALMITO</td>
+            <td>TOMATE</td>
+            <td>BERINJELA</td>
+            <td>COUVE-FLOR</td>
+            <td>PIMENTÃO</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="table-note">
+        <small>💡 Estes vegetais podem ser consumidos à vontade, sem restrição de quantidade</small>
       </div>
-    <% end %>
+    </div>
+    
+    <!-- VEGETAIS B -->
+    <div class="substitution-table">
+      <table>
+        <tbody>
+          <tr>
+            <td>ABÓBORA</td>
+            <td>BETERRABA</td>
+            <td>CENOURA</td>
+            <td>CHUCHU</td>
+          </tr>
+          <tr>
+            <td>NABO</td>
+            <td>QUIABO</td>
+            <td>VAGEM</td>
+            <td>ERVILHA</td>
+          </tr>
+          <tr>
+            <td>SHIMEJI</td>
+            <td>SHITAKE</td>
+            <td>MILHO VERDE</td>
+            <td>ABÓBORA CABOTIÁ</td>
+          </tr>
+        </tbody>
+      </table>
+     
+    </div>
+    
+    <%
+    all_foods = []
+    @diets.each do |diet|
+      diet.diet_foods.includes(:food).each do |diet_food|
+        all_foods << diet_food.food.name.downcase
+      end
+    end
+    all_foods = all_foods.uniq
+    %>
+     
+    
+    
   </div>
-<% end %>
+  
+  
+</div>
 
 <div class="footer">
-  <div class="nutritionist-info">
-    <div class="nutritionist-details">
-      <h4>👨‍⚕️ Nutricionista Responsável</h4>
-      <p><strong><%= current_user.name %></strong></p>
-      <p><%= current_user.specialty %></p>
-      <p><strong>CRN:</strong> <%= current_user.license_number %></p>
-    </div>
-    <div class="contact-info">
-      <h4>📱 Contato</h4>
-      <p><strong>Telefone:</strong> <%= current_user.phone %></p>
-      <p><strong>Email:</strong> <%= current_user.email %></p>
-    </div>
-  </div>
   
-  <div class="disclaimer">
-    <p><strong>⚠️ Importante:</strong> Esta prescrição nutricional foi elaborada especificamente para <strong><%= @client.name %></strong>. Não compartilhe com outras pessoas. Em caso de reações adversas ou dúvidas, interrompa o uso e entre em contato imediatamente.</p>
-  </div>
   
   <div class="signature-area">
     <div class="signature-line">

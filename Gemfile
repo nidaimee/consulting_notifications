@@ -67,3 +67,5 @@ group :test do
 end
 gem "wicked_pdf"
 gem "wkhtmltopdf-binary"
+
+gem "cssbundling-rails", "~> 1.4"

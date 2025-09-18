@@ -10,11 +10,28 @@
         </div>
 
         <div class="card-body">
-          <% if @diet.notes.present? %>
-            <div class="alert alert-info">
-              <strong>Observações:</strong> <%= @diet.notes %>
+          <!-- Seção de Observações com formulário de edição -->
+          <div class="card mb-3 border-info">
+            <div class="card-header bg-info text-white">
+              <h6 class="mb-0">📝 Observações da Refeição</h6>
             </div>
-          <% end %>
+            <div class="card-body">
+              <%= form_with model: [@client, @diet], url: client_diet_path(@client, @diet), method: :patch, local: true, class: "notes-form" do |form| %>
+                <div class="mb-2">
+                  <%= form.text_area :notes, 
+                                     rows: 3, 
+                                     class: "form-control", 
+                                     placeholder: "Adicione observações sobre esta refeição (horário, modo de preparo, recomendações...)",
+                                     value: @diet.notes %>
+                </div>
+                <div class="d-flex justify-content-end">
+                  <%= form.submit "Adicionar Observações", class: "btn btn-info btn-sm" %>
+                </div>
+              <% end %>
+              
+              
+            </div>
+          </div>
 
           <!-- Tabela principal com alimentos + substituições -->
           <div class="table-responsive">
@@ -193,9 +210,10 @@
   </div>
 <% end %>
 
-<!-- Script para cálculo nutricional em tempo real -->
+<!-- Script para cálculo nutricional em tempo real e auto-save das observações -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+  // Código existente para cálculo nutricional
   const foodSelectMain = document.getElementById('food_select_main');
   const quantityInputMain = document.getElementById('quantity_input_main');
   const nutritionPreviewMain = document.getElementById('nutrition_preview_main');
@@ -245,5 +263,55 @@ document.addEventListener('DOMContentLoaded', function() {
 
   if (foodSelectMain) foodSelectMain.addEventListener('change', calculateNutritionMain);
   if (quantityInputMain) quantityInputMain.addEventListener('input', calculateNutritionMain);
+
+  // Auto-save para as observações (opcional)
+  const notesForm = document.querySelector('.notes-form');
+  const notesTextarea = notesForm ? notesForm.querySelector('textarea[name="diet[notes]"]') : null;
+  let saveTimeout;
+
+  if (notesTextarea) {
+    notesTextarea.addEventListener('input', function() {
+      clearTimeout(saveTimeout);
+      // Adiciona um indicador visual de que está salvando
+      notesTextarea.style.borderColor = '#ffc107';
+      
+      saveTimeout = setTimeout(function() {
+        // Submete o formulário automaticamente após 2 segundos de inatividade
+        const submitButton = notesForm.querySelector('input[type="submit"]');
+        if (submitButton) {
+          submitButton.value = 'Salvando...';
+          submitButton.disabled = true;
+        }
+        
+        // Simula o envio do formulário via AJAX (Rails UJS)
+        fetch(notesForm.action, {
+          method: 'PATCH',
+          body: new FormData(notesForm),
+          headers: {
+            'X-CSRF-Token': document.querySelector('[name="csrf-token"]').content,
+            'Accept': 'text/html'
+          }
+        }).then(response => {
+          if (response.ok) {
+            notesTextarea.style.borderColor = '#28a745';
+            if (submitButton) {
+              submitButton.value = 'Observações Salvas ✓';
+              setTimeout(() => {
+                submitButton.value = 'Salvar Observações';
+                submitButton.disabled = false;
+                notesTextarea.style.borderColor = '';
+              }, 2000);
+            }
+          }
+        }).catch(error => {
+          notesTextarea.style.borderColor = '#dc3545';
+          if (submitButton) {
+            submitButton.value = 'Erro ao salvar';
+            submitButton.disabled = false;
+          }
+        });
+      }, 2000);
+    });
+  }
 });
 </script>

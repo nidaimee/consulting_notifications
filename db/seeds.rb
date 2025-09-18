@@ -23,6 +23,16 @@ user = User.create!(
   license_number: 'CRN-3-12345'
 )
 
+user = User.create!(
+  email: 'vj@nutri',
+  password: '123456',
+  password_confirmation: '123456',
+  name: 'Viado Jovem',
+  phone: '(11) 99999-9999',
+  specialty: 'Nutrição Clínica',
+  license_number: 'CRN-3-12345'
+)
+
 puts "✅ Nutricionista criada: #{user.name} (#{user.email})"
 
 # ALIMENTOS BRASILEIROS - DADOS REAIS DA TABELA TACO

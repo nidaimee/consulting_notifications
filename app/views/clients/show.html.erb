@@ -1,27 +1,33 @@
 <div class="row mb-4">
   <div class="col-md-8">
     <h1><%= @client.name %></h1>
-    <p class="text-muted"><%= @client.phone_number %></p>
+    
   </div>
-  <div class="col-md-4 text-end">
+  <div class="col-md-12 text-end">
+    <%= link_to "Ver Dieta", client_diets_path(@client), 
+                            class: "btn btn-primary" %>
     <%= link_to "Editar Cliente", edit_client_path(@client), class: "btn btn-warning" %>
-    <%= link_to "Voltar", clients_path, class: "btn btn-secondary" %>
+
+    <%= link_to "Voltar a Clientes", clients_path, class: "btn btn-secondary" %>
   </div>
 </div>
 
-<div class="row mb-4">
-  <div class="col-md-6">
+<div class="row mb-6">
+  <div class="col-md-12">
     <div class="card">
       <div class="card-header">
         <h5>Informações do Cliente</h5>
       </div>
       <div class="card-body">
+         <p class="text-muted"><%= @client.phone_number %></p>
         <p><strong>Status:</strong> 
           <span class="badge bg-<%= @client.status == 'active' ? 'success' : @client.status == 'completed' ? 'primary' : 'secondary' %>">
             <%= @client.status.capitalize %>
           </span>
         </p>
+       
         <p><strong>Período:</strong> <%= @client.start_date.strftime('%d/%m/%Y') %> a <%= @client.end_date.strftime('%d/%m/%Y') %></p>
+        <p><strong>Plano:</strong>   <%= @client.plan_type.present? ? @client.plan_type.capitalize : 'Não informado' %></p>
         <p><strong>Valor Pago:</strong> R$ <%= number_with_precision(@client.paid_amount, precision: 2, delimiter: '.', separator: ',') %></p>
         <% if @client.note.present? %>
           <p><strong>Observações:</strong><br>
@@ -30,44 +36,14 @@
       </div>
     </div>
   </div>
-  
-  <div class="col-md-6">
-    <div class="card">
-      <div class="card-header">
-        <h5>Estatísticas das Dietas</h5>
-      </div>
-      <div class="card-body">
-        <p><strong>Total de Dietas:</strong> <%= @total_diets %></p>
-        <p><strong>Total de Calorias:</strong> <%= @total_calories.round(1) %> kcal</p>
-        <%= link_to "Ver Dietas", client_diets_path(@client), class: "btn btn-success" %>
-        <%= link_to "Nova Refeição", new_client_diet_path(@client), class: "btn btn-primary" %>
-      </div>
-    </div>
-  </div>
-</div>
 
-<% if @diets.any? %>
-  <div class="card">
-    <div class="card-header">
-      <h5>Dietas do Cliente</h5>
-    </div>
-    <div class="card-body">
-      <div class="row">
-        <% @diets.each do |diet| %>
-          <div class="col-md-4 mb-3">
-            <div class="card border-primary">
-              <div class="card-body">
-                <h6 class="card-title"><%= diet.name %></h6>
-                <p class="card-text">
-                  <strong>Tipo:</strong> <br>
-                  <strong>Calorias:</strong> <%= diet.total_calories.round(1) %> kcal
-                </p>
-                <%= link_to "Ver Dieta", client_diet_path(@client, diet), class: "btn btn-sm btn-primary" %>
-              </div>
-            </div>
-          </div>
-        <% end %>
-      </div>
-    </div>
+  
+
+
+<% if @client.diets.present? %>
+<% else %>
+  <div class="alert alert-info">
+    Nenhuma refeição cadastrada para este cliente.
   </div>
 <% end %>
+

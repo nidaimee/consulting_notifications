@@ -33,9 +33,15 @@ class DietsController < ApplicationController
 
   def update
     if @diet.update(diet_params)
-      redirect_to [ @client, @diet ], notice: "Dieta atualizada com sucesso."
+      respond_to do |format|
+        format.html { redirect_to client_diet_path(@client, @diet), notice: "Dieta atualizada com sucesso!" }
+        format.json { render json: { status: "success", message: "Observações salvas" } }
+      end
     else
-      render :edit
+      respond_to do |format|
+        format.html { render :edit }
+        format.json { render json: { status: "error", errors: @diet.errors.full_messages } }
+      end
     end
   end
 
@@ -120,6 +126,6 @@ class DietsController < ApplicationController
   end
 
   def diet_params
-    params.require(:diet).permit(:name, :meal_type, :notes)
+    params.require(:diet).permit(:name, :meal_type, :notes, :created_date)
   end
 end
