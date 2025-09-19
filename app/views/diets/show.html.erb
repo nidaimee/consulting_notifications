@@ -25,16 +25,71 @@
                                      value: @diet.notes %>
                 </div>
                 <div class="d-flex justify-content-end">
-                  <%= form.submit "Adicionar Observações", class: "btn btn-info btn-sm" %>
+                  <%= form.submit "Salvar Observações", class: "btn btn-info btn-sm" %>
                 </div>
               <% end %>
-              
-              
+            </div>
+          </div>
+          
+          <!-- Formulário para adicionar novo alimento -->
+          <div class="card mt-4">
+            <div class="card-header bg-success text-white">
+              <h5 class="mb-0">➕ Adicionar Alimento Principal</h5>
+            </div>
+            <div class="card-body">
+              <%= form_with url: add_food_client_diet_path(@client, @diet), method: :post, local: true do |form| %>
+                <div class="row g-3 align-items-start">
+                  <!-- Coluna com Busca e Quantidade -->
+                  <div class="col-md-7">
+                    <div class="row g-2">
+                      <!-- Buscar Alimento -->
+                      <div class="col-md-7">
+                        <%= form.label :food_id, "Buscar Alimento", class: "form-label mb-2" %>
+                        <div class="autocomplete-wrapper">
+                          <input type="text" 
+                                id="food-search-input" 
+                                class="form-control" 
+                                placeholder="Digite para buscar...">
+                          <div id="autocomplete-results" class="autocomplete-results"></div>
+                          <%= form.hidden_field :food_id, id: "selected-food-id" %>
+                        </div>
+                        <small class="text-muted d-block mt-1">Digite pelo menos 2 caracteres para buscar</small>
+                      </div>
+                      
+                      <!-- Quantidade -->
+                      <div class="col-md-5">
+                        <%= form.label :quantity_grams, "Quantidade (gramas)", class: "form-label mb-2" %>
+                        <%= form.number_field :quantity_grams, 
+                                              min: 1, 
+                                              step: 1,
+                                              class: "form-control", 
+                                              placeholder: "Ex: 150",
+                                              id: "quantity_input_main" %>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <!-- Preview Nutricional -->
+                  <div class="col-md-3">
+                    <label class="form-label mb-2 text-muted">Prévia Nutricional</label>
+                    <div id="nutrition_preview_main" class="alert alert-info py-2 mb-0" style="min-height: 38px; display: flex; align-items: center;">
+                      <span id="calculated_values_main"></span></small>
+                      </small>
+                    </div>
+                  </div>
+                  
+                  <!-- Botão Adicionar -->
+                  <div class="col-md-2">
+                    <label class="form-label mb-2 text-white">.</label>
+                    <%= form.submit "Adicionar", class: "btn btn-success w-100", id: "add-food-btn", disabled: true %>
+                  </div>
+                </div>
+              <% end %>
             </div>
           </div>
 
           <!-- Tabela principal com alimentos + substituições -->
-          <div class="table-responsive">
+          <div class="table-responsive mt-4">
             <table class="table table-sm table-striped">
               <thead class="table-dark">
                 <tr>
@@ -67,12 +122,10 @@
                       <td class="text-warning"><strong><%= diet_food.calories.round(1) %></strong></td>
                       <td>
                         <div class="btn-group btn-group-sm">
-                          <!-- Botão para adicionar substituição -->
                           <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#substitutionModal<%= diet_food.id %>">+</button>
-                          <!-- Botão para remover -->
                           <%= button_to "X", client_diet_diet_food_path(@client, @diet, diet_food),
                                         method: :delete,
-                                        data: { confirm: "Tem certeza? Esta ação não pode ser desfeita." },
+                                        data: { confirm: "Tem certeza?" },
                                         class: "btn btn-danger btn-sm" %>
                         </div>
                       </td>
@@ -102,7 +155,7 @@
                 <% else %>
                   <tr>
                     <td colspan="7" class="text-center text-muted py-4">
-                      Nenhum alimento adicionado ainda. Use o formulário abaixo para começar!
+                      Nenhum alimento adicionado ainda. Use o formulário acima para começar!
                     </td>
                   </tr>
                 <% end %>
@@ -121,47 +174,13 @@
             </table>
           </div>
 
-          <!-- Formulário para adicionar novo alimento -->
-          <div class="card mt-4">
-            <div class="card-header bg-success text-white">
-              <h5 class="mb-0">➕ Adicionar Alimento Principal</h5>
-            </div>
-            <div class="card-body">
-              <%= form_with url: add_food_client_diet_path(@client, @diet), method: :post, local: true do |form| %>
-                <div class="row align-items-end">
-                  <div class="col-md-4">
-                    <%= form.label :food_id, "Alimento", class: "form-label" %>
-                    <%= form.select :food_id, options_from_collection_for_select(@available_foods, :id, :name),
-                                    { prompt: "Selecione um alimento..." },
-                                    { class: "form-select", id: "food_select_main" } %>
-                  </div>
-                  <div class="col-md-3">
-                    <%= form.label :quantity_grams, "Quantidade (gramas)", class: "form-label" %>
-                    <%= form.number_field :quantity_grams, min: 1, step: 1,
-                                          class: "form-control", placeholder: "Ex: 150",
-                                          id: "quantity_input_main" %>
-                  </div>
-                  <div class="col-md-3">
-                    <div id="nutrition_preview_main" class="alert alert-info py-2" style="display: none;">
-                      <small><strong>Prévia:</strong><br>
-                      <span id="calculated_values_main"></span></small>
-                    </div>
-                  </div>
-                  <div class="col-md-2">
-                    <%= form.submit "Adicionar", class: "btn btn-success w-100" %>
-                  </div>
-                </div>
-              <% end %>
-            </div>
-          </div>
-
           <!-- Ações -->
           <div class="mt-4 d-flex gap-2">
             <%= link_to "Voltar", client_diets_path(@client), class: "btn btn-secondary" %>
             <%= link_to "Editar", edit_client_diet_path(@client, @diet), class: "btn btn-warning" %>
             <%= button_to "Excluir", client_diet_path(@client, @diet),
                           method: :delete,
-                          data: { turbo_confirm: "Tem certeza? Esta ação não pode ser desfeita." },
+                          data: { turbo_confirm: "Tem certeza?" },
                           class: "btn btn-danger" %>
           </div>
         </div>
@@ -170,7 +189,7 @@
   </div>
 </div>
 
-<!-- Modais para substituições -->
+<!-- Modais para substituições COM AUTOCOMPLETE -->
 <% @diet.diet_foods.each do |diet_food| %>
   <div class="modal fade" id="substitutionModal<%= diet_food.id %>" tabindex="-1">
     <div class="modal-dialog">
@@ -182,27 +201,57 @@
         <%= form_with url: add_substitution_client_diet_path(@client, @diet), method: :post, local: true do |form| %>
           <div class="modal-body">
             <%= form.hidden_field :diet_food_id, value: diet_food.id %>
+            
+            <!-- AUTOCOMPLETE para Alimento Substituto -->
             <div class="mb-3">
               <label class="form-label">Alimento Substituto</label>
-              <%= form.select :substitute_food_id, options_from_collection_for_select(@available_foods, :id, :name),
-                              { prompt: "Selecione um alimento..." },
-                              { class: "form-select" } %>
+              <div class="autocomplete-wrapper">
+                <input type="text" 
+                       class="form-control" 
+                       id="substitute-search-<%= diet_food.id %>"
+                       placeholder="Digite para buscar..."
+                       data-diet-food-id="<%= diet_food.id %>">
+                <div id="substitute-results-<%= diet_food.id %>" class="autocomplete-results"></div>
+                <%= form.hidden_field :substitute_food_id, 
+                                      id: "substitute-food-id-#{diet_food.id}", 
+                                      class: "substitute-food-hidden" %>
+              </div>
+              <small class="text-muted">Digite pelo menos 2 caracteres para buscar</small>
             </div>
+            
             <div class="mb-3">
               <label class="form-label">Quantidade (gramas)</label>
-              <%= form.number_field :quantity_grams, min: 1, step: 1, class: "form-control", placeholder: "Ex: 100" %>
+              <%= form.number_field :quantity_grams, 
+                                    min: 1, 
+                                    step: 1, 
+                                    class: "form-control", 
+                                    placeholder: "Ex: 100",
+                                    id: "substitute-quantity-#{diet_food.id}" %>
               <div class="form-text">
-                Quantidade equivalente para substituir <%= diet_food.quantity_grams.to_i %>g de <%= diet_food.food.name %>
+                Quantidade para substituir <%= diet_food.quantity_grams.to_i %>g de <%= diet_food.food.name %>
               </div>
             </div>
+            
+            <!-- Preview de Comparação -->
+            <div id="substitute-preview-<%= diet_food.id %>" class="alert alert-info" style="display: none;">
+              <small>
+                <strong>Comparação Nutricional:</strong>
+                <div id="substitute-comparison-<%= diet_food.id %>"></div>
+              </small>
+            </div>
+            
             <div class="mb-3">
               <label class="form-label">Observações (opcional)</label>
-              <%= form.text_area :notes, rows: 2, class: "form-control", placeholder: "Ex: Preferir integral, pode ser usado no jantar..." %>
+              <%= form.text_area :notes, rows: 2, class: "form-control", 
+                                 placeholder: "Ex: Preferir integral..." %>
             </div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-            <%= form.submit "Adicionar Substituição", class: "btn btn-success" %>
+            <%= form.submit "Adicionar Substituição", 
+                            class: "btn btn-success",
+                            id: "submit-substitute-#{diet_food.id}",
+                            disabled: true %>
           </div>
         <% end %>
       </div>
@@ -210,80 +259,357 @@
   </div>
 <% end %>
 
-<!-- Script para cálculo nutricional em tempo real e auto-save das observações -->
+<!-- CSS para Autocomplete -->
+<style>
+  .autocomplete-wrapper {
+    position: relative;
+  }
+  
+  .autocomplete-results {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #dee2e6;
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+    max-height: 250px;
+    overflow-y: auto;
+    z-index: 1055;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: none;
+  }
+  
+  .autocomplete-results.active {
+    display: block;
+  }
+  
+  .autocomplete-item {
+    padding: 10px 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  
+  .autocomplete-item:hover,
+  .autocomplete-item.selected {
+    background-color: #f8f9fa;
+  }
+  
+  .autocomplete-item.selected {
+    background-color: #e7f3ff;
+  }
+  
+  .food-name-autocomplete {
+    font-weight: 500;
+    color: #212529;
+    margin-bottom: 4px;
+  }
+  
+  .food-macros {
+    font-size: 11px;
+    color: #6c757d;
+    display: flex;
+    gap: 10px;
+  }
+  
+  .macro-badge {
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-weight: 600;
+  }
+  
+  .protein-badge { background-color: #e3f2fd; color: #1976d2; }
+  .carbs-badge { background-color: #e8f5e9; color: #388e3c; }
+  .fat-badge { background-color: #fce4ec; color: #c2185b; }
+  .cal-badge { background-color: #fff3e0; color: #f57c00; }
+  
+  .no-results {
+    padding: 15px;
+    text-align: center;
+    color: #6c757d;
+    font-style: italic;
+  }
+</style>
+
+<!-- Script Unificado -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  // Código existente para cálculo nutricional
-  const foodSelectMain = document.getElementById('food_select_main');
-  const quantityInputMain = document.getElementById('quantity_input_main');
-  const nutritionPreviewMain = document.getElementById('nutrition_preview_main');
-  const calculatedValuesMain = document.getElementById('calculated_values_main');
-
+  // DADOS
   const foodsData = {
     <% @available_foods.each do |food| %>
       <%= food.id %>: {
-        name: "<%= food.name %>",
-        calories: <%= food.calories_per_100g %>,
-        protein: <%= food.protein_per_100g %>,
-        carbs: <%= food.carbs_per_100g %>,
-        fat: <%= food.fat_per_100g %>
+        id: <%= food.id %>,
+        name: "<%= j food.name %>",
+        calories: <%= food.calories_per_100g || 0 %>,
+        protein: <%= food.protein_per_100g || 0 %>,
+        carbs: <%= food.carbs_per_100g || 0 %>,
+        fat: <%= food.fat_per_100g || 0 %>
       },
     <% end %>
   };
-
-  function calculateNutritionMain() {
-    const foodId = foodSelectMain.value;
-    const quantity = parseFloat(quantityInputMain.value);
-
-    if (!foodId || !quantity || quantity <= 0) {
-      nutritionPreviewMain.style.display = 'none';
-      return;
-    }
-
-    const food = foodsData[foodId];
-    if (!food) {
-      nutritionPreviewMain.style.display = 'none';
-      return;
-    }
-
-    const calories = (quantity * food.calories / 100).toFixed(1);
-    const protein = (quantity * food.protein / 100).toFixed(1);
-    const carbs = (quantity * food.carbs / 100).toFixed(1);
-    const fat = (quantity * food.fat / 100).toFixed(1);
-
-    calculatedValuesMain.innerHTML = `
-      <span class="text-warning">${calories} kcal</span> |
-      <span class="text-primary">P: ${protein}g</span> |
-      <span class="text-info">C: ${carbs}g</span> |
-      <span class="text-danger">G: ${fat}g</span>
-    `;
-
-    nutritionPreviewMain.style.display = 'block';
+  
+  const foodsArray = Object.values(foodsData);
+  
+  const dietFoodsData = {
+    <% @diet.diet_foods.each do |diet_food| %>
+      <%= diet_food.id %>: {
+        quantity: <%= diet_food.quantity_grams %>,
+        calories: <%= diet_food.calories %>,
+        protein: <%= diet_food.protein %>,
+        carbs: <%= diet_food.carbs %>,
+        fat: <%= diet_food.fat %>
+      },
+    <% end %>
+  };
+  
+  // FUNÇÕES UTILITÁRIAS
+  function normalizeText(text) {
+    return text.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   }
-
-  if (foodSelectMain) foodSelectMain.addEventListener('change', calculateNutritionMain);
-  if (quantityInputMain) quantityInputMain.addEventListener('input', calculateNutritionMain);
-
-  // Auto-save para as observações (opcional)
+  
+  function searchFoods(query) {
+    const normalizedQuery = normalizeText(query);
+    return foodsArray.filter(food => 
+      normalizeText(food.name).includes(normalizedQuery)
+    ).slice(0, 10);
+  }
+  
+  function calculateNutrition(food, quantity) {
+    if (!food || !quantity || quantity <= 0) return null;
+    const factor = quantity / 100;
+    return {
+      calories: (food.calories * factor).toFixed(1),
+      protein: (food.protein * factor).toFixed(1),
+      carbs: (food.carbs * factor).toFixed(1),
+      fat: (food.fat * factor).toFixed(1)
+    };
+  }
+  
+  // CLASSE AUTOCOMPLETE
+  class FoodAutocomplete {
+    constructor(config) {
+      this.searchInput = document.getElementById(config.searchInputId);
+      this.resultsContainer = document.getElementById(config.resultsContainerId);
+      this.hiddenField = document.getElementById(config.hiddenFieldId);
+      this.quantityInput = config.quantityInputId ? document.getElementById(config.quantityInputId) : null;
+      this.submitButton = config.submitButtonId ? document.getElementById(config.submitButtonId) : null;
+      this.previewContainer = config.previewContainerId ? document.getElementById(config.previewContainerId) : null;
+      this.previewContent = config.previewContentId ? document.getElementById(config.previewContentId) : null;
+      this.dietFoodId = config.dietFoodId || null;
+      
+      this.selectedFood = null;
+      this.filteredFoods = [];
+      this.selectedIndex = -1;
+      
+      this.init();
+    }
+    
+    init() {
+      if (!this.searchInput || !this.resultsContainer || !this.hiddenField) return;
+      
+      this.searchInput.addEventListener('input', (e) => this.handleSearch(e));
+      this.searchInput.addEventListener('keydown', (e) => this.handleKeydown(e));
+      this.resultsContainer.addEventListener('click', (e) => this.handleResultClick(e));
+      
+      if (this.quantityInput) {
+        this.quantityInput.addEventListener('input', () => this.updatePreview());
+      }
+    }
+    
+    handleSearch(e) {
+      const query = e.target.value.trim();
+      
+      if (query.length < 2) {
+        this.closeResults();
+        this.clearSelection();
+        return;
+      }
+      
+      this.filteredFoods = searchFoods(query);
+      this.renderResults();
+      this.resultsContainer.classList.add('active');
+      this.selectedIndex = -1;
+    }
+    
+    handleKeydown(e) {
+      if (!this.resultsContainer.classList.contains('active')) return;
+      
+      switch(e.key) {
+        case 'ArrowDown':
+          e.preventDefault();
+          this.selectedIndex = Math.min(this.selectedIndex + 1, this.filteredFoods.length - 1);
+          this.renderResults();
+          break;
+        case 'ArrowUp':
+          e.preventDefault();
+          this.selectedIndex = Math.max(this.selectedIndex - 1, -1);
+          this.renderResults();
+          break;
+        case 'Enter':
+          e.preventDefault();
+          if (this.selectedIndex >= 0) {
+            this.selectFood(this.filteredFoods[this.selectedIndex]);
+          }
+          break;
+        case 'Escape':
+          this.closeResults();
+          break;
+      }
+    }
+    
+    handleResultClick(e) {
+      const item = e.target.closest('.autocomplete-item');
+      if (item) {
+        const foodId = parseInt(item.dataset.foodId);
+        this.selectFood(foodsData[foodId]);
+      }
+    }
+    
+    renderResults() {
+      if (this.filteredFoods.length === 0) {
+        this.resultsContainer.innerHTML = '<div class="no-results">Nenhum alimento encontrado</div>';
+        return;
+      }
+      
+      this.resultsContainer.innerHTML = this.filteredFoods.map((food, index) => `
+        <div class="autocomplete-item ${index === this.selectedIndex ? 'selected' : ''}" 
+             data-food-id="${food.id}">
+          <div class="food-name-autocomplete">${food.name}</div>
+          <div class="food-macros">
+            <span class="macro-badge protein-badge">P: ${food.protein.toFixed(1)}g</span>
+            <span class="macro-badge carbs-badge">C: ${food.carbs.toFixed(1)}g</span>
+            <span class="macro-badge fat-badge">G: ${food.fat.toFixed(1)}g</span>
+            <span class="macro-badge cal-badge">${food.calories.toFixed(0)} kcal</span>
+          </div>
+        </div>
+      `).join('');
+    }
+    
+    selectFood(food) {
+      this.selectedFood = food;
+      this.searchInput.value = food.name;
+      this.hiddenField.value = food.id;
+      this.closeResults();
+      
+      if (this.submitButton) {
+        this.submitButton.disabled = false;
+      }
+      
+      this.updatePreview();
+    }
+    
+    updatePreview() {
+      if (!this.selectedFood || !this.quantityInput) return;
+      
+      const quantity = parseFloat(this.quantityInput.value);
+      if (!quantity || quantity <= 0) {
+        if (this.previewContainer) this.previewContainer.style.display = 'none';
+        return;
+      }
+      
+      // Para o formulário principal
+      if (!this.dietFoodId && this.previewContent) {
+        const nutrition = calculateNutrition(this.selectedFood, quantity);
+        if (nutrition) {
+          this.previewContent.innerHTML = `
+            <span class="text-warning">${nutrition.calories} kcal</span> |
+            <span class="text-primary">P: ${nutrition.protein}g</span> |
+            <span class="text-info">C: ${nutrition.carbs}g</span> |
+            <span class="text-danger">G: ${nutrition.fat}g</span>
+          `;
+          this.previewContainer.style.display = 'block';
+        }
+      }
+      
+      // Para substituições - comparação
+      if (this.dietFoodId && this.previewContent) {
+        const dietFood = dietFoodsData[this.dietFoodId];
+        if (dietFood) {
+          const substitute = calculateNutrition(this.selectedFood, quantity);
+          if (substitute) {
+            const formatDiff = (subValue, origValue) => {
+              const diff = parseFloat(subValue) - parseFloat(origValue);
+              const sign = diff > 0 ? '+' : '';
+              const color = diff > 0 ? 'success' : diff < 0 ? 'danger' : 'muted';
+              return `<span class="text-${color}">${sign}${diff.toFixed(1)}</span>`;
+            };
+            
+            this.previewContent.innerHTML = `
+              <div>Calorias: ${dietFood.calories.toFixed(1)} → ${substitute.calories} ${formatDiff(substitute.calories, dietFood.calories)}</div>
+              <div>Proteína: ${dietFood.protein.toFixed(1)}g → ${substitute.protein}g ${formatDiff(substitute.protein, dietFood.protein)}g</div>
+              <div>Carbs: ${dietFood.carbs.toFixed(1)}g → ${substitute.carbs}g ${formatDiff(substitute.carbs, dietFood.carbs)}g</div>
+              <div>Gordura: ${dietFood.fat.toFixed(1)}g → ${substitute.fat}g ${formatDiff(substitute.fat, dietFood.fat)}g</div>
+            `;
+            this.previewContainer.style.display = 'block';
+          }
+        }
+      }
+    }
+    
+    closeResults() {
+      this.resultsContainer.classList.remove('active');
+    }
+    
+    clearSelection() {
+      this.selectedFood = null;
+      this.hiddenField.value = '';
+      if (this.submitButton) this.submitButton.disabled = true;
+      if (this.previewContainer) this.previewContainer.style.display = 'none';
+    }
+  }
+  
+  // INICIALIZAR AUTOCOMPLETE PRINCIPAL
+  new FoodAutocomplete({
+    searchInputId: 'food-search-input',
+    resultsContainerId: 'autocomplete-results',
+    hiddenFieldId: 'selected-food-id',
+    quantityInputId: 'quantity_input_main',
+    submitButtonId: 'add-food-btn',
+    previewContainerId: 'nutrition_preview_main',
+    previewContentId: 'calculated_values_main'
+  });
+  
+  // INICIALIZAR AUTOCOMPLETES DAS SUBSTITUIÇÕES
+  <% @diet.diet_foods.each do |diet_food| %>
+    new FoodAutocomplete({
+      searchInputId: 'substitute-search-<%= diet_food.id %>',
+      resultsContainerId: 'substitute-results-<%= diet_food.id %>',
+      hiddenFieldId: 'substitute-food-id-<%= diet_food.id %>',
+      quantityInputId: 'substitute-quantity-<%= diet_food.id %>',
+      submitButtonId: 'submit-substitute-<%= diet_food.id %>',
+      previewContainerId: 'substitute-preview-<%= diet_food.id %>',
+      previewContentId: 'substitute-comparison-<%= diet_food.id %>',
+      dietFoodId: <%= diet_food.id %>
+    });
+  <% end %>
+  
+  // FECHAR AUTOCOMPLETES AO CLICAR FORA
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.autocomplete-wrapper')) {
+      document.querySelectorAll('.autocomplete-results').forEach(el => {
+        el.classList.remove('active');
+      });
+    }
+  });
+  
+  // AUTO-SAVE DAS OBSERVAÇÕES
   const notesForm = document.querySelector('.notes-form');
   const notesTextarea = notesForm ? notesForm.querySelector('textarea[name="diet[notes]"]') : null;
   let saveTimeout;
-
+  
   if (notesTextarea) {
     notesTextarea.addEventListener('input', function() {
       clearTimeout(saveTimeout);
-      // Adiciona um indicador visual de que está salvando
       notesTextarea.style.borderColor = '#ffc107';
       
       saveTimeout = setTimeout(function() {
-        // Submete o formulário automaticamente após 2 segundos de inatividade
         const submitButton = notesForm.querySelector('input[type="submit"]');
         if (submitButton) {
           submitButton.value = 'Salvando...';
           submitButton.disabled = true;
         }
         
-        // Simula o envio do formulário via AJAX (Rails UJS)
         fetch(notesForm.action, {
           method: 'PATCH',
           body: new FormData(notesForm),
@@ -315,3 +641,137 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 </script>
+<style>
+  /* app/assets/stylesheets/custom_overrides.css */
+
+/* Autocomplete dentro do modal */
+.modal .autocomplete-wrapper {
+  position: relative;
+}
+
+.modal .autocomplete-results {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #dee2e6;
+  border-top: none;
+  border-radius: 0 0 4px 4px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 1055; /* Maior que o z-index do modal */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: none;
+}
+
+.autocomplete-wrapper {
+  position: relative;
+}
+
+.autocomplete-input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.autocomplete-input:focus {
+  outline: none;
+  border-color: #86b7fe;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.autocomplete-results {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #dee2e6;
+  border-top: none;
+  border-radius: 0 0 4px 4px;
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 1000;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: none;
+}
+
+.autocomplete-results.active {
+  display: block;
+}
+
+.autocomplete-item {
+  padding: 10px 12px;
+  cursor: pointer;
+  border-bottom: 1px solid #f0f0f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.autocomplete-item:hover,
+.autocomplete-item.selected {
+  background-color: #f8f9fa;
+}
+
+.autocomplete-item.selected {
+  background-color: #e7f3ff;
+}
+
+.food-name-autocomplete {
+  font-weight: 500;
+  color: #212529;
+}
+
+.food-macros {
+  font-size: 11px;
+  color: #6c757d;
+  display: flex;
+  gap: 10px;
+}
+
+.macro-badge {
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-weight: 600;
+}
+
+.protein-badge {
+  background-color: #e3f2fd;
+  color: #1976d2;
+}
+
+.carbs-badge {
+  background-color: #e8f5e9;
+  color: #388e3c;
+}
+
+.fat-badge {
+  background-color: #fce4ec;
+  color: #c2185b;
+}
+
+.cal-badge {
+  background-color: #fff3e0;
+  color: #f57c00;
+}
+
+.no-results {
+  padding: 15px;
+  text-align: center;
+  color: #6c757d;
+  font-style: italic;
+}
+
+.search-icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6c757d;
+}
+
+  </style>

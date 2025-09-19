@@ -69,3 +69,5 @@ gem "wicked_pdf"
 gem "wkhtmltopdf-binary"
 
 gem "cssbundling-rails", "~> 1.4"
+
+gem "tailwindcss-rails", "~> 4.3"
