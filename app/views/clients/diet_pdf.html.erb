@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prescrição Nutricional - <%= @client.name %></title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 13px;
+      line-height: 1.4;
+      color: #1f2937;
+      background: #ffffff;
+    }
+    
+    .page {
+      width: 210mm;
+      min-height: 297mm;
+      margin: 0 auto;
+      padding: 15mm;
+      background: white;
+      box-shadow: 0 0 0.5cm rgba(0,0,0,0.1);
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #059669;
+      padding-bottom: 15px;
+    }
+    
+    .header h1 {
+      font-size: 24px;
+      font-weight: 700;
+      color: #059669;
+      margin-bottom: 5px;
+    }
+    
+    .header p {
+      font-size: 14px;
+      color: #6b7280;
+      font-weight: 500;
+    }
+    
+    .client-info {
+      margin-bottom: 25px;
+      background: #f8fafc;
+      border-radius: 8px;
+      padding: 20px;
+      border-left: 4px solid #059669;
+    }
+    
+    .client-details h2 {
+      font-size: 20px;
+      font-weight: 600;
+      color: #1f2937;
+      margin-bottom: 15px;
+    }
+    
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 12px;
+      margin-bottom: 15px;
+    }
+    
+    .info-item {
+      padding: 8px 0;
+    }
+    
+    .info-item strong {
+      color: #374151;
+      font-weight: 600;
+    }
+    
+    .client-notes {
+      margin-top: 15px;
+      padding: 15px;
+      background: #fffbeb;
+      border-radius: 6px;
+      border-left: 3px solid #f59e0b;
+    }
+    
+    .client-notes strong {
+      color: #92400e;
+      font-weight: 600;
+    }
+    
+    .client-notes ul {
+      margin-top: 8px;
+      padding-left: 0;
+    }
+    
+    .client-notes li {
+      padding: 2px 0;
+      color: #78350f;
+    }
+    
+    .meals-container {
+      margin-bottom: 30px;
+    }
+    
+    .meal-section {
+      margin-bottom: 20px;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    
+    .meal-header {
+      background: linear-gradient(135deg, #059669 0%, #047857 100%);
+      color: white;
+      padding: 12px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .meal-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .meal-icon {
+      font-size: 18px;
+    }
+    
+    .meal-name {
+      font-weight: 600;
+      font-size: 16px;
+    }
+    
+    .meal-time {
+      font-size: 14px;
+      font-weight: 500;
+      opacity: 0.9;
+    }
+    
+    .meal-content {
+      padding: 20px;
+    }
+    
+    .food-list {
+      display: grid;
+      gap: 8px;
+    }
+    
+    .food-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 0;
+      border-bottom: 1px solid #f3f4f6;
+    }
+    
+    .food-item:last-child {
+      border-bottom: none;
+    }
+    
+    .quantity {
+      background: #3b82f6;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+      font-size: 12px;
+      min-width: 50px;
+      text-align: center;
+    }
+    
+    .food-name {
+      flex: 1;
+      font-weight: 500;
+    }
+    
+    .meal-notes {
+      margin-top: 15px;
+      padding: 12px;
+      background: #eff6ff;
+      border-radius: 6px;
+      border-left: 3px solid #3b82f6;
+    }
+    
+    .meal-notes strong {
+      color: #1e40af;
+    }
+    
+    .meal-notes em {
+      color: #1e3a8a;
+    }
+    
+    .no-meals {
+      text-align: center;
+      padding: 40px 20px;
+    }
+    
+    .empty-state h3 {
+      color: #374151;
+      margin-bottom: 10px;
+    }
+    
+    .empty-state p {
+      color: #6b7280;
+      margin-bottom: 8px;
+    }
+    
+    .page-break {
+      page-break-before: always;
+    }
+    
+    /* SUBSTITUIÇÕES - DESIGN MELHORADO */
+    .substitutions-section {
+      margin-top: 30px;
+    }
+    
+    .substitutions-header {
+      text-align: center;
+      margin-bottom: 25px;
+      padding: 20px;
+      background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
+      color: white;
+      border-radius: 10px;
+    }
+    
+    .substitutions-header h2 {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 5px;
+      letter-spacing: 0.5px;
+    }
+    
+    .substitutions-header p {
+      font-size: 14px;
+      opacity: 0.9;
+      font-weight: 500;
+    }
+    
+    .custom-substitutions {
+      margin-bottom: 30px;
+    }
+    
+    .custom-substitutions h3 {
+      color: #7c3aed;
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 15px;
+      text-align: center;
+      padding: 10px;
+      background: #f3f4f6;
+      border-radius: 6px;
+      border-left: 4px solid #7c3aed;
+    }
+    
+    .substitutions-compact {
+      display: grid;
+      gap: 15px;
+    }
+    
+    .meal-substitution-group {
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    
+    .meal-sub-header {
+      background: #f8fafc;
+      padding: 8px 15px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    
+    .meal-sub-header h4 {
+      color: #374151;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+    }
+    
+    .sub-row {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 15px;
+      border-bottom: 1px solid #f3f4f6;
+      font-size: 12px;
+    }
+    
+    .sub-row:last-child {
+      border-bottom: none;
+    }
+    
+    .sub-original {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 500;
+      color: #374151;
+    }
+    
+    .sub-qty-badge {
+      background: #ef4444;
+      color: white;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-size: 10px;
+      font-weight: 600;
+    }
+    
+    .sub-arrow {
+      color: #7c3aed;
+      font-weight: 700;
+      font-size: 14px;
+    }
+    
+    .sub-options {
+      color: #059669;
+      font-weight: 500;
+    }
+    
+    .sub-opt-qty {
+      background: #059669;
+      color: white;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-size: 10px;
+      font-weight: 600;
+      margin-right: 4px;
+    }
+    
+    .section-divider {
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #d1d5db, transparent);
+      margin: 25px 0;
+    }
+    
+    .standard-substitutions h3 {
+      color: #059669;
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      text-align: center;
+      padding: 10px;
+      background: #f0fdf4;
+      border-radius: 6px;
+      border-left: 4px solid #059669;
+    }
+    
+    .substitution-table {
+      margin-bottom: 20px;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    
+    .table-title {
+      background: linear-gradient(135deg, #059669 0%, #047857 100%);
+      color: white;
+      padding: 10px 15px;
+      margin: 0;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    
+    .substitution-table table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    .substitution-table td {
+      padding: 8px 12px;
+      border-bottom: 1px solid #f3f4f6;
+      font-size: 11px;
+      font-weight: 500;
+      color: #374151;
+      vertical-align: middle;
+    }
+    
+    .substitution-table tr:nth-child(even) {
+      background: #f9fafb;
+    }
+    
+    .substitution-table tr:nth-child(odd) {
+      background: white;
+    }
+    
+    .substitution-table tr:last-child td {
+      border-bottom: none;
+    }
+    
+    .table-note {
+      padding: 8px 15px;
+      background: #fffbeb;
+      border-top: 1px solid #f3f4f6;
+    }
+    
+    .table-note small {
+      color: #92400e;
+      font-size: 10px;
+      font-style: italic;
+    }
+    
+    .footer {
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 2px solid #e5e7eb;
+    }
+    
+    .signature-area {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+    }
+    
+    .signature-line {
+      text-align: center;
+    }
+    
+    .signature-line p:first-child {
+      margin-bottom: 5px;
+      color: #6b7280;
+    }
+    
+    .signature-line p:nth-child(2) {
+      font-weight: 600;
+      color: #1f2937;
+      margin-bottom: 2px;
+    }
+    
+    .signature-line p:last-child {
+      font-size: 12px;
+      color: #6b7280;
+    }
+    
+    .date-line p {
+      font-size: 12px;
+      color: #6b7280;
+    }
+    
+    @media print {
+      .page {
+        box-shadow: none;
+        margin: 0;
+        padding: 15mm;
+      }
+      
+      .page-break {
+        page-break-before: always;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="header">
+      <h1>📋 Prescrição Nutricional</h1>
+      <p>Plano Alimentar Personalizado</p>
+    </div>
+
+    <div class="client-info">
+      <div class="client-details">
+        <h2><%= @client.name %></h2>
+        <div class="info-grid">
+          <div class="info-item">
+            <strong>📞 Telefone:</strong> <%= @client.phone_number %>
+          </div>
+          <div class="info-item">
+            <strong>📅 Período:</strong> <%= @client.start_date.strftime('%d/%m/%Y') %> até <%= @client.end_date.strftime('%d/%m/%Y') %>
+          </div>
+          <div class="info-item">
+            <strong>📋 Data da Prescrição:</strong> <%= Date.current.strftime('%d/%m/%Y') %>
+          </div>
+        </div>
+        <% if @client.note.present? %>
+          <div class="client-notes">
+            <strong>📝 Observações:</strong>
+            <ul>
+              <% @client.note.split("\n").each do |linha| %>
+                <li style="list-style-type: none;"><%= linha.strip %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <% 
+    # Mapeamento de meal_types e nomes customizados
+    meal_type_mapping = {
+      'breakfast' => { name: 'Café da Manhã', time: '8:00', icon: '🌅' },
+      'morning_snack' => { name: 'Lanche da Manhã', time: '10:00', icon: '🍎' },
+      'lunch' => { name: 'Almoço', time: '12:00', icon: '🍽️' },
+      'afternoon_snack' => { name: 'Lanche da Tarde', time: '15:00', icon: '🥤' },
+      'dinner' => { name: 'Jantar', time: '19:00', icon: '🌙' },
+      'supper' => { name: 'Ceia', time: '22:00', icon: '🌜' }
+    }
+
+    # Filtrar dietas que têm alimentos
+    diets_with_foods = @diets.select { |d| d.diet_foods.any? }
+    %>
+
+    <div class="meals-container">
+      <% if diets_with_foods.any? %>
+        <% diets_with_foods.each_with_index do |diet, index| %>
+          <% 
+          # Determinar nome e ícone da refeição
+          if diet.meal_type.present? && meal_type_mapping[diet.meal_type]
+            meal_info = meal_type_mapping[diet.meal_type]
+            meal_name = meal_info[:name]
+            meal_time = meal_info[:time]
+            meal_icon = meal_info[:icon]
+          else
+            # Se não tiver meal_type ou for customizado, usar o nome da dieta
+            meal_name = diet.name
+            meal_time = ''
+            meal_icon = '🍴'
+          end
+          %>
+          
+          <div class="meal-section">
+            <div class="meal-header">
+              <div class="meal-title">
+                <span class="meal-icon"><%= meal_icon %></span>
+                <span class="meal-name"><%= meal_name %></span>
+              </div>
+              <% if meal_time.present? %>
+                <div class="meal-time"><%= meal_time %></div>
+              <% end %>
+            </div>
+            
+            <div class="meal-content">
+              <div class="food-list">
+                <% diet.diet_foods.includes(:food).each do |diet_food| %>
+                  <div class="food-item">
+                    <span class="quantity"><%= diet_food.quantity_grams.to_i %>g</span>
+                    <span class="food-name"><%= diet_food.food.name %></span>
+                  </div>
+                <% end %>
+              </div>
+              
+              <% if diet.notes.present? %>
+                <div class="meal-notes">
+                  <strong>💡 Observação:</strong> <em><%= diet.notes %></em>
+                </div>
+              <% end %>
+            </div>
+          </div>
+          
+          <% # Page break após 3 refeições %>
+          <% if index == 2 && diets_with_foods.length > 7 %>
+            <div class="page-break"></div>
+          <% end %>
+        <% end %>
+      <% else %>
+        <div class="no-meals">
+          <div class="empty-state">
+            <h3>📝 Plano Alimentar em Elaboração</h3>
+            <p>As refeições específicas estão sendo personalizadas para suas necessidades.</p>
+            <p>Entre em contato com seu nutricionista para mais orientações.</p>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- SEÇÃO DE SUBSTITUIÇÕES -->
+    <%
+    # Coletar todas as substituições cadastradas manualmente com informação da refeição
+    all_manual_substitutions = {}
+    has_manual_substitutions = false
+
+    @diets.each do |diet|
+      # Determinar nome da refeição
+      meal_name = if diet.meal_type.present? && meal_type_mapping[diet.meal_type]
+                    meal_type_mapping[diet.meal_type][:name]
+                  else
+                    diet.name
+                  end
+      
+      diet.diet_foods.each do |diet_food|
+        # Verificar se o modelo DietFood responde ao método food_substitutions
+        if diet_food.respond_to?(:food_substitutions) && diet_food.food_substitutions.any?
+          has_manual_substitutions = true
+          all_manual_substitutions[diet_food.id] = {
+            food: diet_food.food,
+            quantity: diet_food.quantity_grams,
+            substitutions: diet_food.food_substitutions,
+            meal_name: meal_name
+          }
+        end
+      end
+    end
+    %>
+
+    <!-- Sempre adicionar quebra de página antes das substituições -->
+    <div class="page-break"></div>
+
+    <div class="substitutions-section">
+      <div class="substitutions-header">
+        <h2>📋 TABELA DE SUBSTITUIÇÕES</h2>
+        <p>OPÇÕES EQUIVALENTES PARA CADA ALIMENTO</p>
+      </div>
+      
+      <% # Mostrar substituições cadastradas manualmente primeiro %>
+      <% if has_manual_substitutions %>
+        <div class="custom-substitutions">
+          <h3>🎯 SUBSTITUIÇÕES PERSONALIZADAS</h3>
+          
+          <div class="substitutions-compact">
+            <% # Agrupar por refeição %>
+            <% substitutions_by_meal = all_manual_substitutions.group_by { |_, data| data[:meal_name] } %>
+            
+            <% substitutions_by_meal.each do |meal_name, meal_substitutions| %>
+              <div class="meal-substitution-group">
+                <div class="meal-sub-header">
+                  <h4><%= meal_name.upcase %></h4>
+                </div>
+                <% meal_substitutions.each do |diet_food_id, data| %>
+                  <div class="sub-row">
+                    <span class="sub-original">
+                      <%= data[:food].name %>
+                      <span class="sub-qty-badge"><%= data[:quantity].to_i %>g</span>
+                    </span>
+                    <span class="sub-arrow">→</span>
+                    <span class="sub-options">
+                      <% data[:substitutions].each_with_index do |sub, idx| %>
+                        <span class="sub-opt-qty"><%= sub.quantity_grams.to_i %>g</span>
+                        <%= sub.substitute_food.name %><%= idx < data[:substitutions].count - 1 ? ' ou' : '' %>
+                      <% end %>
+                    </span>
+                  </div>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+        
+        <div class="section-divider"></div>
+      <% end %>
+      
+      <% # TABELAS FIXAS DE SUBSTITUIÇÕES %>
+      <div class="standard-substitutions">
+        <h3>🌿 TABELAS PADRÃO DE SUBSTITUIÇÕES</h3>
+        
+        <!-- VEGETAIS A (LIVRES) -->
+        <div class="substitution-table">
+          <h4 class="table-title">🥬 VEGETAIS A (CONSUMO LIVRE)</h4>
+          <table>
+            <tbody>
+              <tr>
+                <td>ACELGA</td>
+                <td>ABOBRINHA</td>
+                <td>BRÓCOLIS</td>
+                <td>ESPINAFRE</td>
+                <td>REPOLHO</td>
+                <td>ALFACE</td>
+                <td>COGUMELOS</td>
+                <td>PEPINO</td>
+              </tr>
+              <tr>
+                <td>AGRIÃO</td>
+                <td>JILÓ</td>
+                <td>CEBOLA</td>
+                <td>MOSTARDA</td>
+                <td>RÚCULA</td>
+                <td>ASPARGO</td>
+                <td>COUVE</td>
+                <td>RABANETE</td>
+              </tr>
+              <tr>
+                <td>ALCACHOFRA</td>
+                <td>AIPO</td>
+                <td>CHICÓRIA</td>
+                <td>PALMITO</td>
+                <td>TOMATE</td>
+                <td>BERINJELA</td>
+                <td>COUVE-FLOR</td>
+                <td>PIMENTÃO</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="table-note">
+            <small>💡 Estes vegetais podem ser consumidos à vontade, sem restrição de quantidade</small>
+          </div>
+        </div>
+        
+        <!-- VEGETAIS B -->
+        <div class="substitution-table">
+          <h4 class="table-title">🥕 VEGETAIS B (EQUIVALENTES - 15g CARBOIDRATO)</h4>
+          <table>
+            <tbody>
+              <tr>
+                <td>ABÓBORA</td>
+                <td>BETERRABA</td>
+                <td>CENOURA</td>
+                <td>CHUCHU</td>
+              </tr>
+              <tr>
+                <td>NABO</td>
+                <td>QUIABO</td>
+                <td>VAGEM</td>
+                <td>ERVILHA</td>
+              </tr>
+              <tr>
+                <td>SHIMEJI</td>
+                <td>SHITAKE</td>
+                <td>MILHO VERDE</td>
+                <td>ABÓBORA CABOTIÁ</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- FRUTAS -->
+        <div class="substitution-table">
+          <h4 class="table-title">🍎 FRUTAS (EQUIVALENTES - 15g CARBOIDRATO)</h4>
+          <table>
+            <tbody>
+              <tr>
+                <td>MAÇÃ (1 UN MÉDIA)</td>
+                <td>BANANA (1/2 UN)</td>
+                <td>LARANJA (1 UN MÉDIA)</td>
+                <td>MAMÃO (1 FATIA)</td>
+              </tr>
+              <tr>
+                <td>PÊRA (1 UN MÉDIA)</td>
+                <td>UVA (10 UNIDADES)</td>
+                <td>MANGA (1/2 UN)</td>
+                <td>ABACAXI (1 FATIA)</td>
+              </tr>
+              <tr>
+                <td>KIWI (1 UN GRANDE)</td>
+                <td>MORANGO (8 UN)</td>
+                <td>MELÃO (1 FATIA)</td>
+                <td>MELANCIA (1 FATIA)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- CEREAIS E TUBÉRCULOS -->
+        <div class="substitution-table">
+          <h4 class="table-title">🌾 CEREAIS E TUBÉRCULOS (EQUIVALENTES - 15g CARBOIDRATO)</h4>
+          <table>
+            <tbody>
+              <tr>
+                <td>ARROZ BRANCO (2 COL SOPA)</td>
+                <td>ARROZ INTEGRAL (2 COL SOPA)</td>
+                <td>BATATA INGLESA (1/2 UN MÉDIA)</td>
+                <td>BATATA DOCE (1/3 UN MÉDIA)</td>
+              </tr>
+              <tr>
+                <td>MANDIOCA (1 PEDAÇO)</td>
+                <td>MACARRÃO (2 COL SOPA)</td>
+                <td>PÃO FRANCÊS (1/2 UN)</td>
+                <td>PÃO DE FORMA (1 FATIA)</td>
+              </tr>
+              <tr>
+                <td>AVEIA (2 COL SOPA)</td>
+                <td>QUINOA (2 COL SOPA)</td>
+                <td>TAPIOCA (1 UN PEQUENA)</td>
+                <td>BISCOITO ÁGUA/SAL (4 UN)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- PROTEÍNAS -->
+        <div class="substitution-table">
+          <h4 class="table-title">🥩 PROTEÍNAS (EQUIVALENTES)</h4>
+          <table>
+            <tbody>
+              <tr>
+                <td>FRANGO S/PELE (30g)</td>
+                <td>CARNE BOVINA MAGRA (30g)</td>
+                <td>PEIXE (40g)</td>
+                <td>OVO (1 UNIDADE)</td>
+              </tr>
+              <tr>
+                <td>QUEIJO BRANCO (30g)</td>
+                <td>RICOTA (40g)</td>
+                <td>TOFU (50g)</td>
+                <td>ATUM ENLATADO (30g)</td>
+              </tr>
+              <tr>
+                <td>FEIJÃO (2 COL SOPA)</td>
+                <td>LENTILHA (2 COL SOPA)</td>
+                <td>GRÃO DE BICO (2 COL SOPA)</td>
+                <td>ERVILHA SECA (2 COL SOPA)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div class="signature-area">
+        <div class="signature-line">
+          <p>_________________________________</p>
+          <p><strong><%= current_user.name %></strong></p>
+          <p>CRN: <%= current_user.license_number %></p>
+        </div>
+        <div class="date-line">
+          <p>Data: <%= Date.current.strftime('%d/%m/%Y') %></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

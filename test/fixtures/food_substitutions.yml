@@ -1,0 +1,11 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  diet_food: one
+  substitute_food: one
+  quantity_grams: 9.99
+
+two:
+  diet_food: two
+  substitute_food: two
+  quantity_grams: 9.99
