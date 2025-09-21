@@ -1,6 +1,7 @@
 Rails.application.routes.draw do
   devise_for :users, controllers: {
-    sessions: "sessions"
+    sessions: "sessions",
+    registrations: "registrations"
   }
   root "dashboard#index"
 
@@ -15,9 +16,15 @@ Rails.application.routes.draw do
         post :add_food
         post :add_substitution
         delete :remove_substitution
+        patch :reorder_foods
       end
-      resources :food_substitutions, only: [ :create, :destroy ]
-      resources :diet_foods, only: [ :create, :destroy, :update ], path: "foods"
+      resources :food_substitutions, only: [ :create, :update, :destroy ]
+      resources :diet_foods, only: [ :create, :destroy, :update ], path: "foods" do
+        member do
+          patch :move_up
+          patch :move_down
+        end
+      end
     end
   end
 

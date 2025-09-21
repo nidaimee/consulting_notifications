@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Drag & Drop</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <div class="p-8">
+        <h1 class="text-2xl font-bold mb-4">Test Drag & Drop</h1>
+        
+        <div data-diet-id="1">
+            <table class="w-full">
+                <tbody>
+                    <tr class="food-row group cursor-move transition-colors hover:bg-slate-50" 
+                        draggable="true" 
+                        data-diet-food-id="1"
+                        data-position="1">
+                        <td class="border p-3">
+                            <div class="flex items-center gap-2">
+                                <div class="drag-handle flex flex-col gap-0.5 opacity-40 group-hover:opacity-100 transition-opacity">
+                                    <div class="flex gap-0.5">
+                                        <div class="h-1 w-1 rounded-full bg-slate-400"></div>
+                                        <div class="h-1 w-1 rounded-full bg-slate-400"></div>
+                                    </div>
+                                    <div class="flex gap-0.5">
+                                        <div class="h-1 w-1 rounded-full bg-slate-400"></div>
+                                        <div class="h-1 w-1 rounded-full bg-slate-400"></div>
+                                    </div>
+                                </div>
+                                <span class="position-number flex h-6 w-6 items-center justify-center rounded-full bg-blue-600 text-xs font-medium text-white">1</span>
+                                <span>Frango - 100g</span>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <tr class="food-row group cursor-move transition-colors hover:bg-slate-50" 
+                        draggable="true" 
+                        data-diet-food-id="2"
+                        data-position="2">
+                        <td class="border p-3">
+                            <div class="flex items-center gap-2">
+                                <div class="drag-handle flex flex-col gap-0.5 opacity-40 group-hover:opacity-100 transition-opacity">
+                                    <div class="flex gap-0.5">
+                                        <div class="h-1 w-1 rounded-full bg-slate-400"></div>
+                                        <div class="h-1 w-1 rounded-full bg-slate-400"></div>
+                                    </div>
+                                    <div class="flex gap-0.5">
+                                        <div class="h-1 w-1 rounded-full bg-slate-400"></div>
+                                        <div class="h-1 w-1 rounded-full bg-slate-400"></div>
+                                    </div>
+                                </div>
+                                <span class="position-number flex h-6 w-6 items-center justify-center rounded-full bg-blue-600 text-xs font-medium text-white">2</span>
+                                <span>Arroz - 150g</span>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <tr class="food-row group cursor-move transition-colors hover:bg-slate-50" 
+                        draggable="true" 
+                        data-diet-food-id="3"
+                        data-position="3">
+                        <td class="border p-3">
+                            <div class="flex items-center gap-2">
+                                <div class="drag-handle flex flex-col gap-0.5 opacity-40 group-hover:opacity-100 transition-opacity">
+                                    <div class="flex gap-0.5">
+                                        <div class="h-1 w-1 rounded-full bg-slate-400"></div>
+                                        <div class="h-1 w-1 rounded-full bg-slate-400"></div>
+                                    </div>
+                                    <div class="flex gap-0.5">
+                                        <div class="h-1 w-1 rounded-full bg-slate-400"></div>
+                                        <div class="h-1 w-1 rounded-full bg-slate-400"></div>
+                                    </div>
+                                </div>
+                                <span class="position-number flex h-6 w-6 items-center justify-center rounded-full bg-blue-600 text-xs font-medium text-white">3</span>
+                                <span>Brócolis - 80g</span>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <style>
+        .food-row.dragging {
+            opacity: 0.5;
+            transform: rotate(2deg);
+        }
+
+        .food-row:hover .drag-handle {
+            opacity: 1;
+        }
+
+        .drop-indicator {
+            box-shadow: 0 0 0 1px #3b82f6;
+        }
+
+        .food-row {
+            transition: all 0.2s ease;
+        }
+
+        .food-row:hover {
+            background-color: #f8fafc;
+        }
+    </style>
+
+    <script>
+        // Simular o CSRF token
+        const meta = document.createElement('meta');
+        meta.name = 'csrf-token';
+        meta.content = 'test-token';
+        document.head.appendChild(meta);
+
+        // Drag & Drop functionality
+        const foodRows = document.querySelectorAll('.food-row[draggable="true"]');
+        let draggedElement = null;
+
+        foodRows.forEach(row => {
+            row.addEventListener('dragstart', function(e) {
+                draggedElement = this;
+                this.classList.add('dragging');
+                e.dataTransfer.effectAllowed = 'move';
+                e.dataTransfer.setData('text/html', this.outerHTML);
+                console.log('Drag started:', this.getAttribute('data-diet-food-id'));
+            });
+
+            row.addEventListener('dragend', function(e) {
+                this.classList.remove('dragging');
+                document.querySelectorAll('.drop-indicator').forEach(indicator => {
+                    indicator.remove();
+                });
+                console.log('Drag ended');
+            });
+
+            row.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+                
+                if (this !== draggedElement) {
+                    const rect = this.getBoundingClientRect();
+                    const midpoint = rect.top + rect.height / 2;
+                    
+                    document.querySelectorAll('.drop-indicator').forEach(indicator => {
+                        indicator.remove();
+                    });
+                    
+                    const indicator = document.createElement('div');
+                    indicator.className = 'drop-indicator absolute left-0 right-0 h-0.5 bg-blue-500 z-10';
+                    
+                    if (e.clientY < midpoint) {
+                        this.parentNode.insertBefore(indicator, this);
+                    } else {
+                        this.parentNode.insertBefore(indicator, this.nextSibling);
+                    }
+                }
+            });
+
+            row.addEventListener('drop', function(e) {
+                e.preventDefault();
+                console.log('Dropped on:', this.getAttribute('data-diet-food-id'));
+                
+                if (this !== draggedElement) {
+                    const rect = this.getBoundingClientRect();
+                    const midpoint = rect.top + rect.height / 2;
+                    
+                    const allRows = Array.from(document.querySelectorAll('.food-row[draggable="true"]'));
+                    const newOrder = [];
+                    
+                    let inserted = false;
+                    allRows.forEach(currentRow => {
+                        if (currentRow === this && !inserted) {
+                            if (e.clientY < midpoint) {
+                                newOrder.push(draggedElement);
+                                if (currentRow !== draggedElement) {
+                                    newOrder.push(currentRow);
+                                }
+                            } else {
+                                if (currentRow !== draggedElement) {
+                                    newOrder.push(currentRow);
+                                }
+                                newOrder.push(draggedElement);
+                            }
+                            inserted = true;
+                        } else if (currentRow !== draggedElement && currentRow !== this) {
+                            newOrder.push(currentRow);
+                        }
+                    });
+                    
+                    if (!inserted && this !== draggedElement) {
+                        newOrder.push(draggedElement);
+                    }
+                    
+                    const container = this.parentNode;
+                    newOrder.forEach((row, index) => {
+                        container.appendChild(row);
+                        row.setAttribute('data-position', index + 1);
+                        const positionSpan = row.querySelector('.position-number');
+                        if (positionSpan) {
+                            positionSpan.textContent = index + 1;
+                        }
+                    });
+                    
+        function updateFoodOrder(orderedRows) {
+            const dietId = 1; // Hardcoded for testing
+            const orderData = orderedRows.map((row, index) => ({
+                id: parseInt(row.getAttribute('data-diet-food-id')),
+                position: index + 1
+            }));
+
+            console.log('Updating order:', orderData);
+            console.log('Diet ID:', dietId);
+
+            // Simulate server call for testing
+            fetch(`http://localhost:3000/diets/${dietId}/reorder_foods`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': 'test-token'
+                },
+                body: JSON.stringify({ order: orderData })
+            })
+            .then(response => {
+                console.log('Response status:', response.status);
+                console.log('Response headers:', response.headers);
+                return response.json();
+            })
+            .then(data => {
+                console.log('Response data:', data);
+                if (data.success) {
+                    orderedRows.forEach((row, index) => {
+                        const positionSpan = row.querySelector('.position-number');
+                        if (positionSpan) {
+                            positionSpan.textContent = index + 1;
+                        }
+                    });
+                    alert('Ordem atualizada com sucesso!');
+                } else {
+                    alert('Erro: ' + (data.message || 'Erro desconhecido'));
+                }
+            })
+            .catch(error => {
+                console.error('Error updating food order:', error);
+                alert('Erro de conexão: ' + error.message);
+            });
+        }
+                }
+                
+                document.querySelectorAll('.drop-indicator').forEach(indicator => {
+                    indicator.remove();
+                });
+            });
+        });
+    </script>
+</body>
+</html>

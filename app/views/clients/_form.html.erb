@@ -1,89 +1,93 @@
-<%= form_with model: client, local: true do |form| %>
+<%= form_with model: client, local: true, class: "space-y-6" do |form| %>
   <% if client.errors.any? %>
-    <div class="alert alert-danger">
-      <h4><%= pluralize(client.errors.count, "erro") %> impediram o cadastro:</h4>
-      <ul class="mb-0">
-        <% client.errors.full_messages.each do |message| %>
-          <li><%= message %></li>
-        <% end %>
-      </ul>
+    <div class="rounded-sm border border-red-200 bg-red-50 p-4">
+      <div class="flex items-start gap-3">
+        <div class="flex-shrink-0">
+          <svg class="h-6 w-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <div>
+          <h4 class="text-sm font-medium text-red-800"><%= pluralize(client.errors.count, "erro") %> impediram o cadastro:</h4>
+          <ul class="mt-2 list-inside list-disc text-sm text-red-700">
+            <% client.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      </div>
     </div>
   <% end %>
 
-  <div class="row">
-    <div class="col-md-6">
-      <div class="mb-3">
-        <%= form.label :name, "Nome", class: "form-label" %>
-        <%= form.text_field :name, class: "form-control" %>
-      </div>
-    </div>
+  <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+    <div>
+      <label for="client_name" class="mb-2.5 block text-black dark:text-white">Nome</label>
+      <%= form.text_field :name, 
+          class: "w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-medium outline-none transition focus:border-blue-500 active:border-blue-500 dark:border-form-strokedark dark:bg-form-input dark:focus:border-blue-500" %>
     
-    <div class="col-md-6">
-      <div class="mb-3">
-        <%= form.label :phone_number, "Telefone", class: "form-label" %>
-        <%= form.text_field :phone_number, class: "form-control" %>
-      </div>
     </div>
-  </div>
 
-  <div class="row">
-    <div class="col-md-4">
-      <div class="mb-3">
-        <%= form.label :start_date, "Data de Início", class: "form-label" %>
-        <%= form.date_field :start_date, class: "form-control" %>
-      </div>
+    <div>
+      <label for="client_phone_number" class="mb-2.5 block text-black dark:text-white">Telefone</label>
+      <%= form.text_field :phone_number, 
+          class: "w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-medium outline-none transition focus:border-blue-500 active:border-blue-500 dark:border-form-strokedark dark:bg-form-input dark:focus:border-blue-500" %>
     </div>
-    
-    <div class="col-md-4">
-      <div class="mb-3">
-        <%= form.label :end_date, "Data de Fim", class: "form-label" %>
-        <%= form.date_field :end_date, class: "form-control" %>
-      </div>
+
+    <div>
+      <label for="client_start_date" class="mb-2.5 block text-black dark:text-white">Data de Início</label>
+      <%= form.date_field :start_date, 
+          class: "w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-medium outline-none transition focus:border-blue-500 active:border-blue-500 dark:border-form-strokedark dark:bg-form-input dark:focus:border-blue-500" %>
     </div>
-    
-    <div class="col-md-4">
-      <div class="mb-3">
-        <%= form.label :paid_amount, "Valor Pago (R$)", class: "form-label" %>
-        <%= form.number_field :paid_amount, step: 0.01, class: "form-control" %>
-      </div>
+
+    <div>
+      <label for="client_end_date" class="mb-2.5 block text-black dark:text-white">Data de Fim</label>
+      <%= form.date_field :end_date, 
+          class: "w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-medium outline-none transition focus:border-blue-500 active:border-blue-500 dark:border-form-strokedark dark:bg-form-input dark:focus:border-blue-500" %>
     </div>
-    <div class="mb-3">
-      <%= form.label :plan_type, "Tipo de Plano", class: "form-label" %>
+
+    <div>
+      <label for="client_paid_amount" class="mb-2.5 block text-black dark:text-white">Valor Pago (R$)</label>
+      <%= form.number_field :paid_amount, step: '0.01', 
+          class: "w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-medium outline-none transition focus:border-blue-500 active:border-blue-500 dark:border-form-strokedark dark:bg-form-input dark:focus:border-blue-500" %>
+    </div>
+
+    <div>
+      <label for="client_plan_type" class="mb-2.5 block text-black dark:text-white">Tipo de Plano</label>
       <%= form.select :plan_type, 
-            options_for_select([
-              ['Mensal', 'monthly'],
-              ['Trimestral', 'quarterly'],
-              ['Semestral', 'semiannual'],
-              ['Anual', 'annual']
-            ], form.object.plan_type),
-            { include_blank: "Selecione um plano" },
-            class: "form-select" %>
+          options_for_select([
+            ['Mensal', 'monthly'],
+            ['Trimestral', 'quarterly'],
+            ['Semestral', 'semiannual'],
+            ['Anual', 'annual']
+          ], form.object.plan_type),
+          { include_blank: "Selecione um plano" },
+          class: "relative z-20 w-full appearance-none rounded border border-stroke bg-transparent px-5 py-3 outline-none transition focus:border-blue-500 active:border-blue-500 dark:border-form-strokedark dark:bg-form-input" %>
+    </div>
+
+    <div>
+      <label for="client_status" class="mb-2.5 block text-black dark:text-white">Status</label>
+      <%= form.select :status, 
+          options_for_select([
+            ['Ativo', 'active'],
+            ['Inativo', 'inactive'],
+            ['Finalizado', 'completed']
+          ], client.status),
+          {},
+          class: "relative z-20 w-full appearance-none rounded border border-stroke bg-transparent px-5 py-3 outline-none transition focus:border-blue-500 active:border-blue-500 dark:border-form-strokedark dark:bg-form-input" %>
     </div>
   </div>
 
-  <div class="row">
-    <div class="col-md-6">
-      <div class="mb-3">
-        <%= form.label :status, "Status", class: "form-label" %>
-        <%= form.select :status, options_for_select([
-          ['Ativo', 'active'],
-          ['Inativo', 'inactive'],
-          ['Finalizado', 'completed']
-        ], client.status), {}, { class: "form-select" } %>
-      </div>
-    </div>
+  <div>
+    <label for="client_note" class="mb-2.5 block text-black dark:text-white">Observações</label>
+    <%= form.text_area :note, rows: 4, 
+        class: "w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-medium outline-none transition focus:border-blue-500 active:border-blue-500 dark:border-form-strokedark dark:bg-form-input dark:focus:border-blue-500",
+        placeholder: "Adicione observações sobre as recomendações do que você pretende para o seu paciente (cardio, modo de preparo, quantidade de água consumida e recomendações gerais...)" %>
   </div>
 
-  <div class="mb-3">
-    <%= form.label :note, "Observações", class: "form-label" %>
-    <%= form.text_area :note, rows: 4, class: "form-control", 
-    placeholder: "Adicione observações sobre as recomendações do que você pretende para o seu paciente (cardio, modo de preparo, quantidade de água consumida e recomendações gerais...)" %>
-  </div>
-  
-  <div class="mb-3">
+  <div class="flex items-center gap-4">
     <%= form.submit client.persisted? ? "Atualizar Cliente" : "Criar Cliente", 
-                    class: "btn btn-success me-2" %>
+        class: "inline-flex items-center justify-center rounded-md bg-blue-500 px-6 py-3 text-center font-medium text-white hover:bg-opacity-90" %>
     <%= link_to "Voltar", client.persisted? ? client : clients_path, 
-                class: "btn btn-secondary" %>
+        class: "inline-flex items-center justify-center rounded-md border border-stroke px-6 py-3 text-center font-medium hover:bg-opacity-90 dark:border-strokedark" %>
   </div>
 <% end %>

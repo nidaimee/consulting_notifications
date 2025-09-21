@@ -1,250 +1,360 @@
-<!-- app/views/clients/index.html.erb -->
+<!-- Breadcrumb e Header -->
+<div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+  <div>
+    <h2 class="text-title-md2 font-semibold text-black dark:text-white">
+      Meus Clientes
+    </h2>
+    <nav>
+      <ol class="flex items-center gap-2">
+        <span class="text-black dark:text-white">Clientes</span>
+        <span class="text-slate-500 dark:text-slate-400">
+          • Total: <%= @clients.count %> cliente(s)
+        </span>
+      </ol>
+    </nav>
+  </div>
+  
+  <div class="flex items-center gap-3">
+    <%= link_to new_client_path, 
+        class: "inline-flex items-center justify-center gap-2.5 rounded-md bg-green-600 px-6 py-2.5 text-center font-medium text-white transition hover:bg-green-700 hover:shadow-lg" do %>
+      <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+      </svg>
+      Novo Cliente
+    <% end %>
+  </div>
+</div>
 
-<div class="container-fluid">
-  <!-- HEADER -->
-  <div class="row mb-4">
-    <div class="col-md-6">
-      <h1 class="display-6">Meus Clientes</h1>
-      <p class="text-muted">
-        <i class="bi bi-people"></i> 
-        Total: <%= @clients.count %> cliente(s)
-      </p>
-    </div>
-    <div class="col-md-6 text-md-end">
-      <%= link_to "Novo Cliente", new_client_path, class: "btn btn-success btn-lg" %>
+<!-- Card de Busca e Filtros -->
+<div class="mb-6 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+  <div class="border-b border-stroke px-6.5 py-4 dark:border-strokedark">
+    <div class="flex items-center gap-3">
+      <svg class="h-5 w-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+      </svg>
+      <h3 class="font-medium text-black dark:text-white">
+        Buscar e Filtrar Clientes
+      </h3>
     </div>
   </div>
-
-  <!-- BARRA DE BUSCA E FILTROS -->
-  <div class="card shadow-sm mb-4">
-    <div class="card-body">
-      <%= form_with url: clients_path, method: :get, local: true, class: "search-form" do |f| %>
-        <div class="row g-3">
-          <!-- Campo de Busca Principal -->
-          <div class="col-md-4">
-            <div class="input-group">
-              <span class="input-group-text bg-primary text-white">
-                <i class="bi bi-search"></i>
-              </span>
-              <%= text_field_tag :search, 
-                                 params[:search], 
-                                 placeholder: "Buscar por nome, email ou telefone...",
-                                 class: "form-control",
-                                 autocomplete: "off" %>
-            </div>
-          </div>
-
-          <!-- Filtro por Status -->
-          <div class="col-md-2">
-            <%= select_tag :status,
-                          options_for_select([
-                            ['Todos os Status', ''],
-                            ['Ativos', 'active'],
-                            ['Inativos', 'inactive'],
-                            ['Pendentes', 'pending']
-                          ], params[:status]),
-                          class: "form-select" %>
-          </div>
-
-          <!-- Filtro por Período -->
-          <div class="col-md-2">
-            <%= select_tag :period,
-                          options_for_select([
-                            ['Todos os Períodos', ''],
-                            ['Este Mês', 'this_month'],
-                            ['Últimos 3 Meses', 'last_3_months'],
-                            ['Este Ano', 'this_year']
-                          ], params[:period]),
-                          class: "form-select" %>
-          </div>
-
-          <!-- Ordenação -->
-          <div class="col-md-2">
-            <%= select_tag :sort_by,
-                          options_for_select([
-                            ['Ordenar por Nome', 'name'],
-                            ['Mais Recentes', 'created_at_desc'],
-                            ['Mais Antigos', 'created_at_asc'],
-                            ['Valor (Maior)', 'value_desc'],
-                            ['Valor (Menor)', 'value_asc']
-                          ], params[:sort_by]),
-                          class: "form-select" %>
-          </div>
-
-          <!-- Botões de Ação -->
-          <div class="col-md-2">
-            <div class="btn-group w-100">
-              <%= submit_tag "Buscar", class: "btn btn-primary" %>
-              <%= link_to "Limpar", clients_path, class: "btn btn-outline-secondary" %>
-            </div>
+  
+  <div class="p-6.5">
+    <%= form_with url: clients_path, method: :get, local: true, class: "search-form" do |f| %>
+      <div class="grid grid-cols-1 gap-4 md:grid-cols-6">
+        <!-- Campo de Busca Principal -->
+        <div class="md:col-span-2">
+          <label class="mb-2.5 block text-sm font-medium text-black dark:text-white">
+            Buscar Cliente
+          </label>
+          <div class="relative">
+            <span class="absolute left-4.5 top-4 text-slate-400">
+              <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+              </svg>
+            </span>
+            <%= text_field_tag :search, 
+                               params[:search], 
+                               placeholder: "Nome, email ou telefone...",
+                               class: "w-full rounded-lg border-[1.5px] border-stroke bg-transparent pl-12 pr-5 py-3 font-medium outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary",
+                               autocomplete: "off" %>
           </div>
         </div>
 
-        <!-- Filtros Avançados (Expansível) -->
-       
-      <% end %>
-
-      <!-- Botão para Mostrar/Ocultar Filtros Avançados -->
-
-    </div>
-  </div>
-
-  <!-- RESULTADOS DA BUSCA -->
-  <% if params[:search].present? || params.slice(:status, :period, :min_paid_amount, :max_paid_amount).values.any?(&:present?) %>
-    <div class="alert alert-info alert-dismissible fade show" role="alert">
-      <i class="bi bi-info-circle"></i>
-      <strong>Resultados da busca:</strong> 
-      Encontrados <%= @clients.count %> cliente(s)
-      <% if params[:search].present? %>
-        para "<strong><%= params[:search] %></strong>"
-      <% end %>
-      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-  <% end %>
-
-  <!-- LISTA DE CLIENTES -->
-  <div class="row">
-    <% if @clients.any? %>
-      <% @clients.each do |client| %>
-        <div class="col-lg-4 col-md-6 mb-4">
-          <div class="card h-100 shadow-sm client-card">
-            <div class="card-body">
-              <div class="d-flex justify-content-between align-items-start mb-2">
-                <h5 class="card-title mb-0">
-                  <%= client.name %>
-                </h5>
-                <span class="badge bg-<%= client_status_color(client.status) %>">
-                  <%= client.status&.capitalize || 'Active' %>
-                </span>
-              </div>
-
-              <div class="client-info">
-                <p class="mb-1">
-                  <i class="bi bi-envelope text-muted"></i> 
-                  <small><%= client.email || 'Sem email' %></small>
-                </p>
-                <p class="mb-1">
-                  <i class="bi bi-telephone text-muted"></i> 
-                  <small><%= client.phone_number || '(11) 98888-8888' %></small>
-                </p>
-                <p class="mb-1">
-                  <i class="bi bi-calendar text-muted"></i> 
-                  <small>
-                    Período: <%= client.start_date&.strftime('%d/%m/%Y') || '09/09/2025' %> 
-                    a <%= client.end_date&.strftime('%d/%m/%Y') || '08/11/2025' %>
-                  </small>
-                </p>
-                <p class="mb-1">
-                  <i class="bi bi-box-seam text-muted"></i>
-                  <small>
-                    Plano: <%= client.plan_type.present? ? client.plan_type.capitalize : 'Não informado' %>
-                  </small>
-                </p>
-                <p class="mb-3">
-                  <i class="bi bi-cash-stack text-muted"></i> 
-                  <strong class="text-success">
-                  <td>
-                  <% if client.paid_amount.present? %>
-                    R$ <%= number_with_precision(client.paid_amount, precision: 2, delimiter: '.', separator: ',') %>
-                  <% else %>
-                    –
-                  <% end %>
-                </td>
-                  </strong>
-                </p>
-              </div>
-
-              <div class="d-flex gap-2">
-                  <%= link_to "Ver Dieta", client_diets_path(client), 
-                              class: "btn btn-primary btn-sm flex-fill" %>
-                <%= link_to "Editar", edit_client_path(client), 
-                            class: "btn btn-warning btn-sm flex-fill" %>
-                <%= button_to "Excluir", client_path(client), 
-                            data: { 
-                              turbo_method: :delete,
-                              turbo_confirm: "Tem certeza que deseja excluir #{client.name}?"
-                            },
-                            class: "btn btn-danger btn-sm flex-fill" %>
-              </div>
-            </div>
-          </div>
+        <!-- Filtro por Status -->
+        <div>
+          <label class="mb-2.5 block text-sm font-medium text-black dark:text-white">
+            Status
+          </label>
+          <%= select_tag :status,
+                        options_for_select([
+                          ['Todos os Status', ''],
+                          ['Ativos', 'active'],
+                          ['Inativos', 'inactive'],
+                          ['Pendentes', 'pending']
+                        ], params[:status]),
+                        class: "w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 font-medium outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary" %>
         </div>
-      <% end %>
-    <% else %>
-      <div class="col-12">
-        <div class="alert alert-warning text-center">
-          <i class="bi bi-exclamation-triangle fs-1"></i>
-          <h4 class="mt-3">Nenhum cliente encontrado</h4>
-          <p>
-            <% if params[:search].present? %>
-              Não foram encontrados clientes para sua busca.
-            <% else %>
-              Você ainda não tem clientes cadastrados.
+
+        <!-- Filtro por Período -->
+        <div>
+          <label class="mb-2.5 block text-sm font-medium text-black dark:text-white">
+            Período
+          </label>
+          <%= select_tag :period,
+                        options_for_select([
+                          ['Todos os Períodos', ''],
+                          ['Este Mês', 'this_month'],
+                          ['Últimos 3 Meses', 'last_3_months'],
+                          ['Este Ano', 'this_year']
+                        ], params[:period]),
+                        class: "w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 font-medium outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary" %>
+        </div>
+
+        <!-- Ordenação -->
+        <div>
+          <label class="mb-2.5 block text-sm font-medium text-black dark:text-white">
+            Ordenar por
+          </label>
+          <%= select_tag :sort_by,
+                        options_for_select([
+                          ['Nome', 'name'],
+                          ['Mais Recentes', 'created_at_desc'],
+                          ['Mais Antigos', 'created_at_asc'],
+                          ['Valor (Maior)', 'value_desc'],
+                          ['Valor (Menor)', 'value_asc']
+                        ], params[:sort_by]),
+                        class: "w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 font-medium outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary" %>
+        </div>
+
+        <!-- Botões de Ação -->
+        <div class="flex flex-col gap-2">
+          <label class="mb-2.5 block text-sm font-medium text-transparent">
+            Ações
+          </label>
+          <div class="flex gap-2">
+            <%= submit_tag "Buscar", 
+                class: "inline-flex items-center justify-center rounded-md bg-slate-600 px-4 py-2.5 text-center font-medium text-white transition hover:bg-slate-700" %>
+            <%= link_to clients_path, 
+                class: "inline-flex items-center justify-center rounded-md bg-slate-600 px-4 py-2.5 text-center font-medium text-white transition hover:bg-slate-700" do %>
+              Limpar
             <% end %>
-          </p>
-          <div class="mt-3">
-            <% if params[:search].present? %>
-              <%= link_to "Limpar Busca", clients_path, class: "btn btn-secondary" %>
-            <% end %>
-            <%= link_to "Adicionar Novo Cliente", new_client_path, class: "btn btn-success" %>
           </div>
         </div>
       </div>
     <% end %>
   </div>
+</div>
 
-  <!-- PAGINAÇÃO -->
-  <% if @clients.respond_to?(:total_pages) %>
-    <div class="d-flex justify-content-center mt-4">
-      <%= paginate @clients, theme: 'bootstrap-5' %>
+<!-- Resultados da Busca -->
+<% if params[:search].present? || params.slice(:status, :period, :min_paid_amount, :max_paid_amount).values.any?(&:present?) %>
+  <div class="mb-6 rounded-sm border border-meta-9 bg-meta-9/10 p-4 dark:border-meta-9 dark:bg-meta-9/20">
+    <div class="flex items-center gap-3">
+      <svg class="h-5 w-5 text-meta-9" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+      </svg>
+      <div>
+        <h4 class="font-medium text-meta-9">Resultados da busca</h4>
+        <p class="text-sm text-meta-9/80">
+          Encontrados <%= @clients.count %> cliente(s)
+          <% if params[:search].present? %>
+            para "<strong><%= params[:search] %></strong>"
+          <% end %>
+        </p>
+      </div>
+    </div>
+  </div>
+<% end %>
+
+<!-- Grid de Clientes -->
+<div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+  <% if @clients.any? %>
+    <% @clients.each do |client| %>
+      <div class="rounded-sm border border-stroke bg-white shadow-default transition-all duration-200 hover:shadow-lg dark:border-strokedark dark:bg-boxdark hover:transform hover:-translate-y-1">
+        <div class="p-6">
+          <!-- Header do Card -->
+          <div class="mb-4 flex items-start justify-between">
+            <h5 class="text-lg font-semibold text-black dark:text-white">
+              <%= client.name %>
+            </h5>
+            <span class="inline-flex rounded-full px-3 py-1 text-xs font-medium 
+                       <%= case client.status
+                           when 'active' then 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                           when 'inactive' then 'bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200'
+                           when 'pending' then 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200'
+                           else 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                           end %>">
+              <%= client.status&.capitalize || 'Active' %>
+            </span>
+          </div>
+
+          <!-- Informações do Cliente -->
+          <div class="space-y-3 text-sm">
+            <div class="flex items-center gap-3">
+              <svg class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+              </svg>
+              <span class="text-slate-600 dark:text-slate-400">
+                <%= client.email || 'Sem email' %>
+              </span>
+            </div>
+            
+            <div class="flex items-center gap-3">
+              <svg class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+              </svg>
+              <span class="text-slate-600 dark:text-slate-400">
+                <%= client.phone_number || '(11) 98888-8888' %>
+              </span>
+            </div>
+            
+            <div class="flex items-center gap-3">
+              <svg class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a1 1 0 012 0v4m0 0V5a1 1 0 112 0v2m0 0V3a1 1 0 012 0v4M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+              </svg>
+              <span class="text-slate-600 dark:text-slate-400 text-xs">
+                <%= client.start_date&.strftime('%d/%m/%Y') || '09/09/2025' %> 
+                a <%= client.end_date&.strftime('%d/%m/%Y') || '08/11/2025' %>
+              </span>
+            </div>
+            
+            <div class="flex items-center gap-3">
+              <svg class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+              </svg>
+              <span class="text-slate-600 dark:text-slate-400">
+                Plano: <%= client.plan_type.present? ? client.plan_type.capitalize : 'Não informado' %>
+              </span>
+            </div>
+            
+            <div class="flex items-center gap-3">
+              <svg class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+              <span class="font-semibold text-green-600 dark:text-green-400">
+                <% if client.paid_amount.present? %>
+                  R$ <%= number_with_precision(client.paid_amount, precision: 2, delimiter: '.', separator: ',') %>
+                <% else %>
+                  R$ 0,00
+                <% end %>
+              </span>
+            </div>
+          </div>
+
+          <!-- Botões de Ação -->
+          <div class="mt-6 grid grid-cols-3 gap-2">
+            <%= link_to client_diets_path(client), 
+                class: "inline-flex items-center justify-center rounded-md bg-purple-500 px-3 py-2 text-xs font-medium text-white transition hover:bg-purple-600
+" do %>
+              <svg class="mr-1 h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+              </svg>
+              Dieta
+            <% end %>
+            
+            <%= link_to edit_client_path(client), 
+                class: "inline-flex items-center justify-center rounded-md bg-amber-500 px-3 py-2 text-xs font-medium text-white transition hover:bg-amber-600" do %>
+              <svg class="mr-1 h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+              </svg>
+              Editar
+            <% end %>
+            
+            <%= button_to client_path(client), 
+                data: { 
+                  turbo_method: :delete,
+                  turbo_confirm: "Tem certeza que deseja excluir #{client.name}?"
+                },
+                class: "inline-flex items-center justify-center rounded-md bg-red-600 px-3 py-2 text-xs font-medium text-white transition hover:bg-red-700" do %>
+              <svg class="mr-1 h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+              </svg>
+              Excluir
+            <% end %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  <% else %>
+    <!-- Estado Vazio -->
+    <div class="col-span-full">
+      <div class="rounded-sm border border-stroke bg-white p-12 text-center shadow-default dark:border-strokedark dark:bg-boxdark">
+        <div class="mx-auto mb-6 h-20 w-20 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+          <svg class="h-10 w-10 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+          </svg>
+        </div>
+        <h3 class="mb-2 text-lg font-semibold text-black dark:text-white">
+          Nenhum cliente encontrado
+        </h3>
+        <p class="mb-6 text-slate-600 dark:text-slate-400">
+          <% if params[:search].present? || params[:status].present? || params[:period].present? %>
+            Não encontramos clientes com os filtros aplicados. Tente ajustar os critérios de busca.
+          <% else %>
+            Comece criando seu primeiro cliente para gerenciar dietas e acompanhar o progresso.
+          <% end %>
+        </p>
+        <div class="flex flex-col gap-3 sm:flex-row sm:justify-center">
+          <%= link_to new_client_path, 
+              class: "inline-flex items-center justify-center rounded-md bg-primary px-6 py-3 text-sm font-medium text-white transition hover:bg-opacity-90" do %>
+            <svg class="mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+            </svg>
+            Criar Primeiro Cliente
+          <% end %>
+          <% if params[:search].present? || params[:status].present? || params[:period].present? %>
+            <%= link_to clients_path, 
+                class: "inline-flex items-center justify-center rounded-md border border-stroke bg-white px-6 py-3 text-sm font-medium text-black transition hover:bg-slate-50 dark:border-strokedark dark:bg-boxdark dark:text-white dark:hover:bg-slate-800" do %>
+              <svg class="mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+              </svg>
+              Limpar Filtros
+            <% end %>
+          <% end %>
+        </div>
+      </div>
     </div>
   <% end %>
 </div>
 
-<!-- STYLES -->
-<style>
-  .client-card {
-    transition: transform 0.2s, box-shadow 0.2s;
-    border: none;
-  }
-  
-  .client-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
-  }
-  
-  .client-info {
-    font-size: 0.9rem;
-  }
-  
-  .search-form .form-control:focus,
-  .search-form .form-select:focus {
-    border-color: #0d6efd;
-    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
-  }
-
-  .form-check-group {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-  }
-</style>
-
-<!-- JAVASCRIPT -->
-<script>
-  // Toggle do texto do botão de filtros avançados
-  document.addEventListener('DOMContentLoaded', function() {
-    const collapseElement = document.getElementById('advancedFilters');
-    const toggleText = document.querySelector('.toggle-text');
+<!-- Paginação -->
+<% if @clients.respond_to?(:total_pages) && @clients.total_pages > 1 %>
+  <div class="mt-8 flex items-center justify-between">
+    <div class="text-sm text-slate-600 dark:text-slate-400">
+      Mostrando <%= @clients.offset_value + 1 %> a <%= [@clients.offset_value + @clients.limit_value, @clients.total_count].min %> 
+      de <%= @clients.total_count %> cliente<%= @clients.total_count == 1 ? '' : 's' %>
+    </div>
     
-    if (collapseElement) {
-      collapseElement.addEventListener('show.bs.collapse', function () {
-        toggleText.textContent = 'Ocultar Filtros Avançados';
-      });
-      
-      collapseElement.addEventListener('hide.bs.collapse', function () {
-        toggleText.textContent = 'Mostrar Filtros Avançados';
-      });
-    }
-  });
-</script>
+    <div class="flex items-center gap-2">
+      <!-- Primeira página -->
+      <% if @clients.current_page > 1 %>
+        <%= link_to clients_path(params.permit(:search, :status, :period, :sort).merge(page: 1)), 
+            class: "inline-flex h-9 w-9 items-center justify-center rounded-md border border-stroke bg-white text-sm font-medium text-black transition hover:bg-slate-50 dark:border-strokedark dark:bg-boxdark dark:text-white dark:hover:bg-slate-800" do %>
+          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"/>
+          </svg>
+        <% end %>
+      <% end %>
+
+      <!-- Página anterior -->
+      <% if @clients.prev_page %>
+        <%= link_to clients_path(params.permit(:search, :status, :period, :sort).merge(page: @clients.prev_page)), 
+            class: "inline-flex h-9 w-9 items-center justify-center rounded-md border border-stroke bg-white text-sm font-medium text-black transition hover:bg-slate-50 dark:border-strokedark dark:bg-boxdark dark:text-white dark:hover:bg-slate-800" do %>
+          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+          </svg>
+        <% end %>
+      <% end %>
+
+      <!-- Páginas numeradas -->
+      <% page_range = [[@clients.current_page - 2, 1].max, [@clients.current_page + 2, @clients.total_pages].min] %>
+      <% (page_range[0]..page_range[1]).each do |page| %>
+        <%= link_to clients_path(params.permit(:search, :status, :period, :sort).merge(page: page)), 
+            class: "inline-flex h-9 w-9 items-center justify-center rounded-md border text-sm font-medium transition #{ page == @clients.current_page ? 'border-primary bg-primary text-white' : 'border-stroke bg-white text-black hover:bg-slate-50 dark:border-strokedark dark:bg-boxdark dark:text-white dark:hover:bg-slate-800' }" do %>
+          <%= page %>
+        <% end %>
+      <% end %>
+
+      <!-- Próxima página -->
+      <% if @clients.next_page %>
+        <%= link_to clients_path(params.permit(:search, :status, :period, :sort).merge(page: @clients.next_page)), 
+            class: "inline-flex h-9 w-9 items-center justify-center rounded-md border border-stroke bg-white text-sm font-medium text-black transition hover:bg-slate-50 dark:border-strokedark dark:bg-boxdark dark:text-white dark:hover:bg-slate-800" do %>
+          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+          </svg>
+        <% end %>
+      <% end %>
+
+      <!-- Última página -->
+      <% if @clients.current_page < @clients.total_pages %>
+        <%= link_to clients_path(params.permit(:search, :status, :period, :sort).merge(page: @clients.total_pages)), 
+            class: "inline-flex h-9 w-9 items-center justify-center rounded-md border border-stroke bg-white text-sm font-medium text-black transition hover:bg-slate-50 dark:border-strokedark dark:bg-boxdark dark:text-white dark:hover:bg-slate-800" do %>
+          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"/>
+          </svg>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+<% end %>
+</div>
+

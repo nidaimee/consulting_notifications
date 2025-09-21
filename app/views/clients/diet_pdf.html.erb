@@ -143,45 +143,46 @@ end
 
 <div class="substitutions-section">
   <div class="substitutions-header">
-    <h2>TABELA DE SUBSTITUIÇÕES</h2>
-    <p>OPÇÕES EQUIVALENTES PARA CADA ALIMENTO</p>
+    <h2 style="margin-bottom: 0;">TABELA DE SUBSTITUIÇÕES</h2>
+    <p style="color: #555; margin-top: 2px;">Opções equivalentes para cada alimento</p>
   </div>
-  
-  <% # Mostrar substituições cadastradas manualmente primeiro %>
+
   <% if has_manual_substitutions %>
-    <div class="custom-substitutions">
-      <h3>SUBSTITUIÇÕES PERSONALIZADAS</h3>
+    <div class="custom-substitutions" style="background: #f8fafc; border-radius: 8px; padding: 24px; margin-bottom: 24px;">
+      <% substitutions_by_meal = all_manual_substitutions.group_by { |_, data| data[:meal_name] } %>
       
-      <div class="substitutions-compact">
-        <% # Agrupar por refeição %>
-        <% substitutions_by_meal = all_manual_substitutions.group_by { |_, data| data[:meal_name] } %>
-        
-        <% substitutions_by_meal.each do |meal_name, meal_substitutions| %>
-          <div class="meal-substitution-group">
-            <div class="meal-sub-header">
-              <h4><%= meal_name.upcase %></h4>
-            </div>
-            <% meal_substitutions.each do |diet_food_id, data| %>
-              <div class="sub-row">
-                <span class="sub-original">
-                  <%= data[:food].name %>
-                  <span class="sub-qty-badge"><%= data[:quantity].to_i %>g</span>
-                </span>
-                <span class="sub-arrow">→</span>
-                <span class="sub-options">
-                  <% data[:substitutions].each_with_index do |sub, idx| %>
-                    <span class="sub-opt-qty"><%= sub.quantity_grams.to_i %>g</span>
-                    <%= sub.substitute_food.name %><%= idx < data[:substitutions].count - 1 ? ' ou' : '' %>
-                  <% end %>
-                </span>
-              </div>
-            <% end %>
+      <% substitutions_by_meal.each do |meal_name, meal_substitutions| %>
+        <div class="meal-substitution-group" style="margin-bottom: 18px;">
+          <div class="meal-sub-header" style="padding: 6px 0 2px 0; border-bottom: 1px solid #cdd1d2;">
+            <h4 style="font-size: 1rem; color: #2d6fa1; letter-spacing: 1px; margin: 0;">
+              <span style="font-weight: 600;"><%= meal_name.upcase %></span>
+            </h4>
           </div>
-        <% end %>
-      </div>
+          <% meal_substitutions.each do |diet_food_id, data| %>
+            <div class="sub-row" style="display: flex; align-items: center; margin: 12px 0;">
+              <span class="sub-original" style="flex-shrink: 0; font-weight: 500; color: #333;">
+                <%= data[:food].name %>
+                <span class="sub-qty-badge" style="background: #e5eef7; color: #205080; border-radius: 6px; padding: 2px 8px; font-size: 0.95em; margin-left: 6px;">
+                  <%= data[:quantity].to_i %>g
+                </span>
+              </span>
+              <span class="sub-arrow" style="margin: 0 12px; font-size: 1.1em;">&#8594;</span>
+              <span class="sub-options" style="display: flex; flex-wrap: wrap; gap: 8px;">
+                <% data[:substitutions].each_with_index do |sub, idx| %>
+                  <span style="background: #f2e7fa; color: #7d3ea6; border-radius: 6px; padding: 2px 8px; font-size: 0.95em;">
+                    <%= sub.quantity_grams.to_i %>g <%= sub.substitute_food.name %>
+                  </span>
+                  <% if idx < data[:substitutions].count - 1 %>
+                    <span style="color: #888; margin: 0 4px;">ou</span>
+                  <% end %>
+                <% end %>
+              </span>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
     </div>
-    
-    <div class="section-divider"></div>
+    <div class="section-divider" style="height: 2px; background: #e0e5ea; margin: 24px 0;"></div>
   <% end %>
   
   <% # TABELAS FIXAS DE SUBSTITUIÇÕES %>
@@ -225,13 +226,12 @@ end
           </tr>
         </tbody>
       </table>
-      <div class="table-note">
-        <small>💡 Estes vegetais podem ser consumidos à vontade, sem restrição de quantidade</small>
-      </div>
+      
     </div>
     
     <!-- VEGETAIS B -->
     <div class="substitution-table">
+      <h4 class="table-title">🥬 VEGETAIS B</h4>
       <table>
         <tbody>
           <tr>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sistema de Nutrição</title>
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true %>
+    
+    <!-- Adicione suas configurações do Tailwind aqui -->
+    <style type="text/tailwindcss">
+      @layer components {
+        .sidebar-item {
+          @apply group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-slate-800 duration-300 ease-in-out hover:bg-blue-500 hover:text-white;
+        }
+        .sidebar-item.active {
+          @apply bg-blue-500 text-white;
+        }
+      }
+    </style>
+    
+    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              'boxdark': '#24303F',
+            },
+            width: {
+              '72.5': '18.125rem',
+            },
+            spacing: {
+              '5.5': '1.375rem',
+              '6.5': '1.625rem',
+            },
+          },
+        },
+      }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+  </head>
+
+  <body class="relative bg-gray-50 font-sans">
+    <div class="flex min-h-screen">
+      <!-- Render Sidebar Partial -->
+      <aside class="fixed left-0 top-0 z-50 flex h-screen w-72.5 -translate-x-full flex-col overflow-y-hidden bg-white duration-300 ease-linear dark:bg-boxdark lg:static lg:translate-x-0">
+        <%= render 'shared/sidebar' %>
+      </aside>
+
+      <!-- Main content -->
+      <div class="relative w-full md:ml-72.5">
+        <!-- Topbar -->
+        <header class="sticky top-0 z-999 flex w-full bg-white drop-shadow-1 dark:bg-boxdark dark:drop-shadow-none">
+          <div class="flex w-full items-center justify-between px-4 py-4 shadow-2 md:px-6 2xl:px-11">
+            <div class="flex items-center gap-2 sm:gap-4 lg:hidden">
+              <!-- Mobile Menu Toggle -->
+              <button class="z-99999 block rounded-sm border border-stroke bg-white p-1.5 shadow-sm dark:border-strokedark dark:bg-boxdark lg:hidden">
+                <span class="relative block h-5.5 w-5.5 cursor-pointer">
+                  <span class="du-block absolute right-0 h-full w-full">
+                    <span class="relative left-0 top-0 my-1 block h-0.5 w-0 rounded-sm bg-black delay-[0] duration-200 ease-in-out dark:bg-white">
+                    </span>
+                    <span class="relative left-0 top-0 my-1 block h-0.5 w-0 rounded-sm bg-black delay-150 duration-200 ease-in-out dark:bg-white">
+                    </span>
+                    <span class="relative left-0 top-0 my-1 block h-0.5 w-0 rounded-sm bg-black delay-200 duration-200 ease-in-out dark:bg-white">
+                    </span>
+                  </span>
+                  <span class="du-block absolute right-0 h-full w-full rotate-45">
+                    <span class="absolute left-2.5 top-0 block h-full w-0.5 rounded-sm bg-black delay-300 duration-200 ease-in-out dark:bg-white">
+                    </span>
+                    <span class="delay-400 absolute left-0 top-2.5 block h-0.5 w-full rounded-sm bg-black duration-200 ease-in-out dark:bg-white">
+                    </span>
+                  </span>
+                </span>
+              </button>
+            </div>
+
+            <div class="hidden sm:block">
+              <form class="relative">
+                <button class="absolute left-4 top-1/2 -translate-y-1/2">
+
+                </button>
+              </form>
+            </div>
+
+            <div class="flex items-center gap-3 2xsm:gap-7">
+              <!-- Dark Mode Toggler -->
+             
+
+              <!-- User Area -->
+              <div class="relative" x-data="{ dropdownOpen: false }" @click.outside="dropdownOpen = false">
+                <button @click="dropdownOpen = !dropdownOpen" class="flex items-center gap-4">
+                  <span class="hidden text-right lg:block">
+                    <span class="block text-sm font-medium text-black dark:text-white">
+                      <%= current_user.name if current_user %>
+                    </span>
+                    
+                  </span>
+                  <img src="https://ui-avatars.com/api/?name=<%= current_user.name if current_user %>&background=0D8ABC&color=fff" 
+                      class="h-10 w-10 rounded-full border-2 border-blue-500" alt="Avatar" />
+                  <svg class="hidden fill-current sm:block transition-transform duration-200" 
+                       :class="dropdownOpen ? 'rotate-180' : ''" 
+                       width="12" height="8" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M0.410765 0.910734C0.736202 0.585297 1.26384 0.585297 1.58928 0.910734L6.00002 5.32148L10.4108 0.910734C10.7362 0.585297 11.2638 0.585297 11.5893 0.910734C11.9147 1.23617 11.9147 1.76381 11.5893 2.08924L6.58928 7.08924C6.26384 7.41468 5.7362 7.41468 5.41077 7.08924L0.410765 2.08924C0.0853277 1.76381 0.0853277 1.23617 0.410765 0.910734Z" fill="currentColor"/>
+                  </svg>
+                </button>
+
+                <!-- Dropdown Menu -->
+                <div x-show="dropdownOpen" 
+                     x-transition:enter="transition ease-out duration-200"
+                     x-transition:enter-start="opacity-0 scale-95"
+                     x-transition:enter-end="opacity-100 scale-100"
+                     x-transition:leave="transition ease-in duration-75"
+                     x-transition:leave-start="opacity-100 scale-100"
+                     x-transition:leave-end="opacity-0 scale-95"
+                     class="absolute right-0 mt-2 w-56 rounded-lg border border-stroke bg-white py-2 shadow-lg dark:border-strokedark dark:bg-boxdark">
+                  
+                  <!-- User Info Header -->
+                  <div class="border-b border-stroke px-4 py-3 dark:border-strokedark">
+                    <p class="text-sm font-medium text-black dark:text-white">
+                      <%= current_user.name if current_user %>
+                    </p>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">
+                      <%= current_user.email if current_user %>
+                    </p>
+                  </div>
+
+                  <!-- Menu Items -->
+                  <div class="py-1">
+                    <%= link_to edit_user_registration_path, 
+                        class: "flex items-center gap-3 px-4 py-2 text-sm text-slate-700 hover:bg-gray-50 dark:text-slate-300 dark:hover:bg-meta-4" do %>
+                      <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                      </svg>
+                      Editar Perfil
+                    <% end %>
+
+                    <div class="border-t border-stroke my-1 dark:border-strokedark"></div>
+
+                    <%= button_to destroy_user_session_path, 
+                        method: :delete,
+                        class: "w-full flex items-center gap-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20" do %>
+                      <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                      </svg>
+                      Sair
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <!-- Main content -->
+        <main class="flex-1 mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
+          <%= yield %>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>

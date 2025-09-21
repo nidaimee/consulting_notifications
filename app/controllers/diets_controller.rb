@@ -1,6 +1,7 @@
 class DietsController < ApplicationController
+  include TailadminLayout
   before_action :set_client
-  before_action :set_diet, only: [ :show, :edit, :update, :destroy, :add_food, :add_substitution, :remove_substitution ]
+  before_action :set_diet, only: [ :show, :edit, :update, :destroy, :add_food, :add_substitution, :remove_substitution, :reorder_foods ]
 
   def index
     @diets = @client.diets.order(:meal_type)
@@ -115,6 +116,38 @@ class DietsController < ApplicationController
     redirect_to [ @client, @diet ], alert: "Erro ao remover substituição: #{e.message}"
   end
 
+  def reorder_foods
+    Rails.logger.info "User authenticated: #{user_signed_in?}"
+    Rails.logger.info "Current user: #{current_user&.email}"
+    Rails.logger.info "Client: #{@client&.name}"
+    Rails.logger.info "Diet: #{@diet&.name}"
+    Rails.logger.info "Raw params: #{params.inspect}"
+
+    order_data = reorder_params[:order] || []
+
+    Rails.logger.info "Reorder foods called with order_data: #{order_data.inspect}"
+
+    begin
+      DietFood.transaction do
+        order_data.each do |item|
+          diet_food = @diet.diet_foods.find(item[:id])
+          Rails.logger.info "Updating diet_food #{diet_food.id} to position #{item[:position]}"
+          diet_food.update!(position: item[:position])
+        end
+      end
+
+      Rails.logger.info "Reorder successful"
+      render json: { success: true, message: "Ordem atualizada com sucesso!" }
+    rescue ActiveRecord::RecordNotFound => e
+      Rails.logger.error "Record not found: #{e.message}"
+      render json: { success: false, message: "Alimento não encontrado." }, status: 404
+    rescue => e
+      Rails.logger.error "Error in reorder_foods: #{e.message}"
+      Rails.logger.error e.backtrace.join("\n")
+      render json: { success: false, message: "Erro ao reordenar: #{e.message}" }, status: 500
+    end
+  end
+
   private
 
   def set_client
@@ -127,5 +160,9 @@ class DietsController < ApplicationController
 
   def diet_params
     params.require(:diet).permit(:name, :meal_type, :notes, :created_date)
+  end
+
+  def reorder_params
+    params.permit(order: [ :id, :position ])
   end
 end

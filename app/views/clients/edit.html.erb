@@ -1,3 +1,20 @@
-<h1>Editar Cliente</h1>
+<!-- Breadcrumb -->
+<div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+  <h2 class="text-xl font-semibold text-slate-800 dark:text-white">
+    Editar Cliente
+  </h2>
+  <nav>
+    <ol class="flex items-center gap-2">
+      <li>
+        <%= link_to "Clientes", clients_path, class: "text-sm font-medium text-blue-500 hover:text-blue-600" %>
+      </li>
+      <li class="text-sm text-slate-500">/</li>
+      <li class="text-sm font-medium text-slate-500">Editar</li>
+    </ol>
+  </nav>
+</div>
 
-<%= render 'form', client: @client %>
+<!-- Form Card -->
+<div class="rounded-sm border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
+  <%= render 'form', client: @client %>
+</div>

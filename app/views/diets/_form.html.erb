@@ -1,37 +1,59 @@
-<%= form_with model: [@client, diet], local: true do |form| %>
+<%= form_with model: [@client, diet], local: true, class: "space-y-6" do |form| %>
   <% if diet.errors.any? %>
-    <div class="alert alert-danger">
-      <h4><%= pluralize(diet.errors.count, "erro") %> impediram o cadastro:</h4>
-      <ul class="mb-0">
-        <% diet.errors.full_messages.each do |message| %>
-          <li><%= message %></li>
-        <% end %>
-      </ul>
+    <div class="rounded-md border border-red-300 bg-red-50 p-4">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        <div class="ml-3">
+          <h3 class="text-sm font-medium text-red-800">
+            <%= pluralize(diet.errors.count, "erro") %> impediram o cadastro:
+          </h3>
+          <div class="mt-2 text-sm text-red-700">
+            <ul class="list-disc space-y-1 pl-5">
+              <% diet.errors.full_messages.each do |message| %>
+                <li><%= message %></li>
+              <% end %>
+            </ul>
+          </div>
+        </div>
+      </div>
     </div>
   <% end %>
 
-  <div class="row">
-    <div class="col-md-6">
-      <div class="mb-3">
-        <%= form.label :name, "Nome da Dieta", class: "form-label" %>
-        <%= form.text_field :name, class: "form-control", placeholder: "Ex: Café da Manhã" %>
-      </div>
+  <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+    <div>
+      <%= form.label :name, "Nome da Dieta", class: "mb-2.5 block font-medium text-black dark:text-white" %>
+      <%= form.text_field :name, 
+          class: "w-full rounded-lg border border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary", 
+          placeholder: "Ex: Café da Manhã" %>
     </div>
     
-    <div class="col-md-6">
+    <div>
+      <!-- Espaço reservado para futuros campos -->
     </div>
   </div>
 
-  <div class="mb-3">
-    <%= form.label :notes, "Observações", class: "form-label" %>
-    <%= form.text_area :notes, rows: 3, class: "form-control", 
-                       placeholder: "Observações sobre esta refeição..." %>
+  <div>
+    <%= form.label :notes, "Observações", class: "mb-2.5 block font-medium text-black dark:text-white" %>
+    <%= form.text_area :notes, 
+        rows: 4, 
+        class: "w-full rounded-lg border border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary", 
+        placeholder: "Observações sobre esta refeição..." %>
   </div>
 
-  <div class="mb-3">
+  <div class="flex flex-wrap items-center gap-4">
     <%= form.submit diet.persisted? ? "Atualizar Dieta" : "Criar Dieta", 
-                    class: "btn btn-success me-2" %>
-    <%= link_to "Cancelar", diet.persisted? ? client_diet_path(@client, diet) : client_diets_path(@client), 
-                class: "btn btn-secondary" %>
+        class: "inline-flex items-center justify-center gap-2.5 rounded-md bg-green-600 px-6 py-3 text-center font-medium text-white transition hover:bg-green-700 hover:shadow-lg" %>
+    
+    <%= link_to diet.persisted? ? client_diet_path(@client, diet) : client_diets_path(@client), 
+        class: "inline-flex items-center justify-center gap-2.5 rounded-md bg-slate-600 px-6 py-3 text-center font-medium text-white transition hover:bg-slate-700 hover:shadow-lg" do %>
+      <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+      </svg>
+      Cancelar
+    <% end %>
   </div>
 <% end %>

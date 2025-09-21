@@ -8,6 +8,7 @@ class DietFood < ApplicationRecord
   validates :quantity_grams, presence: true, numericality: { greater_than: 0 }
 
   before_save :calculate_nutrients
+  before_create :set_position
   after_update :calculate_nutrients
 
   # Aceitar parâmetros aninhados para substituições
@@ -40,7 +41,58 @@ class DietFood < ApplicationRecord
     "#{calculated_calories.round(1)}kcal | P:#{calculated_protein.round(1)}g | C:#{calculated_carbs.round(1)}g | F:#{calculated_fat.round(1)}g"
   end
 
+  # Métodos para reordenação
+  def move_up!
+    return false if first_position?
+
+    transaction do
+      previous_item = diet.diet_foods.where("position < ?", position).order(position: :desc).first
+      if previous_item
+        self.class.where(id: [ id, previous_item.id ]).update_all(
+          "position = CASE
+            WHEN id = #{id} THEN #{previous_item.position}
+            WHEN id = #{previous_item.id} THEN #{position}
+          END"
+        )
+      end
+    end
+    reload
+    true
+  end
+
+  def move_down!
+    return false if last_position?
+
+    transaction do
+      next_item = diet.diet_foods.where("position > ?", position).order(position: :asc).first
+      if next_item
+        self.class.where(id: [ id, next_item.id ]).update_all(
+          "position = CASE
+            WHEN id = #{id} THEN #{next_item.position}
+            WHEN id = #{next_item.id} THEN #{position}
+          END"
+        )
+      end
+    end
+    reload
+    true
+  end
+
+  def first_position?
+    position <= 1 || diet.diet_foods.where("position < ?", position).empty?
+  end
+
+  def last_position?
+    diet.diet_foods.where("position > ?", position).empty?
+  end
+
   private
+
+  def set_position
+    if self.position.blank?
+      self.position = (diet.diet_foods.maximum(:position) || 0) + 1
+    end
+  end
 
   def calculate_nutrients
     self.calories = calculated_calories.round(2)

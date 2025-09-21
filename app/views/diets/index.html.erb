@@ -1,150 +1,146 @@
-<!-- Título e botões -->
-<div class="row mb-4 align-items-center">
-  <div class="col-md-6">
-    <h1 class="fw-bold mb-0">Dieta de <%= @client.name %></h1>
+<!-- Breadcrumb e Header -->
+<div class="mb-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+  <div>
+    <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
+      Dieta de <%= @client.name %>
+    </h2>
+    <nav>
+      <ol class="flex items-center gap-2 text-sm text-gray-500">
+        <%= link_to clients_path, class: "hover:text-blue-600" do %>
+          Clientes
+        <% end %>
+        <span>/</span>
+        <%= link_to @client, class: "hover:text-blue-600" do %>
+          <%= @client.name %>
+        <% end %>
+        <span>/</span>
+        <span class="text-gray-700 dark:text-white font-semibold">Dietas</span>
+      </ol>
+    </nav>
   </div>
-  <div class="col-md-6 text-end">
-    <!-- Dropdown simples -->
-      <div class="dropdown">
-        <button class="btn btn-danger me-2 dropdown-toggle" data-bs-toggle="dropdown">
-          <i class="bi bi-file-pdf"></i> Baixar PDF
-        </button>
-        <ul class="dropdown-menu">
-          <li>
-            <%= link_to "☀️ Tema Claro", 
-                diet_pdf_client_path(@client, format: :pdf, theme: 'light'), 
-                class: "dropdown-item", target: "_blank" %>
-          </li>
-          <li>
-            <%= link_to "🌙 Tema Escuro", 
-                diet_pdf_client_path(@client, format: :pdf, theme: 'dark'), 
-                class: "dropdown-item", target: "_blank" %>
-          </li>
-        </ul>
-         <%= link_to "Nova Refeição", new_client_diet_path(@client), class: "btn btn-primary me-2" %>
-    <%= link_to "Voltar ao Cliente", @client, class: "btn btn-outline-secondary" %>
+  <div class="flex flex-wrap items-center gap-3">
+    <!-- PDF Dropdown -->
+    <div class="relative" x-data="{ dropdownOpen: false }" @click.outside="dropdownOpen = false">
+      <button @click="dropdownOpen = !dropdownOpen"
+        class="inline-flex items-center gap-2.5 rounded bg-blue-600 px-4 py-2 text-white font-medium hover:bg-blue-700 transition">
+        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+        </svg>
+        PDF
+      </button>
+      <div x-show="dropdownOpen"
+        class="absolute right-0 mt-2 w-40 rounded border bg-white py-2 shadow">
+        <%= link_to diet_pdf_client_path(@client, format: :pdf, theme: 'light'), class: "block px-4 py-2 text-gray-800 hover:bg-gray-100", target: "_blank" do %>
+          ☀️ Tema Claro
+        <% end %>
+        <%= link_to diet_pdf_client_path(@client, format: :pdf, theme: 'dark'), class: "block px-4 py-2 text-gray-800 hover:bg-gray-100", target: "_blank" do %>
+          🌙 Tema Escuro
+        <% end %>
       </div>
-   
+    </div>
+    <%= link_to new_client_diet_path(@client), 
+      class: "inline-flex items-center gap-2.5 rounded bg-green-600 px-4 py-2 text-white font-medium hover:bg-green-700 transition" do %>
+      <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+      </svg>
+      Nova Refeição
+    <% end %>
+    <%= link_to @client, 
+      class: "inline-flex items-center gap-2.5 rounded bg-gray-200 px-4 py-2 text-gray-700 font-medium hover:bg-gray-300 transition" do %>
+      <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+      </svg>
+      Voltar
+    <% end %>
   </div>
 </div>
 
 <% if @diets.any? %>
-  <div class="row">
+  <!-- Cards das refeições -->
+  <div class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
     <% @diets.each do |diet| %>
-      <div class="col-lg-4 col-md-6 mb-4">
-        <div class="card shadow-sm border-1 h-100">
-          <!-- Header -->
-          <div class="card-header bg-white border-0">
-            <h5 class="fw-semibold text-dark mb-0"><%= diet.name %></h5>
+      <div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm flex flex-col gap-4">
+        <div class="flex items-center justify-between">
+          <h3 class="text-lg font-semibold text-gray-900"><%= diet.name %></h3>
+          <span class="rounded bg-blue-50 px-3 py-1 text-xs font-bold text-blue-600">
+            <%= diet.total_calories.round(1) %> kcal
+          </span>
+        </div>
+        <% if diet.notes.present? %>
+          <div class="flex items-center gap-2 text-sm text-gray-500">
+            <span><%= diet.notes.truncate(80) %></span>
           </div>
-
-          <!-- Body -->
-          <div class="card-body">
-            <div class="text-center mb-3">
-              <h3 class="fw-bold text-primary"><%= diet.total_calories.round(1) %> kcal</h3>
-            </div>
-
-            <% if diet.notes.present? %>
-              <div class="alert alert-light border text-muted small mb-3">
-                <%= diet.notes.truncate(80) %>
-              </div>
+        <% end %>
+        <% if diet.diet_foods.any? %>
+          <ul class="flex flex-col gap-1 text-sm text-gray-700">
+            <% diet.diet_foods.limit(5).each do |df| %>
+              <li>
+                <span class="font-bold text-gray-900"><%= df.quantity_grams.to_i %>g</span>
+                <%= df.food.name.split(',').first %>
+              </li>
             <% end %>
-
-            <% if diet.diet_foods.any? %>
-              <ul class="list-unstyled small text-muted">
-                <% diet.diet_foods.limit(5).each do |df| %>
-                  <li class="mb-1">
-                    <span class="badge bg-light text-dark"><%= df.quantity_grams.to_i %>g</span>
-                    <%= df.food.name.split(',').first %>
-                  </li>
-                <% end %>
-              </ul>
-            <% else %>
-              <p class="fst-italic text-muted small">Nenhum alimento adicionado</p>
+            <% if diet.diet_foods.count > 5 %>
+              <li class="text-xs text-gray-400">+ <%= diet.diet_foods.count - 5 %> mais alimento<%= 's' if diet.diet_foods.count - 5 > 1 %></li>
             <% end %>
-
-            <!-- Macros -->
-            <div class="row text-center mt-3 pt-3 border-top">
-              <div class="col">
-                <span class="fw-bold text-primary"><%= diet.total_protein.round(1) %>g</span>
-                <small class="d-block text-muted">Proteína</small>
-              </div>
-              <div class="col">
-                <span class="fw-bold text-success"><%= diet.total_carbs.round(1) %>g</span>
-                <small class="d-block text-muted">Carboidratos</small>
-              </div>
-              <div class="col">
-                <span class="fw-bold text-danger"><%= diet.total_fat.round(1) %>g</span>
-                <small class="d-block text-muted">Gordura</small>
-              </div>
-            </div>
+          </ul>
+        <% else %>
+          <p class="text-sm italic text-gray-400">Nenhum alimento adicionado</p>
+        <% end %>
+        <!-- Macros -->
+        <div class="grid grid-cols-3 gap-2">
+          <div class="rounded bg-green-50 p-2 text-center text-green-700">
+            <span class="font-bold"><%= diet.total_protein.round(1) %>g</span>
+            <span class="block text-xs">Proteína</span>
           </div>
-
-          <!-- Footer -->
-          <div class="card-footer bg-white border-0">
-            <div class="d-flex gap-2">
-              <%= link_to "Editar", client_diet_path(@client, diet), 
-                  class: "btn btn-outline-primary btn-sm flex-fill" %>
-              <%= button_to client_diet_path(@client, diet),
-                    method: :delete,
-                    data: { turbo_confirm: "Excluir #{diet.name}?" },
-                    class: "btn btn-outline-danger btn-sm flex-fill" do %>
-                Excluir
-              <% end %>
-            </div>
+          <div class="rounded bg-orange-50 p-2 text-center text-orange-700">
+            <span class="font-bold"><%= diet.total_carbs.round(1) %>g</span>
+            <span class="block text-xs">Carboidratos</span>
           </div>
+          <div class="rounded bg-red-50 p-2 text-center text-red-700">
+            <span class="font-bold"><%= diet.total_fat.round(1) %>g</span>
+            <span class="block text-xs">Gordura</span>
+          </div>
+        </div>
+        <!-- Footer -->
+        <div class="flex gap-2 pt-3">
+          <%= link_to client_diet_path(@client, diet), class: "flex-1 rounded border border-blue-600 bg-white px-2 py-1 text-blue-600 text-sm hover:bg-blue-50" do %>
+            Editar
+          <% end %>
+          <%= button_to client_diet_path(@client, diet), method: :delete, data: { turbo_confirm: "Excluir #{diet.name}?" }, class: "flex-1 rounded border border-red-600 bg-white px-2 py-1 text-red-600 text-sm hover:bg-red-50" do %>
+            Excluir
+          <% end %>
         </div>
       </div>
     <% end %>
   </div>
-
-  <!-- Resumo Total -->
-  <div class="row mt-5 g-3">
-    <div class="col-md-3 col-6">
-      <div class="card border-1 shadow-sm text-center p-3">
-        <h3 class="fw-bold text-warning"><%= @daily_total_calories.round(1) %></h3>
-        <p class="mb-0 text-muted">Total Kcal</p>
-      </div>
+  <!-- Resumo total de macros -->
+  <div class="mt-8 grid grid-cols-2 gap-6 md:grid-cols-4">
+    <div class="rounded-lg border border-gray-200 bg-white p-6 shadow text-center">
+      <h3 class="text-2xl font-bold text-blue-700"><%= @daily_total_calories.round(1) %></h3>
+      <p class="text-sm text-gray-500">Total Kcal</p>
     </div>
-    <div class="col-md-3 col-6">
-      <div class="card border-1 shadow-sm text-center p-3">
-        <h3 class="fw-bold text-primary"><%= @diets.sum(&:total_protein).round(1) %>g</h3>
-        <p class="mb-0 text-muted">Proteínas</p>
-      </div>
+    <div class="rounded-lg border border-gray-200 bg-white p-6 shadow text-center">
+      <h3 class="text-2xl font-bold text-green-700"><%= @diets.sum(&:total_protein).round(1) %>g</h3>
+      <p class="text-sm text-gray-500">Proteínas</p>
     </div>
-    <div class="col-md-3 col-6">
-      <div class="card border-1 shadow-sm text-center p-3">
-        <h3 class="fw-bold text-success"><%= @diets.sum(&:total_carbs).round(1) %>g</h3>
-        <p class="mb-0 text-muted">Carboidratos</p>
-      </div>
+    <div class="rounded-lg border border-gray-200 bg-white p-6 shadow text-center">
+      <h3 class="text-2xl font-bold text-orange-700"><%= @diets.sum(&:total_carbs).round(1) %>g</h3>
+      <p class="text-sm text-gray-500">Carboidratos</p>
     </div>
-    <div class="col-md-3 col-6">
-      <div class="card border-1 shadow-sm text-center p-3">
-        <h3 class="fw-bold text-danger"><%= @diets.sum(&:total_fat).round(1) %>g</h3>
-        <p class="mb-0 text-muted">Gorduras</p>
-      </div>
+    <div class="rounded-lg border border-gray-200 bg-white p-6 shadow text-center">
+      <h3 class="text-2xl font-bold text-red-700"><%= @diets.sum(&:total_fat).round(1) %>g</h3>
+      <p class="text-sm text-gray-500">Gorduras</p>
     </div>
   </div>
- </div>
 <% else %>
-<div class="text-center py-5">
-    <h4 class="text-muted">Comece criando a primeira refeição para <%= @client.name %>!</h4>
-    <%= link_to "Nova Refeição", new_client_diet_path(@client), class: "btn btn-success btn-lg" %>
+  <div class="py-12 text-center">
+    <h4 class="mb-4 text-lg text-gray-500">Comece criando a primeira refeição para <%= @client.name %>!</h4>
+    <%= link_to new_client_diet_path(@client), 
+      class: "inline-flex items-center gap-2.5 rounded bg-green-600 px-6 py-2 text-white font-medium hover:bg-green-700 transition" do %>
+      <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+      </svg>
+      Nova Refeição
+    <% end %>
   </div>
 <% end %>
-
-
-<script>
-function toggleNotes(dietId) {
-  const shortNotes = document.getElementById(`notes-short-${dietId}`);
-  const fullNotes = document.getElementById(`notes-full-${dietId}`);
-  
-  if (shortNotes.style.display === 'none') {
-    shortNotes.style.display = 'inline';
-    fullNotes.style.display = 'none';
-  } else {
-    shortNotes.style.display = 'none';
-    fullNotes.style.display = 'inline';
-  }
-}
-</script>

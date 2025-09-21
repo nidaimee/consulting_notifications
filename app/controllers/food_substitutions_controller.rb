@@ -1,7 +1,7 @@
 class FoodSubstitutionsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_client_and_diet
-  before_action :set_substitution, only: [ :destroy ]
+  before_action :set_substitution, only: [ :update, :destroy ]
 
   def create
     @diet_food = @diet.diet_foods.find(params[:diet_food_id])
@@ -18,6 +18,40 @@ class FoodSubstitutionsController < ApplicationController
     else
       redirect_to client_diet_path(@client, @diet),
                   alert: "Erro ao adicionar substituição."
+    end
+  end
+
+  def update
+    if @substitution.update(quantity_grams: params[:quantity_grams])
+      respond_to do |format|
+        format.json {
+          render json: {
+            success: true,
+            protein: @substitution.calculated_protein.round(1),
+            carbs: @substitution.calculated_carbs.round(1),
+            fat: @substitution.calculated_fat.round(1),
+            calories: @substitution.calculated_calories.round(1),
+            message: "Quantidade atualizada com sucesso!"
+          }
+        }
+        format.html {
+          redirect_to client_diet_path(@client, @diet),
+                      notice: "Quantidade da substituição atualizada!"
+        }
+      end
+    else
+      respond_to do |format|
+        format.json {
+          render json: {
+            success: false,
+            message: @substitution.errors.full_messages.join(", ")
+          }, status: :unprocessable_entity
+        }
+        format.html {
+          redirect_to client_diet_path(@client, @diet),
+                      alert: "Erro ao atualizar quantidade."
+        }
+      end
     end
   end
 

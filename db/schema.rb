@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_10_230633) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_20_053052) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -41,6 +41,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_10_230633) do
     t.decimal "fat"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "position", default: 0
+    t.index ["diet_id", "position"], name: "index_diet_foods_on_diet_id_and_position"
     t.index ["diet_id"], name: "index_diet_foods_on_diet_id"
     t.index ["food_id"], name: "index_diet_foods_on_food_id"
   end

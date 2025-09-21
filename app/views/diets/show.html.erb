@@ -1,266 +1,517 @@
-<!-- app/views/diets/show.html.erb -->
-<div class="container mt-4">
-  <div class="row">
-    <div class="col-md-12">
-      <div class="card">
-        <!-- Cabeçalho -->
-        <div class="card-header bg-primary text-white">
-          <h3><%= @diet.name %></h3>
-          <p class="mb-0">Cliente: <%= @client.name %></p>
+<!-- Breadcrumb e Header -->
+<div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between" 
+     data-diet-id="<%= @diet.id %>"
+     data-reorder-url="<%= url_for(controller: 'diets', action: 'reorder_foods', client_id: @client.id, id: @diet.id) %>">
+  <div>
+    <h2 class="text-title-md2 font-semibold text-black dark:text-white">
+      <%= @diet.name %>
+    </h2>
+    <nav>
+      <ol class="flex items-center gap-2">
+        <%= link_to clients_path, class: "text-primary" do %>
+          Clientes
+        <% end %>
+        <span class="text-primary">/</span>
+        <%= link_to client_diets_path(@client), class: "text-primary" do %>
+          Dietas
+        <% end %>
+        <span class="text-primary">/</span>
+        <span class="text-black dark:text-white"><%= @diet.meal_type %></span>
+      </ol>
+    </nav>
+  </div>
+  
+  <div class="flex items-center gap-3">
+    <%= link_to client_diets_path(@client), 
+        class: "inline-flex items-center justify-center gap-2.5 rounded-md bg-slate-600 px-6 py-2.5 text-center font-medium text-white transition hover:bg-slate-700 hover:shadow-lg" do %>
+      <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+      </svg>
+      Voltar
+    <% end %>
+    
+    <%= link_to edit_client_diet_path(@client, @diet), 
+        class: "inline-flex items-center justify-center gap-2.5 rounded-md bg-amber-500 px-6 py-2.5 text-center font-medium text-white transition hover:bg-amber-600 hover:shadow-lg" do %>
+      <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+      </svg>
+      Editar
+    <% end %>
+    
+    <%= button_to client_diet_path(@client, @diet),
+        method: :delete,
+        data: { turbo_confirm: "Tem certeza?" },
+        class: "inline-flex items-center justify-center gap-2.5 rounded-md bg-red-600 px-6 py-2.5 text-center font-medium text-white transition hover:bg-red-700 hover:shadow-lg" do %>
+      <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+      </svg>
+      Excluir
+    <% end %>
+  </div>
+</div>
+
+<!-- Grid Principal -->
+<div class="grid grid-cols-1 gap-4 md:grid-cols-12 md:gap-6 2xl:gap-7.5">
+  <!-- Card de Observações -->
+  <div class="col-span-12 md:col-span-4">
+    <div class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+      <div class="border-b border-stroke px-6.5 py-4 dark:border-strokedark">
+        <div class="flex items-center gap-3">
+          <svg class="h-5 w-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+          </svg>
+          <h3 class="font-medium text-black dark:text-white">
+            Observações da Refeição
+          </h3>
+        </div>
+      </div>
+      
+      <div class="p-6.5">
+        <%= form_with model: [@client, @diet], 
+            url: client_diet_path(@client, @diet), 
+            method: :patch, 
+            local: true, 
+            class: "notes-form" do |form| %>
+          
+          <div class="mb-4.5">
+            <%= form.text_area :notes, 
+                rows: 6, 
+                class: "w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary",
+                placeholder: "Adicione observações sobre esta refeição (horário, modo de preparo, recomendações...)" %>
+          </div>
+
+          <div class="flex justify-end">
+            <%= form.submit "Salvar Observações", 
+                class: "inline-flex items-center justify-center rounded-md bg-blue-600 px-6 py-2.5 text-center font-medium text-white transition hover:bg-blue-700 hover:shadow-lg" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card Principal - Tabela de Alimentos -->
+  <div class="col-span-12 md:col-span-8">
+    <div class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+      <!-- Formulário de Adicionar Alimento -->
+      <div class="border-b border-stroke px-6.5 py-4 dark:border-strokedark">
+        <%= form_with url: add_food_client_diet_path(@client, @diet), method: :post, local: true, class: "flex flex-col gap-4 sm:flex-row" do |form| %>
+          <div class="w-full sm:w-1/3">
+            <label class="mb-2.5 block text-black dark:text-white">Buscar Alimento</label>
+            <div class="relative autocomplete-wrapper">
+              <input type="text" 
+                id="food-search-input" 
+                class="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 font-medium outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary" 
+                placeholder="Digite para buscar...">
+              <div id="autocomplete-results" class="autocomplete-results absolute left-0 right-0 z-50 mt-1 rounded-lg border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark"></div>
+              <%= form.hidden_field :food_id, id: "selected-food-id" %>
+            </div>
+          </div>
+
+          <div class="w-full sm:w-1/4">
+            <label class="mb-2.5 block text-black dark:text-white">Quantidade (g)</label>
+            <%= form.number_field :quantity_grams, 
+                min: 1, 
+                step: 1,
+                class: "w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 font-medium outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary",
+                placeholder: "Ex: 150",
+                id: "quantity_input_main" %>
+          </div>
+
+          <div class="w-full sm:w-1/3">
+            <label class="mb-2.5 block text-slate-500 dark:text-slate-400">Prévia Nutricional</label>
+            <div id="nutrition_preview_main" class="rounded-lg border border-blue-300 bg-blue-50 px-4 py-3 dark:border-blue-600 dark:bg-blue-900/20">
+              <span id="calculated_values_main" class="text-sm text-blue-700 dark:text-blue-300"></span>
+            </div>
+          </div>
+
+          <div class="flex items-end">
+            <%= form.submit "Adicionar", 
+                class: "inline-flex items-center justify-center rounded-md bg-green-600 px-6 py-3 text-center font-medium text-white transition hover:bg-green-700 hover:shadow-lg", 
+                id: "add-food-btn", 
+                disabled: true %>
+          </div>
+        <% end %>
+      </div>
+
+      <!-- Tabela de Alimentos -->
+      <div class="p-6.5">
+        <!-- Dicas de Uso -->
+        <div class="mb-4 rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-900/20" id="usage-tips">
+          <div class="flex items-start gap-3">
+            <div class="flex-shrink-0">
+              <svg class="h-5 w-5 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+            </div>
+            <div class="flex-1">
+              <h4 class="text-sm font-medium text-blue-800 dark:text-blue-200">
+                💡 Dicas de Uso
+              </h4>
+              <div class="mt-1 text-sm text-blue-700 dark:text-blue-300">
+                <div class="flex flex-wrap gap-x-6 gap-y-1">
+                  <span>• <strong>Clique</strong> na quantidade para editar (alimentos e substituições)</span>
+                  <span>• <strong>Arraste</strong> os alimentos para reordenar</span>
+                  <span>• Use <strong>Enter</strong> para salvar ou <strong>Esc</strong> para cancelar</span>
+                </div>
+              </div>
+            </div>
+            <button type="button" 
+                    onclick="dismissTips()" 
+                    class="flex-shrink-0 rounded-md p-1 text-blue-400 hover:text-blue-600 dark:text-blue-300 dark:hover:text-blue-100" 
+                    title="Dispensar dicas">
+              <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+            </button>
+          </div>
         </div>
 
-        <div class="card-body">
-          <!-- Seção de Observações com formulário de edição -->
-          <div class="card mb-3 border-info">
-            <div class="card-header bg-info text-white">
-              <h6 class="mb-0">📝 Observações da Refeição</h6>
-            </div>
-            <div class="card-body">
-              <%= form_with model: [@client, @diet], url: client_diet_path(@client, @diet), method: :patch, local: true, class: "notes-form" do |form| %>
-                <div class="mb-2">
-                  <%= form.text_area :notes, 
-                                     rows: 3, 
-                                     class: "form-control", 
-                                     placeholder: "Adicione observações sobre esta refeição (horário, modo de preparo, recomendações...)",
-                                     value: @diet.notes %>
-                </div>
-                <div class="d-flex justify-content-end">
-                  <%= form.submit "Salvar Observações", class: "btn btn-info btn-sm" %>
-                </div>
-              <% end %>
-            </div>
-          </div>
-          
-          <!-- Formulário para adicionar novo alimento -->
-          <div class="card mt-4">
-            <div class="card-header bg-success text-white">
-              <h5 class="mb-0">➕ Adicionar Alimento Principal</h5>
-            </div>
-            <div class="card-body">
-              <%= form_with url: add_food_client_diet_path(@client, @diet), method: :post, local: true do |form| %>
-                <div class="row g-3 align-items-start">
-                  <!-- Coluna com Busca e Quantidade -->
-                  <div class="col-md-7">
-                    <div class="row g-2">
-                      <!-- Buscar Alimento -->
-                      <div class="col-md-7">
-                        <%= form.label :food_id, "Buscar Alimento", class: "form-label mb-2" %>
-                        <div class="autocomplete-wrapper">
-                          <input type="text" 
-                                id="food-search-input" 
-                                class="form-control" 
-                                placeholder="Digite para buscar...">
-                          <div id="autocomplete-results" class="autocomplete-results"></div>
-                          <%= form.hidden_field :food_id, id: "selected-food-id" %>
+        <div class="max-w-full overflow-x-auto">
+          <table class="w-full table-auto">
+            <thead>
+              <tr class="bg-gray-2 text-left dark:bg-meta-4">
+                <th class="min-w-[140px] px-4 py-4 font-medium text-black dark:text-white">
+                  <div class="flex items-center gap-2">
+                    <svg class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/>
+                    </svg>
+                    # Quantidade
+                  </div>
+                </th>
+                <th class="min-w-[220px] px-4 py-4 font-medium text-black dark:text-white">
+                  Alimento
+                </th>
+                <th class="px-4 py-4 font-medium text-black dark:text-white">
+                  Proteína
+                </th>
+                <th class="px-4 py-4 font-medium text-black dark:text-white">
+                  Carbs
+                </th>
+                <th class="px-4 py-4 font-medium text-black dark:text-white">
+                  Gordura
+                </th>
+                <th class="px-4 py-4 font-medium text-black dark:text-white">
+                  Calorias
+                </th>
+                <th class="px-4 py-4 font-medium text-black dark:text-white">
+                  Ações
+                </th>
+              </tr>
+            </thead>
+            
+            <tbody>
+              <% if @diet.diet_foods.any? %>
+                <% DietFood.where(diet: @diet).includes(:food, :food_substitutions).order(:position, :created_at).each_with_index do |diet_food, index| %>
+                  <!-- Alimento principal -->
+                  <tr class="food-row group cursor-move transition-colors hover:bg-slate-50 dark:hover:bg-slate-800" 
+                      draggable="true" 
+                      data-diet-food-id="<%= diet_food.id %>"
+                      data-position="<%= diet_food.position || index + 1 %>">
+                    <td class="border-b border-[#eee] px-4 py-3 dark:border-strokedark relative">
+                      <div class="flex items-center gap-2">
+                        <!-- Indicador de drag -->
+                        <div class="drag-handle flex flex-col gap-0.5 opacity-40 group-hover:opacity-100 transition-opacity">
+                          <div class="flex gap-0.5">
+                            <div class="h-1 w-1 rounded-full bg-slate-400"></div>
+                            <div class="h-1 w-1 rounded-full bg-slate-400"></div>
+                          </div>
+                          <div class="flex gap-0.5">
+                            <div class="h-1 w-1 rounded-full bg-slate-400"></div>
+                            <div class="h-1 w-1 rounded-full bg-slate-400"></div>
+                          </div>
                         </div>
-                        <small class="text-muted d-block mt-1">Digite pelo menos 2 caracteres para buscar</small>
-                      </div>
-                      
-                      <!-- Quantidade -->
-                      <div class="col-md-5">
-                        <%= form.label :quantity_grams, "Quantidade (gramas)", class: "form-label mb-2" %>
-                        <%= form.number_field :quantity_grams, 
-                                              min: 1, 
-                                              step: 1,
-                                              class: "form-control", 
-                                              placeholder: "Ex: 150",
-                                              id: "quantity_input_main" %>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <!-- Preview Nutricional -->
-                  <div class="col-md-3">
-                    <label class="form-label mb-2 text-muted">Prévia Nutricional</label>
-                    <div id="nutrition_preview_main" class="alert alert-info py-2 mb-0" style="min-height: 38px; display: flex; align-items: center;">
-                      <span id="calculated_values_main"></span></small>
-                      </small>
-                    </div>
-                  </div>
-                  
-                  <!-- Botão Adicionar -->
-                  <div class="col-md-2">
-                    <label class="form-label mb-2 text-white">.</label>
-                    <%= form.submit "Adicionar", class: "btn btn-success w-100", id: "add-food-btn", disabled: true %>
-                  </div>
-                </div>
-              <% end %>
-            </div>
-          </div>
-
-          <!-- Tabela principal com alimentos + substituições -->
-          <div class="table-responsive mt-4">
-            <table class="table table-sm table-striped">
-              <thead class="table-dark">
-                <tr>
-                  <th width="10%">Quantidade</th>
-                  <th width="30%">Alimento</th>
-                  <th width="12%">Proteína (g)</th>
-                  <th width="12%">Carbs (g)</th>
-                  <th width="12%">Gordura (g)</th>
-                  <th width="12%">Calorias</th>
-                  <th width="12%">Ações</th>
-                </tr>
-              </thead>
-              <tbody>
-                <% if @diet.diet_foods.any? %>
-                  <% @diet.diet_foods.includes(:food, :food_substitutions).each do |diet_food| %>
-                    <!-- Alimento principal -->
-                    <tr>
-                      <td><strong class="text-primary"><%= diet_food.quantity_grams.to_i %>g</strong></td>
-                      <td>
-                        <strong><%= diet_food.food.name %></strong>
-                        <% if diet_food.food_substitutions.any? %>
-                          <span class="badge bg-info ms-2">
-                            <%= diet_food.food_substitutions.count %> substituição(ões)
+                        <span class="position-number flex h-6 w-6 items-center justify-center rounded-full bg-primary text-xs font-medium text-white">
+                          <%= diet_food.position || index + 1 %>
+                        </span>
+                        
+                        <!-- Campo de quantidade editável -->
+                        <div class="inline-quantity-editor" data-diet-food-id="<%= diet_food.id %>">
+                          <span class="quantity-display font-medium text-primary cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/20 px-2 py-1 rounded transition-all duration-200 group" 
+                                title="💡 Clique para editar a quantidade">
+                            <%= diet_food.quantity_grams.to_i %>g
+                            <span class="ml-1 text-xs text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity">✏️</span>
                           </span>
-                        <% end %>
-                      </td>
-                      <td class="text-primary"><%= diet_food.protein.round(1) %></td>
-                      <td class="text-info"><%= diet_food.carbs.round(1) %></td>
-                      <td class="text-danger"><%= diet_food.fat.round(1) %></td>
-                      <td class="text-warning"><strong><%= diet_food.calories.round(1) %></strong></td>
-                      <td>
-                        <div class="btn-group btn-group-sm">
-                          <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#substitutionModal<%= diet_food.id %>">+</button>
-                          <%= button_to "X", client_diet_diet_food_path(@client, @diet, diet_food),
-                                        method: :delete,
-                                        data: { confirm: "Tem certeza?" },
-                                        class: "btn btn-danger btn-sm" %>
+                          <div class="quantity-edit-form hidden">
+                            <div class="flex items-center gap-2">
+                              <input type="number" 
+                                     class="quantity-input w-20 rounded border-[1.5px] border-stroke bg-transparent px-2 py-1 text-sm font-medium outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                                     value="<%= diet_food.quantity_grams.to_i %>"
+                                     min="1"
+                                     step="1">
+                              <span class="text-xs text-slate-500">g</span>
+                              <button type="button" class="save-quantity-btn rounded bg-green-600 px-2 py-1 text-xs text-white hover:bg-green-700" title="Salvar">
+                                ✓
+                              </button>
+                              <button type="button" class="cancel-quantity-btn rounded bg-slate-400 px-2 py-1 text-xs text-white hover:bg-slate-500" title="Cancelar">
+                                ✕
+                              </button>
+                            </div>
+                          </div>
                         </div>
-                      </td>
-                    </tr>
+                      </div>
+                    </td>
+                    <td class="border-b border-[#eee] px-4 py-3 dark:border-strokedark">
+                      <span class="font-medium text-black dark:text-white"><%= diet_food.food.name %></span>
+                      <% if diet_food.food_substitutions.any? %>
+                        <span class="ml-2 rounded-md bg-blue-600 px-2 py-1 text-xs font-medium text-white">
+                          <%= diet_food.food_substitutions.count %> subst.
+                        </span>
+                      <% end %>
+                    </td>
+                    <td class="border-b border-[#eee] px-4 py-3 dark:border-strokedark">
+                      <span class="text-blue-600 dark:text-blue-400"><%= diet_food.protein.round(1) %>g</span>
+                    </td>
+                    <td class="border-b border-[#eee] px-4 py-3 dark:border-strokedark">
+                      <span class="text-green-600 dark:text-green-400"><%= diet_food.carbs.round(1) %>g</span>
+                    </td>
+                    <td class="border-b border-[#eee] px-4 py-3 dark:border-strokedark">
+                      <span class="text-amber-600 dark:text-amber-400"><%= diet_food.fat.round(1) %>g</span>
+                    </td>
+                    <td class="border-b border-[#eee] px-4 py-3 dark:border-strokedark">
+                      <span class="text-red-600 dark:text-red-400"><%= diet_food.calories.round(1) %></span>
+                    </td>
+                    <td class="border-b border-[#eee] px-4 py-3 dark:border-strokedark">
+                      <div class="flex items-center space-x-2">
+                        <!-- Botões de Reordenação -->
 
-                    <!-- Substituições -->
-                    <% diet_food.food_substitutions.includes(:substitute_food).each do |substitution| %>
-                      <tr class="table-light">
-                        <td><span class="text-muted"><%= substitution.quantity_grams.to_i %>g</span></td>
-                        <td class="ps-4">
-                          <em class="text-muted">↪ <%= substitution.substitute_food.name %></em>
-                          <small class="text-success d-block">SUBSTITUIÇÃO</small>
-                        </td>
-                        <td class="text-muted"><%= substitution.calculated_protein.round(1) %></td>
-                        <td class="text-muted"><%= substitution.calculated_carbs.round(1) %></td>
-                        <td class="text-muted"><%= substitution.calculated_fat.round(1) %></td>
-                        <td class="text-muted"><%= substitution.calculated_calories.round(1) %></td>
-                        <td>
-                          <%= button_to "Remover", remove_substitution_client_diet_path(@client, @diet, substitution_id: substitution.id),
-                                        method: :delete,
-                                        data: { turbo_confirm: "Tem certeza?" },
-                                        class: "btn btn-sm btn-danger" %>
-                        </td>
-                      </tr>
-                    <% end %>
-                  <% end %>
-                <% else %>
-                  <tr>
-                    <td colspan="7" class="text-center text-muted py-4">
-                      Nenhum alimento adicionado ainda. Use o formulário acima para começar!
+                        
+                        <!-- Botões de Ação Existentes -->
+                        <div class="flex items-center space-x-2">
+                          <button class="rounded-md bg-green-600 p-2 text-white transition hover:bg-green-700 hover:shadow-md" 
+                                  onclick="openModal('substitutionModal<%= diet_food.id %>')"
+                                  title="Adicionar substituição">
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                            </svg>
+                          </button>
+                          <%= button_to client_diet_diet_food_path(@client, @diet, diet_food),
+                              method: :delete,
+                              class: "rounded-md bg-red-600 p-2 text-white transition hover:bg-red-700 hover:shadow-md",
+                              data: { turbo_confirm: "Tem certeza?" },
+                              title: "Remover alimento" do %>
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                            </svg>
+                          <% end %>
+                        </div>
+                      </div>
                     </td>
                   </tr>
-                <% end %>
-              </tbody>
-              <tfoot class="table-success">
-                <tr class="fw-bold">
-                  <td>TOTAL</td>
-                  <td>-</td>
-                  <td class="text-primary"><%= @diet.total_protein.round(1) %>g</td>
-                  <td class="text-info"><%= @diet.total_carbs.round(1) %>g</td>
-                  <td class="text-danger"><%= @diet.total_fat.round(1) %>g</td>
-                  <td class="text-warning fs-5"><%= @diet.total_calories.round(1) %> kcal</td>
-                  <td>-</td>
-                </tr>
-              </tfoot>
-            </table>
-          </div>
 
-          <!-- Ações -->
-          <div class="mt-4 d-flex gap-2">
-            <%= link_to "Voltar", client_diets_path(@client), class: "btn btn-secondary" %>
-            <%= link_to "Editar", edit_client_diet_path(@client, @diet), class: "btn btn-warning" %>
-            <%= button_to "Excluir", client_diet_path(@client, @diet),
-                          method: :delete,
-                          data: { turbo_confirm: "Tem certeza?" },
-                          class: "btn btn-danger" %>
-          </div>
+                  <!-- Substituições -->
+                  <% diet_food.food_substitutions.includes(:substitute_food).each do |substitution| %>
+                    <tr class="bg-gray-1 dark:bg-meta-4/30">
+                      <td class="border-b border-[#eee] px-4 py-3 dark:border-strokedark relative">
+                        <!-- Campo de quantidade editável para substituições -->
+                        <div class="inline-quantity-editor-substitution" data-substitution-id="<%= substitution.id %>">
+                          <span class="quantity-display font-medium text-slate-600 cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/20 px-2 py-1 rounded transition-all duration-200 group" 
+                                title="💡 Clique para editar a quantidade">
+                            <%= substitution.quantity_grams.to_i %>g
+                            <span class="ml-1 text-xs text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity">✏️</span>
+                          </span>
+                          <div class="quantity-edit-form hidden">
+                            <div class="flex items-center gap-2">
+                              <input type="number" 
+                                     class="quantity-input w-20 rounded border-[1.5px] border-stroke bg-transparent px-2 py-1 text-sm font-medium outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                                     value="<%= substitution.quantity_grams.to_i %>"
+                                     min="1"
+                                     step="1">
+                              <span class="text-xs text-slate-500">g</span>
+                              <button type="button" class="save-quantity-btn rounded bg-green-600 px-2 py-1 text-xs text-white hover:bg-green-700" title="Salvar">
+                                ✓
+                              </button>
+                              <button type="button" class="cancel-quantity-btn rounded bg-slate-400 px-2 py-1 text-xs text-white hover:bg-slate-500" title="Cancelar">
+                                ✕
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="border-b border-[#eee] px-4 py-3 pl-8 dark:border-strokedark">
+                        <span class="text-sm text-slate-500">↪ <%= substitution.substitute_food.name %></span>
+                        <span class="ml-2 rounded-md bg-green-100 px-2 py-1 text-xs font-medium text-green-800 dark:bg-green-900 dark:text-green-200">
+                          Substituição
+                        </span>
+                      </td>
+                      <td class="border-b border-[#eee] px-4 py-3 dark:border-strokedark">
+                        <span class="text-sm text-slate-500 nutrition-protein"><%= substitution.calculated_protein.round(1) %>g</span>
+                      </td>
+                      <td class="border-b border-[#eee] px-4 py-3 dark:border-strokedark">
+                        <span class="text-sm text-slate-500 nutrition-carbs"><%= substitution.calculated_carbs.round(1) %>g</span>
+                      </td>
+                      <td class="border-b border-[#eee] px-4 py-3 dark:border-strokedark">
+                        <span class="text-sm text-slate-500 nutrition-fat"><%= substitution.calculated_fat.round(1) %>g</span>
+                      </td>
+                      <td class="border-b border-[#eee] px-4 py-3 dark:border-strokedark">
+                        <span class="text-sm text-slate-500 nutrition-calories"><%= substitution.calculated_calories.round(1) %></span>
+                      </td>
+                      <td class="border-b border-[#eee] px-4 py-3 dark:border-strokedark">
+                        <%= button_to remove_substitution_client_diet_path(@client, @diet, substitution_id: substitution.id),
+                            method: :delete,
+                            class: "rounded-md bg-red-600 p-2 text-white transition hover:bg-red-700 hover:shadow-md",
+                            data: { turbo_confirm: "Tem certeza?" } do %>
+                          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                          </svg>
+                        <% end %>
+                      </td>
+                    </tr>
+                  <% end %>
+                <% end %>
+
+                <!-- Totais -->
+                <tr class="bg-slate-50 font-medium dark:bg-slate-800">
+                  <td class="border-b border-[#eee] px-4 py-3 dark:border-strokedark">
+                    TOTAL
+                  </td>
+                  <td class="border-b border-[#eee] px-4 py-3 dark:border-strokedark">-</td>
+                  <td class="border-b border-[#eee] px-4 py-3 dark:border-strokedark">
+                    <span class="text-blue-600 dark:text-blue-400"><%= @diet.total_protein.round(1) %>g</span>
+                  </td>
+                  <td class="border-b border-[#eee] px-4 py-3 dark:border-strokedark">
+                    <span class="text-green-600 dark:text-green-400"><%= @diet.total_carbs.round(1) %>g</span>
+                  </td>
+                  <td class="border-b border-[#eee] px-4 py-3 dark:border-strokedark">
+                    <span class="text-amber-600 dark:text-amber-400"><%= @diet.total_fat.round(1) %>g</span>
+                  </td>
+                  <td class="border-b border-[#eee] px-4 py-3 text-lg font-bold dark:border-strokedark">
+                    <span class="text-red-600 dark:text-red-400"><%= @diet.total_calories.round(1) %></span>
+                  </td>
+                  <td class="border-b border-[#eee] px-4 py-3 dark:border-strokedark">-</td>
+                </tr>
+              <% else %>
+                <tr>
+                  <td colspan="7" class="border-b border-[#eee] px-4 py-8 text-center dark:border-strokedark">
+                    <div class="flex flex-col items-center justify-center text-slate-500">
+                      <svg class="h-12 w-12 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                      </svg>
+                      <p class="mt-2">Nenhum alimento adicionado ainda. Use o formulário acima para começar!</p>
+                    </div>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Modais para substituições COM AUTOCOMPLETE -->
+<!-- Modais de Substituição -->
 <% @diet.diet_foods.each do |diet_food| %>
-  <div class="modal fade" id="substitutionModal<%= diet_food.id %>" tabindex="-1">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Adicionar Substituição para <%= diet_food.food.name %></h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
-        <%= form_with url: add_substitution_client_diet_path(@client, @diet), method: :post, local: true do |form| %>
-          <div class="modal-body">
-            <%= form.hidden_field :diet_food_id, value: diet_food.id %>
-            
-            <!-- AUTOCOMPLETE para Alimento Substituto -->
-            <div class="mb-3">
-              <label class="form-label">Alimento Substituto</label>
-              <div class="autocomplete-wrapper">
-                <input type="text" 
-                       class="form-control" 
-                       id="substitute-search-<%= diet_food.id %>"
-                       placeholder="Digite para buscar..."
-                       data-diet-food-id="<%= diet_food.id %>">
-                <div id="substitute-results-<%= diet_food.id %>" class="autocomplete-results"></div>
-                <%= form.hidden_field :substitute_food_id, 
-                                      id: "substitute-food-id-#{diet_food.id}", 
-                                      class: "substitute-food-hidden" %>
-              </div>
-              <small class="text-muted">Digite pelo menos 2 caracteres para buscar</small>
-            </div>
-            
-            <div class="mb-3">
-              <label class="form-label">Quantidade (gramas)</label>
-              <%= form.number_field :quantity_grams, 
-                                    min: 1, 
-                                    step: 1, 
-                                    class: "form-control", 
-                                    placeholder: "Ex: 100",
-                                    id: "substitute-quantity-#{diet_food.id}" %>
-              <div class="form-text">
-                Quantidade para substituir <%= diet_food.quantity_grams.to_i %>g de <%= diet_food.food.name %>
-              </div>
-            </div>
-            
-            <!-- Preview de Comparação -->
-            <div id="substitute-preview-<%= diet_food.id %>" class="alert alert-info" style="display: none;">
-              <small>
-                <strong>Comparação Nutricional:</strong>
-                <div id="substitute-comparison-<%= diet_food.id %>"></div>
-              </small>
-            </div>
-            
-            <div class="mb-3">
-              <label class="form-label">Observações (opcional)</label>
-              <%= form.text_area :notes, rows: 2, class: "form-control", 
-                                 placeholder: "Ex: Preferir integral..." %>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-            <%= form.submit "Adicionar Substituição", 
-                            class: "btn btn-success",
-                            id: "submit-substitute-#{diet_food.id}",
-                            disabled: true %>
-          </div>
-        <% end %>
+  <div class="fixed left-0 top-0 z-999999 hidden h-screen w-full overflow-y-auto overflow-x-hidden bg-black/90 modal-backdrop"
+       id="substitutionModal<%= diet_food.id %>" tabindex="-1">
+    <div class="relative mx-auto mt-7 w-full max-w-xl rounded-sm bg-white p-8 dark:bg-boxdark modal-content">
+      <!-- Header -->
+      <div class="mb-6">
+        <h3 class="text-lg font-medium text-black dark:text-white">
+          Adicionar Substituição para <%= diet_food.food.name %>
+        </h3>
+        <button type="button" 
+                class="absolute right-1 top-1 p-4 hover:text-meta-1" 
+                onclick="closeModal('substitutionModal<%= diet_food.id %>')">
+          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
       </div>
+
+      <!-- Form -->
+      <%= form_with url: add_substitution_client_diet_path(@client, @diet), 
+          method: :post, 
+          local: true, 
+          class: "space-y-4" do |form| %>
+        
+        <%= form.hidden_field :diet_food_id, value: diet_food.id %>
+
+        <!-- Campo de Busca -->
+        <div class="w-full">
+          <label class="mb-2.5 block font-medium text-black dark:text-white">
+            Buscar Alimento Substituto
+          </label>
+          <div class="relative autocomplete-wrapper">
+            <input type="text" 
+                   id="substitute-search-<%= diet_food.id %>" 
+                   class="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 font-medium outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary" 
+                   placeholder="Digite para buscar...">
+            <div id="substitute-results-<%= diet_food.id %>" 
+                 class="autocomplete-results absolute left-0 right-0 z-50 mt-1 rounded-lg border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark"></div>
+            <%= form.hidden_field :substitute_food_id, 
+                id: "substitute-food-id-#{diet_food.id}" %>
+          </div>
+        </div>
+
+        <!-- Quantidade -->
+        <div class="w-full">
+          <label class="mb-2.5 block font-medium text-black dark:text-white">
+            Quantidade (gramas)
+          </label>
+          <%= form.number_field :quantity_grams, 
+              min: 1,
+              step: 1,
+              class: "w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 font-medium outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary",
+              placeholder: "Ex: 150",
+              id: "substitute-quantity-#{diet_food.id}" %>
+        </div>
+
+        <!-- Prévia Nutricional -->
+        <div class="w-full">
+          <label class="mb-2.5 block font-medium text-slate-500 dark:text-slate-400">
+            Prévia Nutricional
+          </label>
+          <div id="substitute-preview-<%= diet_food.id %>" 
+               class="rounded-lg border border-blue-300 bg-blue-50 px-4 py-3 dark:border-blue-600 dark:bg-blue-900/20">
+            <span id="substitute-comparison-<%= diet_food.id %>" 
+                  class="text-sm text-blue-700 dark:text-blue-300"></span>
+          </div>
+        </div>
+
+        <!-- Observações -->
+        <div class="w-full">
+          <label class="mb-2.5 block font-medium text-black dark:text-white">
+            Observações
+          </label>
+          <%= form.text_area :notes,
+              rows: 2,
+              class: "w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 font-medium outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary",
+              placeholder: "Observações sobre a substituição..." %>
+        </div>
+
+        <!-- Botões -->
+        <div class="flex items-center justify-end space-x-4">
+          <button type="button" 
+                  class="inline-flex items-center justify-center rounded-md bg-slate-600 px-6 py-2.5 text-center font-medium text-white transition hover:bg-slate-700 hover:shadow-lg" 
+                  onclick="closeModal('substitutionModal<%= diet_food.id %>')">
+            Cancelar
+          </button>
+          <%= form.submit "Adicionar Substituição",
+              class: "inline-flex items-center justify-center rounded-md bg-green-600 px-6 py-2.5 text-center font-medium text-white transition hover:bg-green-700 hover:shadow-lg",
+              id: "submit-substitute-#{diet_food.id}",
+              disabled: true %>
+        </div>
+      <% end %>
     </div>
   </div>
 <% end %>
 
-<!-- CSS para Autocomplete -->
 <style>
+  /* Modal */
+  .modal-backdrop {
+    backdrop-filter: blur(2px);
+  }
+  
+  .modal-content {
+    animation: modalFadeIn 0.2s ease-out;
+  }
+  
+  @keyframes modalFadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  
+  /* Autocomplete */
   .autocomplete-wrapper {
     position: relative;
   }
@@ -330,11 +581,172 @@
     color: #6c757d;
     font-style: italic;
   }
+  
+  /* Editor inline de quantidade */
+  .inline-quantity-editor {
+    position: relative;
+  }
+  
+  .quantity-display {
+    transition: all 0.2s ease;
+    border-radius: 4px;
+  }
+  
+  .quantity-display:hover {
+    background-color: #f0f9ff !important;
+    box-shadow: 0 0 0 1px #3b82f6;
+  }
+  
+  .quantity-edit-form {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 10;
+    background: white;
+    border: 1px solid #3b82f6;
+    border-radius: 6px;
+    padding: 4px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    min-width: 140px;
+  }
+  
+  /* Editor inline de quantidade para substituições */
+  .inline-quantity-editor-substitution {
+    position: relative;
+  }
+  
+  .inline-quantity-editor-substitution .quantity-display {
+    transition: all 0.2s ease;
+    border-radius: 4px;
+  }
+  
+  .inline-quantity-editor-substitution .quantity-display:hover {
+    background-color: #f0f9ff !important;
+    box-shadow: 0 0 0 1px #3b82f6;
+  }
+  
+  .inline-quantity-editor-substitution .quantity-edit-form {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 10;
+    background: white;
+    border: 1px solid #3b82f6;
+    border-radius: 6px;
+    padding: 4px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    min-width: 140px;
+  }
+  
+  .quantity-input {
+    min-width: 60px;
+  }
+  
+  .save-quantity-btn, .cancel-quantity-btn {
+    transition: all 0.15s ease;
+    min-width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .save-quantity-btn:hover {
+    transform: scale(1.05);
+  }
+  
+  .cancel-quantity-btn:hover {
+    transform: scale(1.05);
+  }
+  
+  /* Dark mode para autocomplete */
+  .dark .autocomplete-results {
+    background: #1f2937;
+    border-color: #374151;
+  }
+  
+  .dark .autocomplete-item {
+    border-bottom-color: #374151;
+  }
+  
+  .dark .autocomplete-item:hover,
+  .dark .autocomplete-item.selected {
+    background-color: #374151;
+  }
+  
+  .dark .food-name-autocomplete {
+    color: #f3f4f6;
+  }
+  
+  .dark .food-macros {
+    color: #9ca3af;
+  }
+  
+  /* Dark mode para editor inline */
+  .dark .quantity-display:hover {
+    background-color: #1e40af !important;
+  }
+  
+  .dark .quantity-edit-form {
+    background: #1f2937;
+    border-color: #3b82f6;
+  }
+  
+  /* Dark mode para editor inline de substituições */
+  .dark .inline-quantity-editor-substitution .quantity-display:hover {
+    background-color: #1e40af !important;
+  }
+  
+  .dark .inline-quantity-editor-substitution .quantity-edit-form {
+    background: #1f2937;
+    border-color: #3b82f6;
+  }
 </style>
 
 <!-- Script Unificado -->
 <script>
+// FUNÇÕES GLOBAIS PARA MODAIS
+function openModal(modalId) {
+  const modal = document.getElementById(modalId);
+  if (modal) {
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden'; // Previne scroll do body
+  }
+}
+
+function closeModal(modalId) {
+  const modal = document.getElementById(modalId);
+  if (modal) {
+    modal.classList.add('hidden');
+    document.body.style.overflow = 'auto'; // Restaura scroll do body
+  }
+}
+
+// Fechar modal ao clicar no backdrop
+function handleModalClick(event, modalId) {
+  if (event.target.classList.contains('bg-black/90')) {
+    closeModal(modalId);
+  }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
+  // Adicionar listeners para fechar modais ao clicar no backdrop
+  <% @diet.diet_foods.each do |diet_food| %>
+    const modal<%= diet_food.id %> = document.getElementById('substitutionModal<%= diet_food.id %>');
+    if (modal<%= diet_food.id %>) {
+      modal<%= diet_food.id %>.addEventListener('click', (e) => handleModalClick(e, 'substitutionModal<%= diet_food.id %>'));
+    }
+  <% end %>
+
+  // Fechar modais com ESC
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      <% @diet.diet_foods.each do |diet_food| %>
+        closeModal('substitutionModal<%= diet_food.id %>');
+      <% end %>
+    }
+  });
+
   // DADOS
   const foodsData = {
     <% @available_foods.each do |food| %>
@@ -639,139 +1051,598 @@ document.addEventListener('DOMContentLoaded', function() {
       }, 2000);
     });
   }
+
+  // Drag & Drop functionality
+  const foodRows = document.querySelectorAll('.food-row[draggable="true"]');
+  let draggedElement = null;
+
+  foodRows.forEach(row => {
+    row.addEventListener('dragstart', function(e) {
+      draggedElement = this;
+      this.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/html', this.outerHTML);
+    });
+
+    row.addEventListener('dragend', function(e) {
+      this.classList.remove('dragging');
+      // Remove all visual feedback
+      document.querySelectorAll('.food-row').forEach(row => {
+        row.classList.remove('drag-over');
+      });
+      document.querySelectorAll('.drop-indicator').forEach(indicator => {
+        indicator.remove();
+      });
+    });
+
+    row.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      
+      if (this !== draggedElement) {
+        // Add visual feedback
+        this.classList.add('drag-over');
+        
+        const rect = this.getBoundingClientRect();
+        const midpoint = rect.top + rect.height / 2;
+        
+        // Remove existing indicators
+        document.querySelectorAll('.drop-indicator').forEach(indicator => {
+          indicator.remove();
+        });
+        
+        // Add drop indicator
+        const indicator = document.createElement('div');
+        indicator.className = 'drop-indicator absolute left-0 right-0 h-1 bg-blue-500 z-10 animate-pulse';
+        
+        if (e.clientY < midpoint) {
+          this.parentNode.insertBefore(indicator, this);
+        } else {
+          this.parentNode.insertBefore(indicator, this.nextSibling);
+        }
+      }
+    });
+
+    row.addEventListener('dragleave', function(e) {
+      // Only remove drag-over if we're actually leaving the element
+      if (!this.contains(e.relatedTarget)) {
+        this.classList.remove('drag-over');
+      }
+    });
+
+    row.addEventListener('drop', function(e) {
+      e.preventDefault();
+      
+      if (this !== draggedElement) {
+        const rect = this.getBoundingClientRect();
+        const midpoint = rect.top + rect.height / 2;
+        
+        // Function to get all rows belonging to a food group (main + substitutions)
+        function getFoodGroup(foodRow) {
+          const group = [foodRow];
+          let nextSibling = foodRow.nextElementSibling;
+          
+          // Collect all substitution rows (they have bg-gray-1 class and come right after the main row)
+          while (nextSibling && nextSibling.classList.contains('bg-gray-1')) {
+            group.push(nextSibling);
+            nextSibling = nextSibling.nextElementSibling;
+          }
+          
+          return group;
+        }
+        
+        // Get groups for dragged element and drop target
+        const draggedGroup = getFoodGroup(draggedElement);
+        const targetGroup = getFoodGroup(this);
+        
+        // Remove dragged group from current position
+        draggedGroup.forEach(row => row.remove());
+        
+        // Insert dragged group at new position
+        if (e.clientY < midpoint) {
+          // Insert before target group
+          this.parentNode.insertBefore(draggedGroup[0], targetGroup[0]);
+          for (let i = 1; i < draggedGroup.length; i++) {
+            this.parentNode.insertBefore(draggedGroup[i], draggedGroup[i-1].nextSibling);
+          }
+        } else {
+          // Insert after target group
+          const lastTargetRow = targetGroup[targetGroup.length - 1];
+          if (lastTargetRow.nextSibling) {
+            this.parentNode.insertBefore(draggedGroup[0], lastTargetRow.nextSibling);
+          } else {
+            this.parentNode.appendChild(draggedGroup[0]);
+          }
+          for (let i = 1; i < draggedGroup.length; i++) {
+            this.parentNode.insertBefore(draggedGroup[i], draggedGroup[i-1].nextSibling);
+          }
+        }
+        
+        // Update positions for all main food rows
+        const allFoodRows = Array.from(document.querySelectorAll('.food-row[draggable="true"]'));
+        allFoodRows.forEach((row, index) => {
+          row.setAttribute('data-position', index + 1);
+        });
+        
+        // Send update to server
+        updateFoodOrder(allFoodRows);
+      }
+      
+      // Clean up visual feedback
+      document.querySelectorAll('.food-row').forEach(row => {
+        row.classList.remove('drag-over');
+      });
+      document.querySelectorAll('.drop-indicator').forEach(indicator => {
+        indicator.remove();
+      });
+    });
+  });
+
+  function updateFoodOrder(orderedFoodRows) {
+    const orderData = orderedFoodRows.map((row, index) => ({
+      id: parseInt(row.getAttribute('data-diet-food-id')),
+      position: index + 1
+    }));
+
+    // Use a data attribute to get the correct URL
+    const reorderUrl = document.querySelector('[data-reorder-url]').getAttribute('data-reorder-url');
+
+    console.log('Sending request to:', reorderUrl);
+    console.log('Order data:', orderData);
+    console.log('CSRF Token:', document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'));
+
+    // Show loading notification
+    showNotification('Atualizando ordem...', 'info');
+
+    fetch(reorderUrl, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({ order: orderData })
+    })
+    .then(response => {
+      console.log('Response status:', response.status);
+      console.log('Response ok:', response.ok);
+      console.log('Content-Type:', response.headers.get('content-type'));
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        throw new Error('Servidor retornou resposta inválida (não JSON)');
+      }
+      
+      return response.json();
+    })
+    .then(data => {
+      console.log('Success response:', data);
+      if (data.success) {
+        // Update position numbers in UI (only for main food rows)
+        orderedFoodRows.forEach((row, index) => {
+          const positionSpan = row.querySelector('.position-number');
+          if (positionSpan) {
+            positionSpan.textContent = index + 1;
+          }
+        });
+        
+        showNotification('Ordem dos alimentos atualizada!', 'success');
+        
+        // Force page reload after 1 second to ensure data is fresh
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+      } else {
+        throw new Error(data.message || 'Erro desconhecido do servidor');
+      }
+    })
+    .catch(error => {
+      console.error('Error details:', error);
+      showNotification(`Erro ao atualizar ordem: ${error.message}`, 'error');
+      
+      // Reload page to restore correct order
+      setTimeout(() => {
+        location.reload();
+      }, 2000);
+    });
+  }
+
+  function showNotification(message, type) {
+    const notification = document.createElement('div');
+    
+    let bgColor, borderColor, icon;
+    switch(type) {
+      case 'success':
+        bgColor = 'bg-green-500';
+        borderColor = 'border-green-600';
+        icon = '<svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>';
+        break;
+      case 'error':
+        bgColor = 'bg-red-500';
+        borderColor = 'border-red-600';
+        icon = '<svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path></svg>';
+        break;
+      case 'info':
+        bgColor = 'bg-blue-500';
+        borderColor = 'border-blue-600';
+        icon = '<svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>';
+        break;
+      default:
+        bgColor = 'bg-gray-500';
+        borderColor = 'border-gray-600';
+        icon = '';
+    }
+    
+    notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg z-50 transform transition-all duration-300 ${bgColor} text-white border-l-4 ${borderColor}`;
+    
+    notification.innerHTML = `
+      <div class="flex items-center gap-3">
+        <div class="flex-shrink-0">
+          ${icon}
+        </div>
+        <span class="font-medium">${message}</span>
+      </div>
+    `;
+    
+    // Initial state for animation
+    notification.style.transform = 'translateX(100%)';
+    notification.style.opacity = '0';
+    
+    document.body.appendChild(notification);
+    
+    // Trigger animation
+    requestAnimationFrame(() => {
+      notification.style.transform = 'translateX(0)';
+      notification.style.opacity = '1';
+    });
+    
+    const duration = type === 'info' ? 2000 : 3000;
+    
+    setTimeout(() => {
+      notification.style.transform = 'translateX(100%)';
+      notification.style.opacity = '0';
+      setTimeout(() => {
+        if (notification.parentNode) {
+          notification.remove();
+        }
+      }, 300);
+    }, duration);
+  }
+  
+  // FUNCIONALIDADE DE EDIÇÃO INLINE DE QUANTIDADE
+  function initializeInlineQuantityEditor() {
+    document.querySelectorAll('.inline-quantity-editor').forEach(editor => {
+      const dietFoodId = editor.dataset.dietFoodId;
+      const displayElement = editor.querySelector('.quantity-display');
+      const formElement = editor.querySelector('.quantity-edit-form');
+      const inputElement = editor.querySelector('.quantity-input');
+      const saveButton = editor.querySelector('.save-quantity-btn');
+      const cancelButton = editor.querySelector('.cancel-quantity-btn');
+      
+      let originalValue = inputElement.value;
+      
+      // Clique no display para editar
+      displayElement.addEventListener('click', function() {
+        displayElement.classList.add('hidden');
+        formElement.classList.remove('hidden');
+        inputElement.focus();
+        inputElement.select();
+        originalValue = inputElement.value;
+      });
+      
+      // Cancelar edição
+      function cancelEdit() {
+        inputElement.value = originalValue;
+        formElement.classList.add('hidden');
+        displayElement.classList.remove('hidden');
+      }
+      
+      // Salvar alteração
+      function saveEdit() {
+        const newValue = inputElement.value;
+        if (newValue && newValue > 0 && newValue !== originalValue) {
+          updateQuantity(dietFoodId, newValue, displayElement, formElement);
+        } else {
+          cancelEdit();
+        }
+      }
+      
+      // Event listeners
+      cancelButton.addEventListener('click', cancelEdit);
+      saveButton.addEventListener('click', saveEdit);
+      
+      // Enter para salvar, Escape para cancelar
+      inputElement.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          saveEdit();
+        } else if (e.key === 'Escape') {
+          e.preventDefault();
+          cancelEdit();
+        }
+      });
+      
+      // Perder foco para cancelar (opcional)
+      inputElement.addEventListener('blur', function() {
+        // Delay para permitir que os botões funcionem
+        setTimeout(() => {
+          if (!formElement.contains(document.activeElement)) {
+            cancelEdit();
+          }
+        }, 100);
+      });
+    });
+  }
+  
+  // Função para atualizar quantidade via AJAX
+  function updateQuantity(dietFoodId, newQuantity, displayElement, formElement) {
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    
+    // Mostrar loading
+    displayElement.innerHTML = '<span class="text-blue-600">Salvando...</span>';
+    displayElement.classList.remove('hidden');
+    formElement.classList.add('hidden');
+    
+    fetch(`/clients/<%= @client.id %>/diets/<%= @diet.id %>/foods/${dietFoodId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': csrfToken,
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({
+        diet_food: {
+          quantity_grams: newQuantity
+        }
+      })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        // Atualizar display
+        displayElement.innerHTML = `${newQuantity}g`;
+        displayElement.className = 'quantity-display font-medium text-primary cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/20 px-2 py-1 rounded';
+        
+        // Atualizar valores nutricionais na linha
+        const row = displayElement.closest('tr');
+        if (data.nutrition) {
+          row.querySelector('td:nth-child(3) span').textContent = `${data.nutrition.protein}g`;
+          row.querySelector('td:nth-child(4) span').textContent = `${data.nutrition.carbs}g`;
+          row.querySelector('td:nth-child(5) span').textContent = `${data.nutrition.fat}g`;
+          row.querySelector('td:nth-child(6) span').textContent = `${data.nutrition.calories}`;
+        }
+        
+        // Atualizar totais (reload seria mais simples, mas vamos tentar atualizar dinamicamente)
+        updateTotals();
+        
+        showNotification('Quantidade atualizada com sucesso!', 'success');
+      } else {
+        throw new Error(data.message || 'Erro ao atualizar quantidade');
+      }
+    })
+    .catch(error => {
+      console.error('Erro:', error);
+      displayElement.innerHTML = `${displayElement.dataset.originalValue || '0'}g`;
+      displayElement.className = 'quantity-display font-medium text-primary cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/20 px-2 py-1 rounded';
+      showNotification('Erro ao atualizar quantidade: ' + error.message, 'error');
+    });
+  }
+  
+  // Função para atualizar totais (simplificada - recarrega a página em caso de erro)
+  function updateTotals() {
+    // Por simplicidade, vamos recarregar os totais
+    // Em uma implementação mais complexa, poderíamos calcular dinamicamente
+    fetch(window.location.href)
+      .then(response => response.text())
+      .then(html => {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const newTotalRow = doc.querySelector('tr.bg-slate-50');
+        const currentTotalRow = document.querySelector('tr.bg-slate-50');
+        
+        if (newTotalRow && currentTotalRow) {
+          currentTotalRow.innerHTML = newTotalRow.innerHTML;
+        }
+      })
+      .catch(error => {
+        console.error('Erro ao atualizar totais:', error);
+        // Em caso de erro, recarregar a página
+        setTimeout(() => window.location.reload(), 1000);
+      });
+  }
+  
+  // FUNCIONALIDADE DE EDIÇÃO INLINE DE QUANTIDADE PARA SUBSTITUIÇÕES
+  function initializeInlineQuantityEditorSubstitutions() {
+    document.querySelectorAll('.inline-quantity-editor-substitution').forEach(editor => {
+      const substitutionId = editor.dataset.substitutionId;
+      const displayElement = editor.querySelector('.quantity-display');
+      const formElement = editor.querySelector('.quantity-edit-form');
+      const inputElement = editor.querySelector('.quantity-input');
+      const saveButton = editor.querySelector('.save-quantity-btn');
+      const cancelButton = editor.querySelector('.cancel-quantity-btn');
+      
+      let originalValue = inputElement.value;
+      
+      // Clique no display para editar
+      displayElement.addEventListener('click', function() {
+        displayElement.classList.add('hidden');
+        formElement.classList.remove('hidden');
+        inputElement.focus();
+        inputElement.select();
+        originalValue = inputElement.value;
+      });
+      
+      // Cancelar edição
+      function cancelEdit() {
+        inputElement.value = originalValue;
+        formElement.classList.add('hidden');
+        displayElement.classList.remove('hidden');
+      }
+      
+      // Salvar alteração
+      function saveEdit() {
+        const newValue = inputElement.value;
+        if (newValue && newValue > 0 && newValue !== originalValue) {
+          updateSubstitutionQuantity(substitutionId, newValue, displayElement, formElement);
+        } else {
+          cancelEdit();
+        }
+      }
+      
+      // Event listeners
+      cancelButton.addEventListener('click', cancelEdit);
+      saveButton.addEventListener('click', saveEdit);
+      
+      // Enter para salvar, Escape para cancelar
+      inputElement.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          saveEdit();
+        } else if (e.key === 'Escape') {
+          e.preventDefault();
+          cancelEdit();
+        }
+      });
+      
+      // Perder foco para cancelar (opcional)
+      inputElement.addEventListener('blur', function() {
+        // Delay para permitir que os botões funcionem
+        setTimeout(() => {
+          if (!formElement.contains(document.activeElement)) {
+            cancelEdit();
+          }
+        }, 100);
+      });
+    });
+  }
+  
+  // Função para atualizar quantidade de substituição via AJAX
+  function updateSubstitutionQuantity(substitutionId, newQuantity, displayElement, formElement) {
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    
+    // Mostrar loading
+    displayElement.innerHTML = '<span class="text-blue-600">Salvando...</span>';
+    displayElement.classList.remove('hidden');
+    formElement.classList.add('hidden');
+    
+    fetch(`/clients/<%= @client.id %>/diets/<%= @diet.id %>/food_substitutions/${substitutionId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': csrfToken,
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({
+        quantity_grams: newQuantity
+      })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        // Atualizar display
+        displayElement.innerHTML = `${newQuantity}g`;
+        displayElement.className = 'quantity-display font-medium text-slate-600 cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/20 px-2 py-1 rounded transition-all duration-200 group';
+        
+        // Atualizar valores nutricionais na linha
+        const row = displayElement.closest('tr');
+        if (data.protein !== undefined) {
+          const proteinElement = row.querySelector('.nutrition-protein');
+          if (proteinElement) proteinElement.textContent = `${data.protein}g`;
+          
+          const carbsElement = row.querySelector('.nutrition-carbs');
+          if (carbsElement) carbsElement.textContent = `${data.carbs}g`;
+          
+          const fatElement = row.querySelector('.nutrition-fat');
+          if (fatElement) fatElement.textContent = `${data.fat}g`;
+          
+          const caloriesElement = row.querySelector('.nutrition-calories');
+          if (caloriesElement) caloriesElement.textContent = `${data.calories}`;
+        }
+        
+        // Atualizar totais
+        updateTotals();
+        
+        showNotification('Quantidade da substituição atualizada!', 'success');
+      } else {
+        throw new Error(data.message || 'Erro ao atualizar quantidade');
+      }
+    })
+    .catch(error => {
+      console.error('Erro:', error);
+      displayElement.innerHTML = `${displayElement.dataset.originalValue || '0'}g`;
+      displayElement.className = 'quantity-display font-medium text-slate-600 cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/20 px-2 py-1 rounded transition-all duration-200 group';
+      showNotification('Erro ao atualizar quantidade: ' + error.message, 'error');
+    });
+  }
+  
+  // Inicializar na carga da página
+  initializeInlineQuantityEditor();
+  initializeInlineQuantityEditorSubstitutions();
+  
+  // Verificar se as dicas devem ser mostradas
+  initializeUsageTips();
 });
+
+// FUNÇÃO PARA GERENCIAR DICAS DE USO
+function initializeUsageTips() {
+  const tipsElement = document.getElementById('usage-tips');
+  if (!tipsElement) return;
+  
+  // Verificar se o usuário já dispensou as dicas
+  const tipsDismissed = localStorage.getItem('diet-tips-dismissed');
+  if (tipsDismissed === 'true') {
+    tipsElement.style.display = 'none';
+  }
+}
+
+function dismissTips() {
+  const tipsElement = document.getElementById('usage-tips');
+  if (tipsElement) {
+    // Animação de fade out
+    tipsElement.style.transition = 'all 0.3s ease';
+    tipsElement.style.opacity = '0';
+    tipsElement.style.transform = 'translateY(-10px)';
+    
+    setTimeout(() => {
+      tipsElement.style.display = 'none';
+    }, 300);
+    
+    // Salvar preferência no localStorage
+    localStorage.setItem('diet-tips-dismissed', 'true');
+  }
+}
 </script>
 <style>
-  /* app/assets/stylesheets/custom_overrides.css */
-
-/* Autocomplete dentro do modal */
-.modal .autocomplete-wrapper {
-  position: relative;
-}
-
-.modal .autocomplete-results {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  background: white;
-  border: 1px solid #dee2e6;
-  border-top: none;
-  border-radius: 0 0 4px 4px;
-  max-height: 200px;
-  overflow-y: auto;
-  z-index: 1055; /* Maior que o z-index do modal */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  display: none;
-}
-
-.autocomplete-wrapper {
-  position: relative;
-}
-
-.autocomplete-input {
-  width: 100%;
-  padding: 8px 12px;
-  border: 1px solid #ced4da;
-  border-radius: 4px;
-  font-size: 14px;
-}
-
-.autocomplete-input:focus {
-  outline: none;
-  border-color: #86b7fe;
-  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-}
-
-.autocomplete-results {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  background: white;
-  border: 1px solid #dee2e6;
-  border-top: none;
-  border-radius: 0 0 4px 4px;
-  max-height: 300px;
-  overflow-y: auto;
-  z-index: 1000;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  display: none;
-}
-
-.autocomplete-results.active {
-  display: block;
-}
-
-.autocomplete-item {
-  padding: 10px 12px;
-  cursor: pointer;
-  border-bottom: 1px solid #f0f0f0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.autocomplete-item:hover,
-.autocomplete-item.selected {
-  background-color: #f8f9fa;
-}
-
-.autocomplete-item.selected {
-  background-color: #e7f3ff;
-}
-
-.food-name-autocomplete {
-  font-weight: 500;
-  color: #212529;
-}
-
-.food-macros {
-  font-size: 11px;
-  color: #6c757d;
-  display: flex;
-  gap: 10px;
-}
-
-.macro-badge {
-  padding: 2px 6px;
-  border-radius: 3px;
-  font-weight: 600;
-}
-
-.protein-badge {
-  background-color: #e3f2fd;
-  color: #1976d2;
-}
-
-.carbs-badge {
-  background-color: #e8f5e9;
-  color: #388e3c;
-}
-
-.fat-badge {
-  background-color: #fce4ec;
-  color: #c2185b;
-}
-
-.cal-badge {
-  background-color: #fff3e0;
-  color: #f57c00;
-}
-
-.no-results {
-  padding: 15px;
-  text-align: center;
-  color: #6c757d;
-  font-style: italic;
-}
-
-.search-icon {
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #6c757d;
-}
-
-  </style>
+  .food-row.dragging {
+    opacity: 0.5;
+    transform: rotate(2deg);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  }
+  
+  .food-row:hover .drag-handle {
+    opacity: 1;
+  }
+  
+  .drop-indicator {
+    box-shadow: 0 0 0 2px #3b82f6;
+    background-color: #3b82f6;
+    border-radius: 2px;
+  }
+  
+  .food-row {
+    transition: all 0.2s ease;
+  }
+  
+  .food-row:hover {
+    background-color: #f8fafc;
+  }
+  
+  .food-row.drag-over {
+    background-color: #eff6ff;
+    border-color: #3b82f6;
+  }
+</style>

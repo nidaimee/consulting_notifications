@@ -1,8 +1,21 @@
 class FoodsController < ApplicationController
+  include TailadminLayout
   before_action :set_food, only: [ :show, :edit, :update, :destroy ]
 
   def index
     @foods = current_user.foods.order(:category, :name)
+
+    # Aplicar filtro de busca por nome
+    if params[:search].present?
+      search_term = "%#{params[:search].strip}%"
+      @foods = @foods.where("name ILIKE ?", search_term)
+    end
+
+    # Aplicar filtro por categoria
+    if params[:category].present?
+      @foods = @foods.where(category: params[:category])
+    end
+
     @categories = current_user.foods.distinct.pluck(:category).compact.sort
   end
 
@@ -18,6 +31,9 @@ class FoodsController < ApplicationController
       fat_per_100g: 0,
       portion_grams: 100
     )
+
+    # Pre-popular o nome se vier da busca
+    @food.name = params[:name] if params[:name].present?
   end
 
   def create
@@ -56,7 +72,8 @@ class FoodsController < ApplicationController
     params.require(:food).permit(:name, :calories_per_100g, :protein_per_100g,
                                  :carbs_per_100g, :fat_per_100g, :category)
   end
-   def ensure_nutritional_values
+
+  def ensure_nutritional_values
     @food.calories_per_100g ||= 0
     @food.protein_per_100g ||= 0
     @food.carbs_per_100g ||= 0

@@ -1,6 +1,7 @@
 # app/controllers/clients_controller.rb
 
 class ClientsController < ApplicationController
+  include TailadminLayout
   before_action :authenticate_user! # Se você usar Devise
   before_action :set_client, only: [ :show, :edit, :update, :destroy, :diet_pdf ]
 

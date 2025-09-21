@@ -1,9 +1,10 @@
 # app/controllers/diet_foods_controller.rb
 
 class DietFoodsController < ApplicationController
+  include TailadminLayout
   before_action :authenticate_user!
   before_action :set_client_and_diet
-  before_action :set_diet_food, only: [ :update, :destroy ]
+  before_action :set_diet_food, only: [ :update, :destroy, :move_up, :move_down ]
 
   def create
     @food = current_user.foods.find(params[:diet_food][:food_id])
@@ -20,11 +21,40 @@ class DietFoodsController < ApplicationController
 
   def update
     if @diet_food.update(diet_food_params)
-      redirect_to client_diet_path(@client, @diet),
-                  notice: "Quantidade atualizada com sucesso!"
+      respond_to do |format|
+        format.html {
+          redirect_to client_diet_path(@client, @diet),
+                      notice: "Quantidade atualizada com sucesso!"
+        }
+        format.json {
+          # Recalcular valores nutricionais
+          nutrition = {
+            protein: @diet_food.calculated_protein.round(1),
+            carbs: @diet_food.calculated_carbs.round(1),
+            fat: @diet_food.calculated_fat.round(1),
+            calories: @diet_food.calculated_calories.round(1)
+          }
+
+          render json: {
+            success: true,
+            message: "Quantidade atualizada com sucesso!",
+            nutrition: nutrition
+          }
+        }
+      end
     else
-      redirect_to client_diet_path(@client, @diet),
-                  alert: "Erro ao atualizar quantidade."
+      respond_to do |format|
+        format.html {
+          redirect_to client_diet_path(@client, @diet),
+                      alert: "Erro ao atualizar quantidade: #{@diet_food.errors.full_messages.join(', ')}"
+        }
+        format.json {
+          render json: {
+            success: false,
+            message: "Erro ao atualizar quantidade: #{@diet_food.errors.full_messages.join(', ')}"
+          }, status: 422
+        }
+      end
     end
   end
 
@@ -33,11 +63,25 @@ class DietFoodsController < ApplicationController
     redirect_to client_diet_path(@client, @diet), notice: "Alimento removido da dieta!"
   end
 
+  def move_up
+    if @diet_food.move_up!
+      redirect_to client_diet_path(@client, @diet), notice: "Alimento movido para cima!"
+    else
+      redirect_to client_diet_path(@client, @diet), alert: "Não foi possível mover o alimento."
+    end
+  end
 
+  def move_down
+    if @diet_food.move_down!
+      redirect_to client_diet_path(@client, @diet), notice: "Alimento movido para baixo!"
+    else
+      redirect_to client_diet_path(@client, @diet), alert: "Não foi possível mover o alimento."
+    end
+  end
 
   private
 
-   def set_client_and_diet
+  def set_client_and_diet
     @client = current_user.clients.find(params[:client_id])
     @diet = @client.diets.find(params[:diet_id])
   end

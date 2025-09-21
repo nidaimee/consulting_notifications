@@ -1,15 +1,36 @@
 {
-  "name": "app",
-  "private": "true",
-  "dependencies": {
-    "@tailwindcss/cli": "^4.1.13",
-    "autoprefixer": "^10.4.21",
-    "postcss": "^8.5.6",
-    "postcss-import": "^16.1.1",
-    "tailwindcss": "3.3.3"
-  },
+  "name": "consulting_notifications",
+  "version": "1.0.0",
+  "description": "Frontend template with Webpack + PostCSS",
+  "main": "index.js",
   "scripts": {
-    "build:css": "tailwindcss -i ./app/assets/stylesheets/application.tailwind.css -o ./app/assets/builds/application.css --minify",
-    "build:css:watch": "tailwindcss -i ./app/assets/stylesheets/application.tailwind.css -o ./app/assets/builds/application.css --watch"
-  }
+    "start": "webpack serve --open --mode development",
+    "build": "webpack --mode production",
+    "build:css": "tailwindcss -i ./app/assets/stylesheets/tailwind.css -o ./app/assets/builds/tailwind.css --minify",
+    "watch:css": "tailwindcss -i ./app/assets/stylesheets/tailwind.css -o ./app/assets/builds/tailwind.css --watch"
+  },
+  "keywords": [],
+  "author": "Raphael",
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/plugin-proposal-private-methods": "^7.18.6",
+    "@webpack-cli/serve": "^3.0.1",
+    "autoprefixer": "^10.4.21",
+    "css-loader": "^7.1.2",
+    "glob": "^11.0.3",
+    "html-webpack-plugin": "^5.6.4",
+    "mini-css-extract-plugin": "^2.9.4",
+    "postcss": "^8.5.6",
+    "postcss-loader": "^8.1.1",
+    "style-loader": "^4.0.0",
+    "tailwindcss": "3.3.3",
+    "webpack": "^4.46.0",
+    "webpack-cli": "^3.3.12",
+    "webpack-dev-server": "^3"
+  },
+  "dependencies": {
+    "@rails/webpacker": "5.4.4",
+    "bootstrap": "5.3.3"
+  },
+  "private": true
 }

@@ -1,97 +1,194 @@
-<div class="container mt-4">
-  <!-- Header -->
-  <div class="row mb-4">
-    <div class="col-12 text-center">
-      <h4 class="text-muted mb-0">
-        <%= current_user.name %> — <%= current_user.specialty %> | CRN: <%= current_user.license_number %>
-      </h4>
+<!-- Header do usuário -->
+<div class="mb-6">
+  <div class="rounded-sm border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
+    <div class="text-center">
+      <h2 class="mb-2 text-title-md2 font-semibold text-black dark:text-white">
+        Bem-vindo, <%= current_user.name %>!
+      </h2>
+      <p class="text-slate-600 dark:text-slate-400">
+        <%= current_user.specialty %> | CRN: <%= current_user.license_number %>
+      </p>
     </div>
   </div>
+</div>
 
-  <!-- Stat Cards -->
-  <div class="row g-3">
-    <div class="col-md-3">
-      <div class="card shadow-sm border-0 text-center bg-primary text-white rounded-3">
-        <div class="card-body">
-          <h6 class="fw-semibold">Total de Clientes</h6>
-          <h2 class="fw-bold mb-0"><%= @clients_count %></h2>
-        </div>
-      </div>
+<!-- Cards de Estatísticas -->
+<div class="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
+  <!-- Total de Clientes -->
+  <div class="rounded-sm border border-stroke bg-white px-7.5 py-6 shadow-default dark:border-strokedark dark:bg-boxdark">
+    <div class="flex h-11.5 w-11.5 items-center justify-center rounded-full bg-meta-2 dark:bg-meta-4">
+      <svg class="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+      </svg>
     </div>
-
-    <div class="col-md-3">
-      <div class="card shadow-sm border-0 text-center bg-success text-white rounded-3">
-        <div class="card-body">
-          <h6 class="fw-semibold">Clientes Ativos</h6>
-          <h2 class="fw-bold mb-0"><%= @active_clients %></h2>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-md-3">
-      <div class="card shadow-sm border-0 text-center bg-info text-white rounded-3">
-        <div class="card-body">
-          <h6 class="fw-semibold">Base de Alimentos</h6>
-          <h2 class="fw-bold mb-0"><%= @foods_count %></h2>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-md-3">
-      <div class="card shadow-sm border-0 text-center bg-warning text-dark rounded-3">
-        <div class="card-body">
-          <h6 class="fw-semibold">Receita Total</h6>
-          <h2 class="fw-bold mb-0">
-            R$ <%= number_with_precision(@total_revenue, precision: 2, delimiter: '.', separator: ',') %>
-          </h2>
-        </div>
+    <div class="mt-4 flex items-end justify-between">
+      <div>
+        <h4 class="text-title-md font-bold text-black dark:text-white">
+          <%= @clients_count %>
+        </h4>
+        <span class="text-sm font-medium text-slate-600 dark:text-slate-400">
+          Total de Clientes
+        </span>
       </div>
     </div>
   </div>
 
-  <!-- Recent Clients & Quick Actions -->
-  <div class="row mt-5 g-4">
-    <!-- Recent Clients -->
-    <div class="col-md-6">
-      <div class="card shadow-sm border-0 rounded-3">
-        <div class="card-header bg-light">
-          <h5 class="mb-0 fw-semibold">👥 Clientes Recentes</h5>
-        </div>
-        <div class="card-body">
-          <% if @recent_clients.any? %>
-            <% @recent_clients.each do |client| %>
-              <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
-                <div>
-                  <strong><%= client.name %></strong><br>
-                  <small class="text-muted"><%= client.phone_number %></small>
-                </div>
-                <span class="badge bg-<%= client.status == 'active' ? 'success' : 'secondary' %>">
-                  <%= client.status.capitalize %>
-                </span>
+  <!-- Clientes Ativos -->
+  <div class="rounded-sm border border-stroke bg-white px-7.5 py-6 shadow-default dark:border-strokedark dark:bg-boxdark">
+    <div class="flex h-11.5 w-11.5 items-center justify-center rounded-full bg-meta-3 dark:bg-meta-4">
+      <svg class="h-6 w-6 text-meta-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+      </svg>
+    </div>
+    <div class="mt-4 flex items-end justify-between">
+      <div>
+        <h4 class="text-title-md font-bold text-black dark:text-white">
+          <%= @active_clients %>
+        </h4>
+        <span class="text-sm font-medium text-slate-600 dark:text-slate-400">
+          Clientes Ativos
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Base de Alimentos -->
+  <div class="rounded-sm border border-stroke bg-white px-7.5 py-6 shadow-default dark:border-strokedark dark:bg-boxdark">
+    <div class="flex h-11.5 w-11.5 items-center justify-center rounded-full bg-meta-6 dark:bg-meta-4">
+      <svg class="h-6 w-6 text-meta-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+      </svg>
+    </div>
+    <div class="mt-4 flex items-end justify-between">
+      <div>
+        <h4 class="text-title-md font-bold text-black dark:text-white">
+          <%= @foods_count %>
+        </h4>
+        <span class="text-sm font-medium text-slate-600 dark:text-slate-400">
+          Base de Alimentos
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Receita Total -->
+  <div class="rounded-sm border border-stroke bg-white px-7.5 py-6 shadow-default dark:border-strokedark dark:bg-boxdark">
+    <div class="flex h-11.5 w-11.5 items-center justify-center rounded-full bg-meta-8 dark:bg-meta-4">
+      <svg class="h-6 w-6 text-meta-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+      </svg>
+    </div>
+    <div class="mt-4 flex items-end justify-between">
+      <div>
+        <h4 class="text-title-md font-bold text-black dark:text-white">
+          R$ <%= number_with_precision(@total_revenue, precision: 2, delimiter: '.', separator: ',') %>
+        </h4>
+        <span class="text-sm font-medium text-slate-600 dark:text-slate-400">
+          Receita Total
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Grid Principal com Clientes Recentes e Ações Rápidas -->
+<div class="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 2xl:gap-7.5">
+  <!-- Clientes Recentes -->
+  <div class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+    <div class="border-b border-stroke px-6.5 py-4 dark:border-strokedark">
+      <div class="flex items-center gap-3">
+        <svg class="h-5 w-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+        </svg>
+        <h3 class="font-medium text-black dark:text-white">
+          Clientes Recentes
+        </h3>
+      </div>
+    </div>
+    
+    <div class="p-6.5">
+      <% if @recent_clients.any? %>
+        <div class="space-y-4">
+          <% @recent_clients.each do |client| %>
+            <div class="flex items-center justify-between rounded-sm border border-stroke p-4 dark:border-strokedark">
+              <div>
+                <h5 class="font-medium text-black dark:text-white">
+                  <%= client.name %>
+                </h5>
+                <p class="text-sm text-slate-500 dark:text-slate-400">
+                  <%= client.phone_number %>
+                </p>
               </div>
-            <% end %>
-          <% else %>
-            <p class="text-muted">Nenhum cliente cadastrado ainda.</p>
+              <span class="inline-flex rounded-full px-3 py-1 text-xs font-medium 
+                         <%= client.status == 'active' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : 'bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200' %>">
+                <%= client.status.capitalize %>
+              </span>
+            </div>
           <% end %>
-
-          <div class="d-flex justify-content-between mt-3">
-            <%= link_to "Ver Todos", clients_path, class: "btn btn-outline-primary btn-sm" %>
-          </div>
         </div>
+        
+        <div class="mt-6 flex justify-end">
+          <%= link_to clients_path, 
+              class: "inline-flex items-center justify-center gap-2.5 rounded-md bg-primary px-6 py-2.5 text-center font-medium text-white transition hover:bg-opacity-90 hover:shadow-lg" do %>
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            Ver Todos
+          <% end %>
+        </div>
+      <% else %>
+        <div class="text-center py-8">
+          <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800">
+            <svg class="h-8 w-8 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+            </svg>
+          </div>
+          <p class="text-slate-500 dark:text-slate-400">
+            Nenhum cliente cadastrado ainda.
+          </p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Ações Rápidas -->
+  <div class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+    <div class="border-b border-stroke px-6.5 py-4 dark:border-strokedark">
+      <div class="flex items-center gap-3">
+        <svg class="h-5 w-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+        </svg>
+        <h3 class="font-medium text-black dark:text-white">
+          Ações Rápidas
+        </h3>
       </div>
     </div>
-
-    <!-- Quick Actions -->
-    <div class="col-md-6">
-      <div class="card shadow-sm border-0 rounded-3">
-        <div class="card-header bg-light">
-          <h5 class="mb-0 fw-semibold">⚡ Ações Rápidas</h5>
-        </div>
-        <div class="card-body d-grid gap-2">
-          <%= link_to "➕ Novo Cliente", new_client_path, class: "btn btn-success" %>
-          <%= link_to "🥗 Gerenciar Alimentos", foods_path, class: "btn btn-info text-white" %>
-          <%= link_to "📊 Ver Todos os Clientes", clients_path, class: "btn btn-primary" %>
-        </div>
+    
+    <div class="p-6.5">
+      <div class="space-y-4">
+        <%= link_to new_client_path, 
+            class: "flex w-full items-center justify-center gap-3 rounded-md bg-green-600 px-6 py-3 text-center font-medium text-white transition hover:bg-green-700 hover:shadow-lg" do %>
+          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+          </svg>
+          Novo Cliente
+        <% end %>
+        
+        <%= link_to foods_path, 
+            class: "flex w-full items-center justify-center gap-3 rounded-md bg-blue-600 px-6 py-3 text-center font-medium text-white transition hover:bg-blue-700 hover:shadow-lg" do %>
+          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+          </svg>
+          Gerenciar Alimentos
+        <% end %>
+        
+        <%= link_to clients_path, 
+            class: "flex w-full items-center justify-center gap-3 rounded-md bg-amber-600 px-6 py-3 text-center font-medium text-white transition hover:bg-amber-700 hover:shadow-lg" do %>
+          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+          </svg>
+          Ver Todos os Clientes
+        <% end %>
       </div>
     </div>
   </div>

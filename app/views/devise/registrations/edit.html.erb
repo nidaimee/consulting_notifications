@@ -1,43 +1,157 @@
-<h2>Edit <%= resource_name.to_s.humanize %></h2>
+<div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+  <div>
+    <h2 class="text-title-md2 font-semibold text-black dark:text-white">
+      Editar Perfil
+    </h2>
+    <nav>
+      <ol class="flex items-center gap-2">
+        <%= link_to root_path, class: "text-primary" do %>
+          Dashboard
+        <% end %>
+        <span class="text-primary">/</span>
+        <span class="text-black dark:text-white">Editar Perfil</span>
+      </ol>
+    </nav>
+  </div>
+</div>
 
-<%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f| %>
-  <%= render "devise/shared/error_messages", resource: resource %>
+<div class="grid grid-cols-1 gap-9 xl:grid-cols-2">
+  <!-- Formulário de Edição -->
+  <div class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+    <div class="border-b border-stroke px-6.5 py-4 dark:border-strokedark">
+      <h3 class="font-medium text-black dark:text-white">
+        Informações da Conta
+      </h3>
+    </div>
 
-  <div class="field">
-    <%= f.label :email %><br />
-    <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
+    <div class="p-6.5">
+      <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }, local: true) do |f| %>
+        <%= render "devise/shared/error_messages", resource: resource %>
+
+        <!-- Nome -->
+        <div class="mb-4.5">
+          <%= f.label :name, class: "mb-2.5 block text-black dark:text-white" do %>
+            Nome Completo
+          <% end %>
+          <%= f.text_field :name, 
+              class: "w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary",
+              placeholder: "Digite seu nome completo" %>
+        </div>
+
+        <!-- Email -->
+        <div class="mb-4.5">
+          <%= f.label :email, class: "mb-2.5 block text-black dark:text-white" do %>
+            Email
+          <% end %>
+          <%= f.email_field :email, 
+              autofocus: true, 
+              autocomplete: "email",
+              class: "w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary",
+              placeholder: "Digite seu email" %>
+        </div>
+
+        <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
+          <div class="mb-4 rounded-sm border border-warning bg-warning/10 p-4">
+            <div class="flex items-center gap-2 text-warning">
+              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.664-.833-2.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+              </svg>
+              <span class="text-sm">Aguardando confirmação para: <%= resource.unconfirmed_email %></span>
+            </div>
+          </div>
+        <% end %>
+
+        <!-- Nova Senha -->
+        <div class="mb-4.5">
+          <%= f.label :password, class: "mb-2.5 block text-black dark:text-white" do %>
+            Nova Senha <span class="text-sm text-slate-500">(deixe em branco se não quiser alterar)</span>
+          <% end %>
+          <%= f.password_field :password, 
+              autocomplete: "new-password",
+              class: "w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary",
+              placeholder: "Digite a nova senha" %>
+          <% if @minimum_password_length %>
+            <p class="mt-1 text-xs text-slate-500">
+              Mínimo de <%= @minimum_password_length %> caracteres
+            </p>
+          <% end %>
+        </div>
+
+        <!-- Confirmação de Senha -->
+        <div class="mb-4.5">
+          <%= f.label :password_confirmation, class: "mb-2.5 block text-black dark:text-white" do %>
+            Confirmar Nova Senha
+          <% end %>
+          <%= f.password_field :password_confirmation, 
+              autocomplete: "new-password",
+              class: "w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary",
+              placeholder: "Confirme a nova senha" %>
+        </div>
+
+        <!-- Senha Atual -->
+        <div class="mb-6">
+          <%= f.label :current_password, class: "mb-2.5 block text-black dark:text-white" do %>
+            Senha Atual <span class="text-sm text-slate-500">(necessária para confirmar as alterações)</span>
+          <% end %>
+          <%= f.password_field :current_password, 
+              autocomplete: "current-password",
+              class: "w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary",
+              placeholder: "Digite sua senha atual" %>
+        </div>
+
+        <!-- Botões -->
+        <div class="flex flex-col gap-3 sm:flex-row">
+          <%= f.submit "Atualizar Perfil", 
+              class: "flex w-full justify-center rounded bg-primary px-6 py-2 font-medium text-gray hover:bg-opacity-90" %>
+          
+          <%= link_to "Cancelar", :back, 
+              class: "flex w-full justify-center rounded border border-stroke bg-gray px-6 py-2 font-medium text-black hover:shadow-1 dark:border-strokedark dark:bg-meta-4 dark:text-white dark:hover:bg-meta-4" %>
+        </div>
+      <% end %>
+    </div>
   </div>
 
-  <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
-    <div>Currently waiting confirmation for: <%= resource.unconfirmed_email %></div>
-  <% end %>
+  <!-- Painel de Informações e Ações -->
+  <div class="space-y-6">
+    <!-- Informações da Conta -->
+    <div class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+      <div class="border-b border-stroke px-6.5 py-4 dark:border-strokedark">
+        <h3 class="font-medium text-black dark:text-white">
+          Informações da Conta
+        </h3>
+      </div>
+      <div class="p-6.5">
+        <div class="mb-4 flex items-center gap-4">
+          <img src="https://ui-avatars.com/api/?name=<%= current_user.name if current_user %>&background=0D8ABC&color=fff" 
+               class="h-16 w-16 rounded-full border-2 border-blue-500" alt="Avatar" />
+          <div>
+            <p class="font-medium text-black dark:text-white">
+              <%= current_user.name if current_user %>
+            </p>
+            <p class="text-sm text-slate-500">
+              <%= current_user.email if current_user %>
+            </p>
+          </div>
+        </div>
+        
+        <div class="space-y-2">
+          <div class="flex justify-between text-sm">
+            <span class="text-slate-500">Membro desde:</span>
+            <span class="text-black dark:text-white">
+              <%= current_user.created_at.strftime("%d/%m/%Y") if current_user %>
+            </span>
+          </div>
+          <div class="flex justify-between text-sm">
+            <span class="text-slate-500">Última atualização:</span>
+            <span class="text-black dark:text-white">
+              <%= current_user.updated_at.strftime("%d/%m/%Y") if current_user %>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
 
-  <div class="field">
-    <%= f.label :password %> <i>(leave blank if you don't want to change it)</i><br />
-    <%= f.password_field :password, autocomplete: "new-password" %>
-    <% if @minimum_password_length %>
-      <br />
-      <em><%= @minimum_password_length %> characters minimum</em>
-    <% end %>
+    <!-- Zona de Perigo -->
+    
   </div>
-
-  <div class="field">
-    <%= f.label :password_confirmation %><br />
-    <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
-  </div>
-
-  <div class="field">
-    <%= f.label :current_password %> <i>(we need your current password to confirm your changes)</i><br />
-    <%= f.password_field :current_password, autocomplete: "current-password" %>
-  </div>
-
-  <div class="actions">
-    <%= f.submit "Update" %>
-  </div>
-<% end %>
-
-<h3>Cancel my account</h3>
-
-<div>Unhappy? <%= button_to "Cancel my account", registration_path(resource_name), data: { confirm: "Are you sure?", turbo_confirm: "Are you sure?" }, method: :delete %></div>
-
-<%= link_to "Back", :back %>
+</div>
