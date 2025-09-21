@@ -1,5 +1,5 @@
 class ClientsController < ApplicationController
-  before_action :set_client, only: [ :show, :edit, :update, :destroy ]
+  before_action :set_client, only: [ :show, :edit, :update, :destroy, :diet_pdf ]
 
   def index
     @clients = current_user.clients.order(:name)
@@ -9,6 +9,17 @@ class ClientsController < ApplicationController
     @diets = @client.diets.includes(:foods)
     @total_diets = @diets.count
     @total_calories = @diets.sum(&:total_calories)
+  end
+
+  def diet_pdf
+    # Usar includes apenas se a associação estiver disponível
+    begin
+      @diets = @client.diets.includes(diet_foods: [:food, :food_substitutions => :substitute_food])
+    rescue => e
+      # Fallback se a associação food_substitutions não existir ainda
+      @diets = @client.diets.includes(diet_foods: :food)
+    end
+    render layout: false
   end
 
   def new

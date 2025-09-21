@@ -10,6 +10,9 @@ Rails.application.routes.draw do
 
   # Clientes com dietas aninhadas
   resources :clients do
+    member do
+      get :diet_pdf
+    end
     resources :diets do
       member do
         post :add_food

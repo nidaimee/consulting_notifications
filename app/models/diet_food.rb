@@ -1,6 +1,7 @@
 class DietFood < ApplicationRecord
   belongs_to :diet
   belongs_to :food
+  has_many :food_substitutions, dependent: :destroy
   
   validates :quantity_grams, presence: true, numericality: { greater_than: 0 }
   
