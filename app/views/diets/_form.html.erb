@@ -25,7 +25,7 @@
 
   <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
     <div>
-      <%= form.label :name, "Nome da Dieta", class: "mb-2.5 block font-medium text-black dark:text-white" %>
+      <%= form.label :name, "Nome da Refeição", class: "mb-2.5 block font-medium text-black dark:text-white" %>
       <%= form.text_field :name, 
           class: "w-full rounded-lg border border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary", 
           placeholder: "Ex: Café da Manhã" %>
@@ -45,7 +45,7 @@
   </div>
 
   <div class="flex flex-wrap items-center gap-4">
-    <%= form.submit diet.persisted? ? "Atualizar Dieta" : "Criar Dieta", 
+    <%= form.submit diet.persisted? ? "Atualizar Refeição" : "Criar Refeição", 
         class: "inline-flex items-center justify-center gap-2.5 rounded-md bg-green-600 px-6 py-3 text-center font-medium text-white transition hover:bg-green-700 hover:shadow-lg" %>
     
     <%= link_to diet.persisted? ? client_diet_path(@client, diet) : client_diets_path(@client), 

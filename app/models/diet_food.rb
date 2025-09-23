@@ -11,6 +11,7 @@ class DietFood < ApplicationRecord
   before_create :set_position
   after_update :calculate_nutrients
 
+
   # Aceitar parâmetros aninhados para substituições
   accepts_nested_attributes_for :food_substitutions, allow_destroy: true, reject_if: :all_blank
 

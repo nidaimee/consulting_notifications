@@ -60,7 +60,7 @@ class DietFoodsController < ApplicationController
 
   def destroy
     @diet_food.destroy
-    redirect_to client_diet_path(@client, @diet), notice: "Alimento removido da dieta!"
+    redirect_to client_diet_path(@client, @diet), alert: "Alimento removido da dieta!"
   end
 
   def move_up

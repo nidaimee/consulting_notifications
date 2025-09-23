@@ -1,0 +1,41 @@
+<div id="flash-message" class="fixed top-6 right-6 z-50">
+  <% flash.each do |type, message| %>
+    <% flash_class =
+      case type.to_sym
+      when :notice, :success
+        "bg-green-600 text-white"
+      when :alert, :error
+        "bg-red-600 text-white"
+      else
+        "bg-gray-600 text-white"
+      end
+    %>
+    <div class="flex items-center gap-3 px-6 py-4 rounded-xl shadow-xl mb-2 animate-fade-in-fast <%= flash_class %>">
+      <% if type.to_sym == :notice || type.to_sym == :success %>
+        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10" stroke-width="2" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4"/>
+        </svg>
+      <% elsif type.to_sym == :alert || type.to_sym == :error %>
+        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10" stroke-width="2" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 9l-6 6M9 9l6 6"/>
+        </svg>
+      <% end %>
+      <span class="font-semibold"><%= message %></span>
+    </div>
+  <% end %>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    var flash = document.getElementById("flash-message");
+    if (flash) {
+      setTimeout(function() {
+        flash.style.transition = "opacity 0.5s";
+        flash.style.opacity = "0";
+        setTimeout(function() { flash.remove(); }, 600); // remove do DOM após o fade
+      }, 3500); // tempo em ms (3.5 segundos)
+    }
+  });
+</script>

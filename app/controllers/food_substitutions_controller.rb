@@ -58,7 +58,7 @@ class FoodSubstitutionsController < ApplicationController
   def destroy
     @substitution.destroy
     redirect_to client_diet_path(@client, @diet),
-                notice: "Substituição removida com sucesso!"
+                alert: "Substituição removida com sucesso!"
   end
 
   private

@@ -6,6 +6,7 @@ class Diet < ApplicationRecord
 
   validates :name, presence: true
 
+
   def foods_list
     diet_foods.includes(:food).map { |df| df.food.name }.join(", ")
   end
@@ -28,4 +29,6 @@ class Diet < ApplicationRecord
   def total_fat
     diet_foods.sum(&:fat) || 0
   end
+
+  private
 end

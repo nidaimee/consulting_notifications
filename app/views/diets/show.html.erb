@@ -119,7 +119,7 @@
 
           <div class="w-full sm:w-1/3">
             <label class="mb-2.5 block text-slate-500 dark:text-slate-400">Prévia Nutricional</label>
-            <div id="nutrition_preview_main" class="rounded-lg border border-blue-300 bg-blue-50 px-4 py-3 dark:border-blue-600 dark:bg-blue-900/20">
+            <div id="nutrition_preview_main" class=" px-4 py-3 ">
               <span id="calculated_values_main" class="text-sm text-blue-700 dark:text-blue-300"></span>
             </div>
           </div>
@@ -207,7 +207,7 @@
                       draggable="true" 
                       data-diet-food-id="<%= diet_food.id %>"
                       data-position="<%= diet_food.position || index + 1 %>">
-                    <td class="border-b border-[#eee] px-4 py-3 dark:border-strokedark relative">
+                    <td class="border-b border-[#eee] px-4 py-3 dark:border-strokedark">
                       <div class="flex items-center gap-2">
                         <!-- Indicador de drag -->
                         <div class="drag-handle flex flex-col gap-0.5 opacity-40 group-hover:opacity-100 transition-opacity">
@@ -265,7 +265,7 @@
                       <span class="text-green-600 dark:text-green-400"><%= diet_food.carbs.round(1) %>g</span>
                     </td>
                     <td class="border-b border-[#eee] px-4 py-3 dark:border-strokedark">
-                      <span class="text-amber-600 dark:text-amber-400"><%= diet_food.fat.round(1) %>g</span>
+                      <span class="text-red-600 dark:text-red-400"><%= diet_food.fat.round(1) %>g</span>
                     </td>
                     <td class="border-b border-[#eee] px-4 py-3 dark:border-strokedark">
                       <span class="text-red-600 dark:text-red-400"><%= diet_food.calories.round(1) %></span>

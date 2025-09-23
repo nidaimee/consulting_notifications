@@ -4,6 +4,8 @@ class FoodSubstitution < ApplicationRecord
 
   validates :quantity_grams, presence: true, numericality: { greater_than: 0 }
 
+  # Callbacks para logging
+
   def calculated_calories
     (quantity_grams.to_f * substitute_food.calories_per_100g.to_f) / 100.0
   end
@@ -19,4 +21,6 @@ class FoodSubstitution < ApplicationRecord
   def calculated_fat
     (quantity_grams.to_f * substitute_food.fat_per_100g.to_f) / 100.0
   end
+
+  private
 end

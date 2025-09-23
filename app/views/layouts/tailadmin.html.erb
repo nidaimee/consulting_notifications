@@ -9,7 +9,11 @@
 
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true %>
-    
+    <!-- Fancybox CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.css" />
+
+    <!-- Fancybox JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.js"></script>
     <!-- Adicione suas configurações do Tailwind aqui -->
     <style type="text/tailwindcss">
       @layer components {
@@ -46,6 +50,7 @@
   </head>
 
   <body class="relative bg-gray-50 font-sans">
+    <%= render 'shared/flash' %>
     <div class="flex min-h-screen">
       <!-- Render Sidebar Partial -->
       <aside class="fixed left-0 top-0 z-50 flex h-screen w-72.5 -translate-x-full flex-col overflow-y-hidden bg-white duration-300 ease-linear dark:bg-boxdark lg:static lg:translate-x-0">
@@ -162,5 +167,6 @@
         </main>
       </div>
     </div>
+
   </body>
 </html>

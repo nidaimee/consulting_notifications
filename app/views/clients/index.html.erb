@@ -149,12 +149,16 @@
 <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
   <% if @clients.any? %>
     <% @clients.each do |client| %>
+   
       <div class="rounded-sm border border-stroke bg-white shadow-default transition-all duration-200 hover:shadow-lg dark:border-strokedark dark:bg-boxdark hover:transform hover:-translate-y-1">
         <div class="p-6">
           <!-- Header do Card -->
           <div class="mb-4 flex items-start justify-between">
             <h5 class="text-lg font-semibold text-black dark:text-white">
+               <%= link_to client_path(client), class: "font-semibold text-gray-800 hover:text-indigo-600 transition-colors" do %>
               <%= client.name %>
+                              <% end %>
+
             </h5>
             <span class="inline-flex rounded-full px-3 py-1 text-xs font-medium 
                        <%= case client.status
@@ -169,14 +173,7 @@
 
           <!-- Informações do Cliente -->
           <div class="space-y-3 text-sm">
-            <div class="flex items-center gap-3">
-              <svg class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-              </svg>
-              <span class="text-slate-600 dark:text-slate-400">
-                <%= client.email || 'Sem email' %>
-              </span>
-            </div>
+           
             
             <div class="flex items-center gap-3">
               <svg class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -196,6 +193,16 @@
                 a <%= client.end_date&.strftime('%d/%m/%Y') || '08/11/2025' %>
               </span>
             </div>
+            <div class="flex items-center gap-3">
+              <svg class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+              </svg>
+              <span class="text-slate-600 dark:text-slate-400">
+                Idade: <%= client.age || '--' %> &nbsp;|&nbsp;
+                Sexo: <%= client.sex || '--' %> &nbsp;|&nbsp;
+                Altura: <%= client.height.present? ? "#{client.height} cm" : '--' %>
+              </span>
+            </div>           
             
             <div class="flex items-center gap-3">
               <svg class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">

@@ -50,6 +50,21 @@
       <%= form.number_field :paid_amount, step: '0.01', 
           class: "w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-medium outline-none transition focus:border-blue-500 active:border-blue-500 dark:border-form-strokedark dark:bg-form-input dark:focus:border-blue-500" %>
     </div>
+    <div>
+      <label for="client_paid_amount" class="mb-2.5 block text-black dark:text-white">Sexo</label>
+      <%= form.select :sex, Client::SEXES, { include_blank: "Selecione o sexo" },
+          class: "w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-medium outline-none transition focus:border-blue-500 active:border-blue-500 dark:border-form-strokedark dark:bg-form-input dark:focus:border-blue-500" %>
+    </div>
+    <div>
+      <label for="client_paid_amount" class="mb-2.5 block text-black dark:text-white">Altura</label>
+      <%= form.number_field :height, step: '0.01', 
+          class: "w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-medium outline-none transition focus:border-blue-500 active:border-blue-500 dark:border-form-strokedark dark:bg-form-input dark:focus:border-blue-500" %>
+    </div>
+    <div>
+      <label for="client_paid_amount" class="mb-2.5 block text-black dark:text-white">Idade</label>
+      <%= form.number_field :age, 
+          class: "w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-medium outline-none transition focus:border-blue-500 active:border-blue-500 dark:border-form-strokedark dark:bg-form-input dark:focus:border-blue-500" %>
+    </div>
 
     <div>
       <label for="client_plan_type" class="mb-2.5 block text-black dark:text-white">Tipo de Plano</label>
@@ -76,7 +91,6 @@
           class: "relative z-20 w-full appearance-none rounded border border-stroke bg-transparent px-5 py-3 outline-none transition focus:border-blue-500 active:border-blue-500 dark:border-form-strokedark dark:bg-form-input" %>
     </div>
   </div>
-
   <div>
     <label for="client_note" class="mb-2.5 block text-black dark:text-white">Observações</label>
     <%= form.text_area :note, rows: 4, 

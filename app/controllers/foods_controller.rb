@@ -59,7 +59,7 @@ class FoodsController < ApplicationController
 
   def destroy
     @food.destroy
-    redirect_to foods_url, notice: "Alimento removido com sucesso."
+    redirect_to foods_url, alert: "Alimento removido com sucesso."
   end
 
   private

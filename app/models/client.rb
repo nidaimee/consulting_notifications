@@ -4,13 +4,18 @@ class Client < ApplicationRecord
   # Associações
   belongs_to :user
   has_many :diets, dependent: :destroy
+  has_many :client_histories, dependent: :destroy
   # Validações
   validates :name, presence: true
   validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }, allow_blank: true
   validates :phone_number, format: { with: /\A[\d\s\-\(\)]+\z/ }, allow_blank: true
   validates :paid_amount, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
   validates :status, inclusion: { in: %w[active inactive pending] }
+  validates :name, presence: true
+  validates :age, numericality: { only_integer: true, greater_than: 0 }, allow_nil: true
+  validates :height, numericality: { greater_than: 0 }, allow_nil: true
 
+  SEXES = %w[Masculino Feminino]
   # Callbacks
   before_validation :set_default_status, on: :create
 
@@ -18,6 +23,9 @@ class Client < ApplicationRecord
   scope :active, -> { where(status: "active") }
   scope :inactive, -> { where(status: "inactive") }
   scope :pending, -> { where(status: "pending") }
+
+  # Imagens
+  has_many_attached :photos
 
   # Scopes de período
   scope :current, -> { where("end_date >= ?", Date.current) }

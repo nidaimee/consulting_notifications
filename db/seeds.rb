@@ -50,6 +50,17 @@ user3 = User.create!(
 )
 users << user3
 
+user4 = User.create!(
+  email: 'raphael@nutri.com',
+  password: '123456',
+  password_confirmation: '123456',
+  name: 'Raphael',
+  phone: '(11) 98888-8888',
+  specialty: 'Nutrição Funcional',
+  license_number: 'CRN-3-54321'
+)
+users << user4
+
 puts "✅ #{users.count} nutricionistas criados!"
 users.each { |u| puts "  - #{u.name} (#{u.email})" }
 

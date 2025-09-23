@@ -35,7 +35,7 @@ class DietsController < ApplicationController
   def update
     if @diet.update(diet_params)
       respond_to do |format|
-        format.html { redirect_to client_diet_path(@client, @diet), notice: "Dieta atualizada com sucesso!" }
+        format.html { redirect_to client_diet_path(@client, @diet), notice: "Refeição atualizada com sucesso!" }
         format.json { render json: { status: "success", message: "Observações salvas" } }
       end
     else
@@ -48,7 +48,7 @@ class DietsController < ApplicationController
 
   def destroy
     @diet.destroy
-    redirect_to [ @client, :diets ], notice: "Dieta removida com sucesso."
+    redirect_to [ @client, :diets ], alert: "Refeição removida com sucesso."
   end
 
   def add_food
