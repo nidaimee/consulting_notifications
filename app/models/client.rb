@@ -11,7 +11,6 @@ class Client < ApplicationRecord
   validates :phone_number, format: { with: /\A[\d\s\-\(\)]+\z/ }, allow_blank: true
   validates :paid_amount, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
   validates :status, inclusion: { in: %w[active inactive pending] }
-  validates :name, presence: true
   validates :age, numericality: { only_integer: true, greater_than: 0 }, allow_nil: true
   validates :height, numericality: { greater_than: 0 }, allow_nil: true
 
@@ -19,6 +18,45 @@ class Client < ApplicationRecord
   # Callbacks
   before_validation :set_default_status, on: :create
 
+  def plan_type_humanized
+    case plan_type
+    when "mensal"
+      "Mensal"
+    when "trimestral"
+      "Trimestral"
+    when "semestral"
+      "Semestral"
+    when "anual"
+      "Anual"
+    else
+      "Não informado"
+    end
+  end
+
+  def mensal?
+    plan_type == "mensal"
+  end
+
+  def trimestral?
+    plan_type == "trimestral"
+  end
+
+  def semestral?
+    plan_type == "semestral"
+  end
+
+  def anual?
+    plan_type == "anual"
+  end
+
+  def self.plan_type_options
+    [
+      [ "Mensal", "mensal" ],
+      [ "Trimestral", "trimestral" ],
+      [ "Semestral", "semestral" ],
+      [ "Anual", "anual" ]
+    ]
+  end
   # Scopes básicos
   scope :active, -> { where(status: "active") }
   scope :inactive, -> { where(status: "inactive") }
