@@ -49,7 +49,7 @@ RUN bundle exec bootsnap precompile app/ lib/
 RUN bundle exec rails assets:precompile
 
 # Copie as credenciais
-COPY config/master.key config/master.key
+ENV RAILS_MASTER_KEY=5896a6a880ab53cd6124460928da7498
 COPY config/credentials.yml.enc config/credentials.yml.enc
 
 
