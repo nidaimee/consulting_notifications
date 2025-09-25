@@ -42,7 +42,7 @@ RUN bundle install && \
 # Copy package files and install npm dependencies
 COPY package.json ./
 RUN npm cache clean --force && \
-    npm install --production --no-optional --verbose
+    npm install --legacy-peer-deps --production --no-optional --verbose --loglevel=error
 
 # Copy application code
 COPY . .
