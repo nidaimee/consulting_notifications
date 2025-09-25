@@ -1,14 +1,36 @@
-#!/bin/bash -e
+#!/usr/bin/env bash
+set -e
 
-# Enable jemalloc for reduced memory usage and latency.
-if [ -z "${LD_PRELOAD+x}" ]; then
-    LD_PRELOAD=$(find /usr/lib -name libjemalloc.so.2 -print -quit)
-    export LD_PRELOAD
+echo "[entrypoint] Iniciando container Rails (env=$RAILS_ENV)"
+
+# Garante que dependências Ruby estejam instaladas (em teoria já estão no build)
+bundle check || bundle install
+
+# Testa se DATABASE_URL está setada em produção
+if [ "$RAILS_ENV" = "production" ]; then
+  if [ -z "$DATABASE_URL" ]; then
+    echo "[entrypoint][ERRO] DATABASE_URL não está definida!"
+    echo "Defina no Render antes de iniciar."
+    exit 1
+  fi
 fi
 
-# If running the rails server then create or migrate existing database
-if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
-  ./bin/rails db:prepare
+# Aguarda banco (tentativas simples)
+if [ -n "$DATABASE_URL" ]; then
+  echo "[entrypoint] Verificando disponibilidade do banco..."
+  for i in {1..30}; do
+    if bundle exec rails db:version >/dev/null 2>&1; then
+      echo "[entrypoint] Banco acessível."
+      break
+    fi
+    echo "[entrypoint] Tentativa $i: banco indisponível, aguardando..."
+    sleep 2
+  done
 fi
 
-exec "${@}"
+# Migrações (ou prepare se preferir)
+echo "[entrypoint] Rodando migrations..."
+bundle exec rails db:migrate 2>/dev/null || bundle exec rails db:setup
+
+echo "[entrypoint] Iniciando aplicação..."
+exec "$@"
