@@ -1,4 +1,8 @@
-<!-- Breadcrumb e Header -->
+<link rel="stylesheet" href="https://unpkg.com/tippy.js@6/themes/light.css" />
+
+<!-- Tippy.js JS -->
+<script src="https://unpkg.com/@popperjs/core@2"></script>
+<script src="https://unpkg.com/tippy.js@6"></script>
 <div class="mb-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
   <div>
     <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
@@ -58,15 +62,34 @@
 <div class="flex flex-col md:flex-row gap-6">
   <div class="flex-1 min-w-0">
     <% if @diets.any? %>
-      <div id="diets-list" data-reorder-url="<%= client_reorder_diets_path(@client) %>" class="flex flex-wrap gap-6">
+      <div id="diets-list"
+        data-client-id="<%= @client.id %>"
+        data-reorder-url="<%= client_reorder_diets_path(@client) %>"
+        class="flex flex-wrap gap-6">
         <% @diets.each_with_index do |diet, idx| %>
           <div id="diet-card-<%= diet.id %>"
          draggable="true"
          class="diet-card rounded-lg border border-gray-200 bg-white p-6 shadow-sm flex flex-col gap-4 relative"
          data-id="<%= diet.id %>">
+         
             <div class="flex items-center justify-between">
-              <span class="drag-handle cursor-grab mr-2" title="Arraste para reordenar" style="font-size:20px;">&#x2630;</span>
-              <h3 class="text-lg font-semibold text-gray-900"><%= diet.name %></h3>
+              <span class="drag-handle cursor-grab mr-2 flex items-center justify-center text-gray-400 hover:text-blue-500 transition duration-150"
+                
+                aria-label="Arraste para reordenar">
+                  <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
+                    <circle cx="5" cy="6" r="1.5"/>
+                    <circle cx="5" cy="10" r="1.5"/>
+                    <circle cx="5" cy="14" r="1.5"/>
+                    <circle cx="15" cy="6" r="1.5"/>
+                    <circle cx="15" cy="10" r="1.5"/>
+                    <circle cx="15" cy="14" r="1.5"/>
+                  </svg>
+                </span>
+              <div class="diet-name-group">
+                <span class="diet-name" data-id="<%= diet.id %>">
+                  <%= diet.name %></span>
+                <input class="diet-name-input hidden" type="text" value="<%= diet.name %>" data-id="<%= diet.id %>" maxlength="60" />
+              </div>
               <span class="rounded bg-blue-50 px-3 py-1 text-xs font-bold text-blue-600">
                 <%= diet.total_calories.round(1) %> kcal
               </span>
@@ -187,15 +210,17 @@
 </div>
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    const list = document.getElementById('diets-list');
-    let draggedCard = null;
+  const list = document.getElementById('diets-list');
+  const clientId = list ? list.dataset.clientId : null;
+  let draggedCard = null;
 
+  // --- Drag & Drop ---
+  if (list) {
     list.querySelectorAll('.diet-card').forEach(card => {
       card.addEventListener('dragstart', function(e) {
         draggedCard = card;
         card.classList.add('dragging');
         e.dataTransfer.effectAllowed = "move";
-        // Para Firefox, define uma imagem vazia
         var img = document.createElement("img");
         img.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAksB9Xc4Fz4AAAAASUVORK5CYII=";
         e.dataTransfer.setDragImage(img, 0, 0);
@@ -221,7 +246,6 @@
         e.preventDefault();
         card.classList.remove('over');
         if (draggedCard && draggedCard !== card) {
-          // Troca os dois cards de posição no DOM
           swapCards(draggedCard, card);
           showSaving();
           sendOrderToServer();
@@ -231,7 +255,6 @@
 
     function swapCards(cardA, cardB) {
       const parent = cardA.parentNode;
-      // Pega o próximo irmão de cardA (pode ser null)
       const siblingA = cardA.nextSibling === cardB ? cardA : cardA.nextSibling;
       parent.insertBefore(cardA, cardB);
       parent.insertBefore(cardB, siblingA);
@@ -250,41 +273,220 @@
           "X-CSRF-Token": document.querySelector("[name='csrf-token']").content
         },
         body: JSON.stringify({order})
-      }).then(resp => resp.json())
-        .then(data => {
-          showSaved(data.success);
-        });
+      })
+      .then(resp => {
+        if (!resp.ok) throw new Error("Erro ao salvar ordem (status " + resp.status + ")");
+        return resp.json();
+      })
+      .then(data => {
+        showSaved(data.success);
+      })
+      .catch(err => {
+        showSaved(false);
+        showNotice("Erro ao salvar ordem (" + err.message + ")");
+      });
     }
+  }
 
-    function showSaving() {
-      let notice = document.getElementById('save-notice');
-      if (!notice) {
-        notice = document.createElement('div');
-        notice.id = 'save-notice';
-        notice.style.position = 'fixed';
-        notice.style.top = '20px';
-        notice.style.right = '20px';
-        notice.style.background = '#4299e1';
-        notice.style.color = 'white';
-        notice.style.padding = '10px 20px';
-        notice.style.borderRadius = '8px';
-        notice.style.zIndex = '9999';
-        notice.style.fontWeight = 'bold';
-        document.body.appendChild(notice);
-      }
-      notice.textContent = "Salvando ordem...";
-      notice.style.display = 'block';
-    }
+  // --- Inline Edit ---
+  function closeAllInputs() {
+    document.querySelectorAll('.diet-name-input:not(.hidden)').forEach(function(input) {
+      input.classList.add('hidden');
+      input.classList.remove('saving', 'saved', 'error');
+      let span = input.parentElement.querySelector('.diet-name');
+      if (span) span.style.display = '';
+    });
+  }
 
-    function showSaved(success) {
-      let notice = document.getElementById('save-notice');
-      if (notice) {
-        notice.textContent = success ? "Ordem salva!" : "Erro ao salvar ordem";
-        setTimeout(() => { notice.style.display = 'none'; }, 1500);
+  document.querySelectorAll('.diet-name').forEach(function(nameSpan) {
+    nameSpan.addEventListener('click', function(e) {
+      closeAllInputs();
+      const input = nameSpan.parentElement.querySelector('.diet-name-input');
+      nameSpan.style.display = 'none';
+      input.value = nameSpan.textContent.trim();
+      input.classList.remove('hidden');
+      input.focus();
+      input.select();
+      e.stopPropagation();
+    });
+  });
+
+  document.querySelectorAll('.diet-name-input').forEach(function(input) {
+    input.addEventListener('blur', saveName);
+    input.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        saveName.call(input, e);
+      } else if (e.key === 'Escape') {
+        cancelEdit(input);
       }
+    });
+  });
+
+  function saveName(e) {
+    const input = this;
+    const id = input.dataset.id;
+    const nameSpan = input.parentElement.querySelector('.diet-name');
+    const newName = input.value.trim();
+    if (!clientId) {
+      cancelEdit(input);
+      return;
     }
+    if (newName.length === 0 || newName === nameSpan.textContent.trim()) {
+      cancelEdit(input);
+      return;
+    }
+    input.classList.add('saving');
+    input.classList.remove('error', 'saved');
+
+    fetch(`/clients/${clientId}/diets/${id}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'X-CSRF-Token': document.querySelector('[name="csrf-token"]').content
+      },
+      body: JSON.stringify({ diet: { name: newName } })
+    })
+    .then(resp => resp.ok ? resp.json() : Promise.reject(resp))
+    .then(data => {
+      input.classList.remove('saving', 'error');
+      input.classList.add('saved');
+      nameSpan.textContent = data.name || newName;
+      setTimeout(() => input.classList.remove('saved'), 800);
+      nameSpan.style.display = '';
+      input.classList.add('hidden');
+      if (data.notice) showNotice(data.notice);
+    })
+    .catch(() => {
+      input.classList.remove('saving', 'saved');
+      input.classList.add('error');
+      setTimeout(() => {
+        input.classList.remove('error');
+        cancelEdit(input);
+      }, 1500);
+    });
+  }
+
+  function cancelEdit(input) {
+    input.classList.add('hidden');
+    input.classList.remove('saving', 'saved', 'error');
+    input.parentElement.querySelector('.diet-name').style.display = '';
+  }
+
+  // --- Notice helpers ---
+  function showNotice(message) {
+    let notice = document.getElementById('diet-notice');
+    if (!notice) {
+      notice = document.createElement('div');
+      notice.id = 'diet-notice';
+      notice.style.position = 'fixed';
+      notice.style.top = '20px';
+      notice.style.right = '20px';
+      notice.style.background = '#38a169';
+      notice.style.color = 'white';
+      notice.style.padding = '10px 20px';
+      notice.style.borderRadius = '8px';
+      notice.style.zIndex = '9999';
+      notice.style.fontWeight = 'bold';
+      document.body.appendChild(notice);
+    }
+    notice.textContent = message;
+    notice.style.display = 'block';
+    setTimeout(() => { notice.style.display = 'none'; }, 2000);
+  }
+
+  function showSaving() {
+    let notice = document.getElementById('save-notice');
+    if (!notice) {
+      notice = document.createElement('div');
+      notice.id = 'save-notice';
+      notice.style.position = 'fixed';
+      notice.style.top = '20px';
+      notice.style.right = '20px';
+      notice.style.background = '#4299e1';
+      notice.style.color = 'white';
+      notice.style.padding = '10px 20px';
+      notice.style.borderRadius = '8px';
+      notice.style.zIndex = '9999';
+      notice.style.fontWeight = 'bold';
+      document.body.appendChild(notice);
+    }
+    notice.textContent = "Salvando ordem...";
+    notice.style.display = 'block';
+  }
+
+  function showSaved(success) {
+    let notice = document.getElementById('save-notice');
+    if (notice) {
+      notice.textContent = success ? "Ordem salva!" : "Erro ao salvar ordem";
+      setTimeout(() => { notice.style.display = 'none'; }, 1500);
+    }
+  }
   });
 </script>
+<script>
+function showTipToast(message, duration = 4000) {
+  let toast = document.getElementById('tip-toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'tip-toast';
+    toast.style.position = 'fixed';
+    toast.style.top = '20px';
+    toast.style.right = '20px';
+    toast.style.background = '#4299e1';
+    toast.style.color = 'white';
+    toast.style.padding = '14px 24px';
+    toast.style.borderRadius = '8px';
+    toast.style.zIndex = '9999';
+    toast.style.fontWeight = 'bold';
+    toast.style.boxShadow = '0 2px 8px rgba(0,0,0,0.15)';
+    toast.style.display = 'flex';
+    toast.style.alignItems = 'center';
+    toast.innerHTML = `<span>${message}</span><button id="tip-toast-ok" style="margin-left:16px;background:#2563eb;color:white;border:none;border-radius:5px;padding:4px 12px;cursor:pointer">OK</button>`;
+    document.body.appendChild(toast);
+
+    document.getElementById('tip-toast-ok').onclick = function() {
+      toast.remove();
+      localStorage.setItem('tipToastDismissed', '1');
+    };
+  } else {
+    toast.style.display = 'flex';
+    toast.querySelector('span').textContent = message;
+  }
+  if (!localStorage.getItem('tipToastDismissed')) {
+    setTimeout(() => {
+      if (toast) toast.style.display = 'none';
+    }, duration);
+  }
+}
+
+// Exemplo de uso: Só mostra se não foi dispensado antes
+if (!localStorage.getItem('tipToastDismissed')) {
+  showTipToast('💡 Dica: Arraste os cards para reordenar e clique no nome para editar!', 5000);
+}
+  </script>
+
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+    // Drag handle tooltip
+    tippy('.drag-handle', {
+      content: 'Arraste para reordenar',
+      placement: 'bottom',
+      theme: 'light',
+      delay: [0, 0],
+      duration: [300, 200],
+    });
+
+    // Nome editável tooltip
+    tippy('.diet-name', {
+      content: 'Clique para editar o nome',
+      placement: 'bottom',
+      theme: 'light',
+      delay: [0, 0],
+      duration: [300, 200],
+    });
+  });
+    </script>
 <style>
   .diet-card {
     transition: box-shadow 0.2s, transform 0.2s;
@@ -314,5 +516,39 @@
     text-align: center;
     line-height: 24px;
     font-weight: bold;
+  }
+  .diet-name-group {
+  min-height: 40px; /* fixo para altura dos dois estados */
+  display: flex;
+  align-items: center;
+  position: relative;
+  }
+  .diet-name-group {
+  min-height: 38px; /* ou igual à altura do input */
+  display: flex;
+  align-items: center;
+  position: relative;
+  }
+
+  /* Nome e input ocupam o mesmo espaço */
+  .diet-name,
+  .diet-name-input {
+  width: 140px; /* ajuste para seu layout! */
+  font-size: 1.2em;
+  font-weight: bold;
+  box-sizing: border-box;
+  }
+
+  .diet-name-input.hidden {
+  display: none;
+  }
+
+  .diet-name-input {
+  border: 1px solid #4299e1;
+  border-radius: 5px;
+  padding: 2px 8px;
+  background: #f8fafc;
+  outline: none;
+  transition: background 0.2s;
   }
 </style>

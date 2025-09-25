@@ -31,7 +31,8 @@
   "dependencies": {
     "@rails/webpacker": "5.4.4",
     "bootstrap": "5.3.3",
-    "sortablejs": "^1.15.6"
+    "sortablejs": "^1.15.6",
+    "tippy.js": "^6.3.7"
   },
   "private": true
 }

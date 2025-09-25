@@ -35,19 +35,21 @@ class DietsController < ApplicationController
   end
 
   def update
-    if @diet.update(diet_params)
-      respond_to do |format|
-        format.html { redirect_to client_diet_path(@client, @diet), notice: "Refeição atualizada com sucesso!" }
-        format.json { render json: { status: "success", message: "Observações salvas" } }
-      end
-    else
-      respond_to do |format|
-        format.html { render :edit }
-        format.json { render json: { status: "error", errors: @diet.errors.full_messages } }
-      end
+  @diet = Diet.find(params[:id])
+  @client = @diet.client
+
+  if @diet.update(diet_params)
+    respond_to do |format|
+      format.html { redirect_to client_diet_path(@client, @diet), notice: "Refeição atualizada com sucesso!" }
+      format.json { render json: { name: @diet.name, notice: "Refeição atualizada com sucesso!" }, status: :ok }
+    end
+  else
+    respond_to do |format|
+      format.html { render :edit }
+      format.json { render json: { status: "error", errors: @diet.errors.full_messages }, status: :unprocessable_entity }
     end
   end
-
+end
   def destroy
     @diet.destroy
     redirect_to [ @client, :diets ], alert: "Refeição removida com sucesso."
@@ -135,11 +137,12 @@ class DietsController < ApplicationController
   end
 
   def reorder
-    order_data = params[:order] || []
+  order_data = params[:order] || []
     Diet.transaction do
       order_data.each do |item|
-        diet = @client.diets.find(item[:id])
-        diet.update!(position: item[:position])
+        diet = @client.diets.find_by(id: item["id"])
+        next unless diet
+        diet.update!(position: item["position"])
       end
     end
     render json: { success: true, message: "Ordem das refeições atualizada com sucesso!" }
