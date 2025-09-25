@@ -26,6 +26,7 @@ Rails.application.routes.draw do
     end
 
     resources :diets do
+      post "duplicate", on: :member
       member do
         post :add_food
         post :add_substitution

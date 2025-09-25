@@ -53,6 +53,22 @@ class DietsController < ApplicationController
     redirect_to [ @client, :diets ], alert: "Refeição removida com sucesso."
   end
 
+  def duplicate
+    diet = Diet.find(params[:id])
+    duplicated_diet = diet.dup
+    duplicated_diet.name = "#{diet.name} (Cópia)"
+    duplicated_diet.save!
+
+    # Duplicar alimentos associados (diet_foods)
+    diet.diet_foods.each do |food|
+      duplicated_diet.diet_foods.create(
+        food_id: food.food_id,
+        quantity_grams: food.quantity_grams
+      )
+    end
+
+    redirect_to client_diets_path(diet.client), notice: "Dieta duplicada com sucesso!"
+  end
   def add_food
     # Os parâmetros vêm diretamente do form, não aninhados
     food = current_user.foods.find(params[:food_id])
