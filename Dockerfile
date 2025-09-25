@@ -1,10 +1,6 @@
 # syntax=docker/dockerfile:1
 # check=error=true
 
-# This Dockerfile is designed for production, not development. Use with Kamal or build'n'run by hand:
-# docker build -t consulting_notifications .
-# docker run -d -p 80:80 -e RAILS_MASTER_KEY=<value from config/master.key> --name consulting_notifications consulting_notifications
-
 # Make sure RUBY_VERSION matches the Ruby version in .ruby-version
 ARG RUBY_VERSION=3.3.0
 FROM docker.io/library/ruby:$RUBY_VERSION-slim AS base
@@ -53,10 +49,8 @@ RUN bundle exec bootsnap precompile app/ lib/
 # Set Node.js options for memory-intensive builds
 ENV NODE_OPTIONS="--max-old-space-size=4096"
 
-# Precompile assets (only one command needed)
-RUN --mount=type=secret,id=rails_master_key \
-    RAILS_MASTER_KEY=$(cat /run/secrets/rails_master_key) \
-    bundle exec rails assets:precompile
+# Precompile assets without requiring master key
+RUN SECRET_KEY_BASE_DUMMY=1 bundle exec rails assets:precompile
 
 # Final stage for app image
 FROM base
