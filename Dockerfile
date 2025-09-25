@@ -50,7 +50,7 @@ RUN bundle exec bootsnap precompile app/ lib/
 ENV NODE_OPTIONS="--max-old-space-size=4096"
 
 # Precompile assets without requiring master key
-RUN bundle exec rails assets:precompile
+RUN /bin/sh -c bundle exec rails assets:precompile
 
 # Final stage for app image
 FROM base
