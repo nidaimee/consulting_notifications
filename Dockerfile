@@ -40,8 +40,9 @@ RUN bundle install && \
     bundle exec bootsnap precompile --gemfile
 
 # Copy package files and install npm dependencies
-COPY package.json package-lock.json* ./
-RUN npm install
+COPY package.json ./
+RUN npm cache clean --force && \
+    npm install --production --no-optional --verbose
 
 # Copy application code
 COPY . .
