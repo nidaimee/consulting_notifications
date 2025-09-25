@@ -139,13 +139,13 @@ end
   def reorder
   order_data = params[:order] || []
     Diet.transaction do
-      order_data.each do |item|
+      order_data.each_with_index do |item, idx|
         diet = @client.diets.find_by(id: item["id"])
         next unless diet
-        diet.update!(position: item["position"])
+        diet.update!(position: idx + 1)
       end
     end
-    render json: { success: true, message: "Ordem das refeições atualizada com sucesso!" }
+    render json: { success: true }
   end
 
   def reorder_foods

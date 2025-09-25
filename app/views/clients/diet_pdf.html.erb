@@ -43,7 +43,7 @@ meal_type_mapping = {
 }
 
 # Filtrar dietas que têm alimentos
-diets_with_foods = @diets.select { |d| d.diet_foods.any? }
+diets_with_foods = @diets.sort_by(&:position).select { |d| d.diet_foods.any? }
 %>
 
 <div class="meals-container">

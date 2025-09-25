@@ -157,28 +157,16 @@ end
     end
   end
 def diet_pdf
-    client_id = params[:client_id] || params[:id]
-    @client = Client.find(client_id)
-    @diets = @client.diets
-      .includes(diet_foods: [ :food, { food_substitutions: :substitute_food } ])
-      .order(:meal_type)
+  client_id = params[:client_id] || params[:id]
+  @client = Client.find(client_id)
+  @diets = @client.diets
+    .includes(diet_foods: [ :food, { food_substitutions: :substitute_food } ])
+    .order(:position) # Use posição para garantir ordem igual à tela!
 
-    # Determinar o tema baseado no parâmetro
-    theme = params[:theme] || "light"
-
-    # Determinar o layout baseado no tema
-    layout_name = case theme
-    when "dark"
-                    "pdf_dark"
-    when "professional"
-                    "pdf_professional"
-    else
-                    "pdf" # tema claro padrão
-    end
+  layout_name = "pdf" # tema claro padrão
 
   respond_to do |format|
     format.html do
-      # Para preview no navegador, usar o layout escolhido
       render "diet_pdf", layout: layout_name
     end
 
@@ -188,7 +176,7 @@ def diet_pdf
         layout: layout_name,
         formats: [ :html ],
         locals: {
-          theme: theme,
+          theme: "light",
           include_substitutions: params[:include_substitutions] != "0",
           include_notes: params[:include_notes] != "0"
         }
@@ -196,17 +184,17 @@ def diet_pdf
 
       pdf = WickedPdf.new.pdf_from_string(
         html,
-          page_size: "A4",
-          margin: { top: 0, bottom: 0, left: 0, right: 0 }, # sem margem
-          encoding: "UTF-8",
-          background: true,
-          print_media_type: true
-        )
+        page_size: "A4",
+        margin: { top: 0, bottom: 0, left: 0, right: 0 },
+        encoding: "UTF-8",
+        background: true,
+        print_media_type: true
+      )
 
       send_data pdf,
-                filename: "dieta_#{@client.name.parameterize}_#{theme}.pdf",
-                type: "application/pdf",
-                disposition: params[:preview] ? "inline" : "attachment"
+        filename: "dieta_#{@client.name.parameterize}_claro.pdf",
+        type: "application/pdf",
+        disposition: params[:preview] ? "inline" : "attachment"
     end
   end
 end
