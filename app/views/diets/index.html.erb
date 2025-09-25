@@ -54,17 +54,18 @@
     <% end %>
   </div>
 </div>
-
 <!-- Grid Layout: refeições à esquerda, observação à direita -->
 <div class="flex flex-col md:flex-row gap-6">
   <div class="flex-1 min-w-0">
     <% if @diets.any? %>
-      <!-- Cards das refeições -->
-      <div class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-        <% @diets.each do |diet| %>
-          <div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm flex flex-col gap-4">
-            
+      <div id="diets-list" data-reorder-url="<%= client_reorder_diets_path(@client) %>" class="flex flex-wrap gap-6">
+        <% @diets.each_with_index do |diet, idx| %>
+          <div id="diet-card-<%= diet.id %>"
+         draggable="true"
+         class="diet-card rounded-lg border border-gray-200 bg-white p-6 shadow-sm flex flex-col gap-4 relative"
+         data-id="<%= diet.id %>">
             <div class="flex items-center justify-between">
+              <span class="drag-handle cursor-grab mr-2" title="Arraste para reordenar" style="font-size:20px;">&#x2630;</span>
               <h3 class="text-lg font-semibold text-gray-900"><%= diet.name %></h3>
               <span class="rounded bg-blue-50 px-3 py-1 text-xs font-bold text-blue-600">
                 <%= diet.total_calories.round(1) %> kcal
@@ -107,18 +108,18 @@
             </div>
             <!-- Footer -->
             <div class="flex gap-2 pt-3">
-            <%= link_to client_diet_path(@client, diet), class: "flex-1 rounded border border-blue-600 bg-white px-2 py-1 text-blue-600 text-sm hover:bg-blue-50" do %>
-              Editar
-            <% end %>
-            <%= button_to duplicate_client_diet_path(@client, diet), 
+              <%= link_to client_diet_path(@client, diet), class: "flex-1 rounded border border-blue-600 bg-white px-2 py-1 text-blue-600 text-sm hover:bg-blue-50" do %>
+                Editar
+              <% end %>
+              <%= button_to duplicate_client_diet_path(@client, diet), 
                   method: :post, 
                   class: "flex-1 rounded border border-indigo-600 bg-white px-2 py-1 text-indigo-600 text-sm hover:bg-indigo-50" do %>
-              Duplicar
-            <% end %>
-            <%= button_to client_diet_path(@client, diet), method: :delete, data: { turbo_confirm: "Excluir #{diet.name}?" }, class: "flex-1 rounded border border-red-600 bg-white px-2 py-1 text-red-600 text-sm hover:bg-red-50" do %>
-              Excluir
-            <% end %>
-          </div>
+                Duplicar
+              <% end %>
+              <%= button_to client_diet_path(@client, diet), method: :delete, data: { turbo_confirm: "Excluir #{diet.name}?" }, class: "flex-1 rounded border border-red-600 bg-white px-2 py-1 text-red-600 text-sm hover:bg-red-50" do %>
+                Excluir
+              <% end %>
+            </div>
           </div>
         <% end %>
       </div>
@@ -184,3 +185,134 @@
     </div>
   </div>
 </div>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const list = document.getElementById('diets-list');
+    let draggedCard = null;
+
+    list.querySelectorAll('.diet-card').forEach(card => {
+      card.addEventListener('dragstart', function(e) {
+        draggedCard = card;
+        card.classList.add('dragging');
+        e.dataTransfer.effectAllowed = "move";
+        // Para Firefox, define uma imagem vazia
+        var img = document.createElement("img");
+        img.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAksB9Xc4Fz4AAAAASUVORK5CYII=";
+        e.dataTransfer.setDragImage(img, 0, 0);
+      });
+
+      card.addEventListener('dragend', function() {
+        card.classList.remove('dragging');
+        draggedCard = null;
+      });
+
+      card.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        if (draggedCard && draggedCard !== card) {
+          card.classList.add('over');
+        }
+      });
+
+      card.addEventListener('dragleave', function(e) {
+        card.classList.remove('over');
+      });
+
+      card.addEventListener('drop', function(e) {
+        e.preventDefault();
+        card.classList.remove('over');
+        if (draggedCard && draggedCard !== card) {
+          // Troca os dois cards de posição no DOM
+          swapCards(draggedCard, card);
+          showSaving();
+          sendOrderToServer();
+        }
+      });
+    });
+
+    function swapCards(cardA, cardB) {
+      const parent = cardA.parentNode;
+      // Pega o próximo irmão de cardA (pode ser null)
+      const siblingA = cardA.nextSibling === cardB ? cardA : cardA.nextSibling;
+      parent.insertBefore(cardA, cardB);
+      parent.insertBefore(cardB, siblingA);
+    }
+
+    function sendOrderToServer() {
+      const order = Array.from(list.querySelectorAll('.diet-card')).map((el, idx) => ({
+        id: el.dataset.id,
+        position: idx + 1
+      }));
+
+      fetch(list.dataset.reorderUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-Token": document.querySelector("[name='csrf-token']").content
+        },
+        body: JSON.stringify({order})
+      }).then(resp => resp.json())
+        .then(data => {
+          showSaved(data.success);
+        });
+    }
+
+    function showSaving() {
+      let notice = document.getElementById('save-notice');
+      if (!notice) {
+        notice = document.createElement('div');
+        notice.id = 'save-notice';
+        notice.style.position = 'fixed';
+        notice.style.top = '20px';
+        notice.style.right = '20px';
+        notice.style.background = '#4299e1';
+        notice.style.color = 'white';
+        notice.style.padding = '10px 20px';
+        notice.style.borderRadius = '8px';
+        notice.style.zIndex = '9999';
+        notice.style.fontWeight = 'bold';
+        document.body.appendChild(notice);
+      }
+      notice.textContent = "Salvando ordem...";
+      notice.style.display = 'block';
+    }
+
+    function showSaved(success) {
+      let notice = document.getElementById('save-notice');
+      if (notice) {
+        notice.textContent = success ? "Ordem salva!" : "Erro ao salvar ordem";
+        setTimeout(() => { notice.style.display = 'none'; }, 1500);
+      }
+    }
+  });
+</script>
+<style>
+  .diet-card {
+    transition: box-shadow 0.2s, transform 0.2s;
+    cursor: grab;
+    position: relative;
+  }
+  .diet-card.dragging {
+    opacity: 0.7;
+    box-shadow: 0 4px 24px 0 rgba(66,153,225,0.2), 0 0 0 3px #4299e1;
+    transform: scale(0.98) rotate(-1deg);
+    z-index: 2;
+  }
+  .diet-card.over {
+    box-shadow: 0 0 0 3px #38a169 inset;
+    background: #e6fffa;
+  }
+  .diet-card .order-index {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background: #4299e1;
+    color: #fff;
+    font-size: 0.85em;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    text-align: center;
+    line-height: 24px;
+    font-weight: bold;
+  }
+</style>

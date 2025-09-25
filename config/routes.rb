@@ -4,10 +4,12 @@ Rails.application.routes.draw do
     registrations: "registrations"
   }
   root "dashboard#index"
-
   get "dashboard", to: "dashboard#index"
 
   resources :clients do
+    # Rota para reordenar dietas do cliente (drag & drop nos cards)
+    post "reorder_diets", to: "diets#reorder", as: :reorder_diets
+
     member do
       patch :update_note
       get :diet_pdf
@@ -27,12 +29,16 @@ Rails.application.routes.draw do
 
     resources :diets do
       post "duplicate", on: :member
+      post "move_up", on: :member
+      post "move_down", on: :member
+
       member do
         post :add_food
         post :add_substitution
         delete :remove_substitution
         patch :reorder_foods
       end
+
       resources :food_substitutions, only: [ :create, :update, :destroy ]
       resources :diet_foods, only: [ :create, :destroy, :update ], path: "foods" do
         member do

@@ -5,7 +5,7 @@ class DietsController < ApplicationController
 
   def index
     @client = current_user.clients.find(params[:client_id])
-    @diets = @client.diets.order(:meal_type)
+    @diets = @client.diets.order(:position)
     @daily_total_calories = @diets.sum(&:total_calories)
   end
 
@@ -132,6 +132,17 @@ class DietsController < ApplicationController
     redirect_to [ @client, @diet ], alert: "Substituição não encontrada."
   rescue => e
     redirect_to [ @client, @diet ], alert: "Erro ao remover substituição: #{e.message}"
+  end
+
+  def reorder
+    order_data = params[:order] || []
+    Diet.transaction do
+      order_data.each do |item|
+        diet = @client.diets.find(item[:id])
+        diet.update!(position: item[:position])
+      end
+    end
+    render json: { success: true, message: "Ordem das refeições atualizada com sucesso!" }
   end
 
   def reorder_foods

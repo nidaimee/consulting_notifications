@@ -3,9 +3,9 @@ class Diet < ApplicationRecord
   belongs_to :client
   has_many :diet_foods, dependent: :destroy
   has_many :foods, through: :diet_foods
-
   validates :name, presence: true
 
+  # acts_as_list scope: :client
 
   def foods_list
     diet_foods.includes(:food).map { |df| df.food.name }.join(", ")
