@@ -22,8 +22,7 @@
       </ol>
     </nav>
   </div>
-  <div class="flex flex-wrap items-center gap-3">
-    <!-- PDF Dropdown -->
+  <div class="flex flex-col gap-2 w-full sm:flex-row sm:gap-3 sm:w-auto items-stretch">
     <div class="relative" x-data="{ dropdownOpen: false }" @click.outside="dropdownOpen = false">
       <%= link_to diet_pdf_client_path(@client, format: :pdf), 
       class: "inline-flex items-center gap-2.5 rounded bg-blue-600 px-4 py-2 text-white font-medium hover:bg-blue-700 transition",
@@ -52,8 +51,8 @@
   </div>
 </div>
 <!-- Grid Layout: refeições à esquerda, observação à direita -->
-<div class="flex flex-col md:flex-row gap-6">
-  <div class="flex-1 min-w-0">
+<div class="flex flex-col gap-6 md:flex-row md:items-start">
+  <div class="flex flex-col gap-6 md:flex-wrap md:flex-row flex-1 min-w-0">
     <% if @diets.any? %>
       <div id="diets-list"
         data-client-id="<%= @client.id %>"
