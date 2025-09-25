@@ -48,11 +48,6 @@ RUN bundle exec bootsnap precompile app/ lib/
 # Precompiling assets for production without requiring secret RAILS_MASTER_KEY
 RUN bundle exec rails assets:precompile
 
-# Copie as credenciais
-ENV RAILS_MASTER_KEY=5896a6a880ab53cd6124460928da7498
-COPY config/credentials.yml.enc config/credentials.yml.enc
-
-
 # Final stage for app image
 FROM base
 
