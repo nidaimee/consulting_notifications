@@ -50,6 +50,28 @@
               placeholder: "Digite seu email" %>
         </div>
 
+        <div class="mb-4.5">
+          <%= f.label :license_number, class: "mb-2.5 block text-black dark:text-white" do %>
+            Número de Licença
+          <% end %>
+          <%= f.text_field :license_number, 
+              autofocus: true, 
+              autocomplete: "CRN",
+              class: "w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary",
+              placeholder: "Digite seu CRN" %>
+        </div>
+
+        <div class="mb-4.5">
+          <%= f.label :phone, class: "mb-2.5 block text-black dark:text-white" do %>
+            Telefone
+          <% end %>
+          <%= f.text_field :phone, 
+              autofocus: true, 
+              autocomplete: "Telefone",
+              class: "w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary",
+              placeholder: "Digite seu Telefone" %>
+        </div>
+
         <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
           <div class="mb-4 rounded-sm border border-warning bg-warning/10 p-4">
             <div class="flex items-center gap-2 text-warning">

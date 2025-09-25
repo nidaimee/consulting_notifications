@@ -91,6 +91,6 @@ class DietFoodsController < ApplicationController
   end
 
   def diet_food_params
-    params.require(:diet_food).permit(:food_id, :quantity_grams)
+    params.require(:diet_food).permit(:quantity_grams, :calories, :protein, :carbs, :fat, :notes)
   end
 end

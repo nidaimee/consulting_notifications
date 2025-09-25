@@ -18,13 +18,12 @@
         <strong>📋 Data da Prescrição:</strong> <%= Date.current.strftime('%d/%m/%Y') %>
       </div>
     </div>
-   <% if @client.note.present? %>
+  <% if @client.note.present? %>
   <div class="client-notes">
-    <strong>📝 Observações:</strong>
+    <strong>📝 Orientações:</strong>
     <ul>
       <% @client.note.split("\n").each do |linha| %>
         <li style="list-style-type: none;"><%= linha.strip %></li>
-
       <% end %>
     </ul>
   </div>

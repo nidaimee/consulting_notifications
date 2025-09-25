@@ -117,8 +117,8 @@
                 id: "quantity_input_main" %>
           </div>
 
-          <div class="w-full sm:w-1/3">
-            <label class="mb-2.5 block text-slate-500 dark:text-slate-400">Prévia Nutricional</label>
+          <div class="w-full sm:w-2/3">
+            <label class="mb-1.5 block text-slate-500 dark:text-slate-400">Prévia Nutricional</label>
             <div id="nutrition_preview_main" class=" px-4 py-3 ">
               <span id="calculated_values_main" class="text-sm text-blue-700 dark:text-blue-300"></span>
             </div>
@@ -462,7 +462,7 @@
             Prévia Nutricional
           </label>
           <div id="substitute-preview-<%= diet_food.id %>" 
-               class="rounded-lg border border-blue-300 bg-blue-50 px-4 py-3 dark:border-blue-600 dark:bg-blue-900/20">
+               class="px-4 py-3">
             <span id="substitute-comparison-<%= diet_food.id %>" 
                   class="text-sm text-blue-700 dark:text-blue-300"></span>
           </div>
@@ -925,10 +925,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const nutrition = calculateNutrition(this.selectedFood, quantity);
         if (nutrition) {
           this.previewContent.innerHTML = `
-            <span class="text-warning">${nutrition.calories} kcal</span> |
-            <span class="text-primary">P: ${nutrition.protein}g</span> |
-            <span class="text-info">C: ${nutrition.carbs}g</span> |
-            <span class="text-danger">G: ${nutrition.fat}g</span>
+            <span class="macro-badge calories-badge">${nutrition.calories} kcal</span>
+            <span class="macro-badge protein-badge">P: ${nutrition.protein}g</span>
+            <span class="macro-badge carbs-badge">C: ${nutrition.carbs}g</span>
+            <span class="macro-badge fat-badge">G: ${nutrition.fat}g</span>
           `;
           this.previewContainer.style.display = 'block';
         }
@@ -948,10 +948,10 @@ document.addEventListener('DOMContentLoaded', function() {
             };
             
             this.previewContent.innerHTML = `
-              <div>Calorias: ${dietFood.calories.toFixed(1)} → ${substitute.calories} ${formatDiff(substitute.calories, dietFood.calories)}</div>
-              <div>Proteína: ${dietFood.protein.toFixed(1)}g → ${substitute.protein}g ${formatDiff(substitute.protein, dietFood.protein)}g</div>
-              <div>Carbs: ${dietFood.carbs.toFixed(1)}g → ${substitute.carbs}g ${formatDiff(substitute.carbs, dietFood.carbs)}g</div>
-              <div>Gordura: ${dietFood.fat.toFixed(1)}g → ${substitute.fat}g ${formatDiff(substitute.fat, dietFood.fat)}g</div>
+              <div class="macro-badge calories-badge">Calorias: ${dietFood.calories.toFixed(1)} → ${substitute.calories} ${formatDiff(substitute.calories, dietFood.calories)}</div>
+              <div class="macro-badge protein-badge">Proteína: ${dietFood.protein.toFixed(1)}g → ${substitute.protein}g ${formatDiff(substitute.protein, dietFood.protein)}g</div>
+              <div class="macro-badge carbs-badge">Carbs: ${dietFood.carbs.toFixed(1)}g → ${substitute.carbs}g ${formatDiff(substitute.carbs, dietFood.carbs)}g</div>
+              <div class="macro-badge fat-badge">Gordura: ${dietFood.fat.toFixed(1)}g → ${substitute.fat}g ${formatDiff(substitute.fat, dietFood.fat)}g</div>
             `;
             this.previewContainer.style.display = 'block';
           }

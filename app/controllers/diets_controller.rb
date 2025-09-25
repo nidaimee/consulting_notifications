@@ -4,11 +4,13 @@ class DietsController < ApplicationController
   before_action :set_diet, only: [ :show, :edit, :update, :destroy, :add_food, :add_substitution, :remove_substitution, :reorder_foods ]
 
   def index
+    @client = current_user.clients.find(params[:client_id])
     @diets = @client.diets.order(:meal_type)
     @daily_total_calories = @diets.sum(&:total_calories)
   end
 
   def show
+    @diet = Diet.find(params[:id])
     @available_foods = current_user.foods.order(:name)
     @diet_food = DietFood.new
   end
@@ -151,7 +153,9 @@ class DietsController < ApplicationController
   private
 
   def set_client
-    @client = current_user.clients.find(params[:client_id])
+  @client = current_user.clients.find(params[:client_id])
+  rescue ActiveRecord::RecordNotFound
+    redirect_to clients_path, alert: "Cliente não encontrado ou você não tem permissão."
   end
 
   def set_diet

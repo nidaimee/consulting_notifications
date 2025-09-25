@@ -3,3 +3,5 @@ import { application } from "controllers/application"
 import { eagerLoadControllersFrom } from "@hotwired/stimulus-loading"
 eagerLoadControllersFrom("controllers", application)
 console.log('Webpack está funcionando!');
+import InlineEditController from "./inline_edit_controller"
+application.register("inline-edit", InlineEditController)

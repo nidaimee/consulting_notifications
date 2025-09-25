@@ -5,10 +5,100 @@ class ClientsController < ApplicationController
   before_action :set_client, only: [ :show, :edit, :update, :destroy, :add_photos, :remove_photo, :replace_photo, :download_comparison ]
 
   def index
-    @clients = Client.all
+    @clients = current_user.clients # Assumindo que há relação User has_many :clients
+
+    # Busca por texto (nome, email, telefone)
+    if params[:search].present?
+      search_term = "%#{params[:search].downcase}%"
+      @clients = @clients.where(
+        "LOWER(name) LIKE :search OR LOWER(email) LIKE :search OR phone_number LIKE :search OR LOWER(note) LIKE :search",
+        search: search_term
+      )
+    end
+
+    # Filtro por status
+    if params[:status].present?
+      @clients = @clients.where(status: params[:status])
+    end
+
+    # Filtro por período (baseado em start_date/end_date)
+    case params[:period]
+    when "this_month"
+      @clients = @clients.where(
+        "start_date <= ? AND end_date >= ?",
+        Date.current.end_of_month,
+        Date.current.beginning_of_month
+      )
+    when "last_3_months"
+      @clients = @clients.where(
+        "start_date >= ? OR end_date >= ?",
+        3.months.ago,
+        3.months.ago
+      )
+    when "this_year"
+      @clients = @clients.where(
+        "start_date <= ? AND end_date >= ?",
+        Date.current.end_of_year,
+        Date.current.beginning_of_year
+      )
+    end
+
+    # Filtro por faixa de valor pago
+    if params[:min_paid_amount].present?
+      @clients = @clients.where("paid_amount >= ?", params[:min_paid_amount].to_f)
+    end
+
+    if params[:max_paid_amount].present?
+      @clients = @clients.where("paid_amount <= ?", params[:max_paid_amount].to_f)
+    end
+
+    # Filtro por data de cadastro
+    if params[:created_after].present?
+      @clients = @clients.where("created_at >= ?", params[:created_after])
+    end
+
+    if params[:created_before].present?
+      @clients = @clients.where("created_at <= ?", params[:created_before])
+    end
+
+    # Filtro por último contato
+    if params[:last_contact_days].present?
+      days_ago = params[:last_contact_days].to_i.days.ago
+      @clients = @clients.where("last_contacted_at >= ?", days_ago)
+    end
+
+    # Ordenação
+    case params[:sort_by]
+    when "name"
+      @clients = @clients.order(:name)
+    when "created_at_desc"
+      @clients = @clients.order(created_at: :desc)
+    when "created_at_asc"
+      @clients = @clients.order(created_at: :asc)
+    when "paid_amount_desc"
+      @clients = @clients.order(paid_amount: :desc)
+    when "paid_amount_asc"
+      @clients = @clients.order(paid_amount: :asc)
+    when "last_contacted_at_desc"
+      @clients = @clients.order(last_contacted_at: :desc)
+    when "end_date_asc"
+      @clients = @clients.order(end_date: :asc)
+    else
+      @clients = @clients.order(:name) # Ordenação padrão
+    end
+
+    # Paginação (se estiver usando Kaminari)
+    @clients = @clients.page(params[:page]).per(12) if defined?(Kaminari)
+
+    respond_to do |format|
+      format.html
+      format.json { render json: @clients }
+      format.csv { send_data generate_csv(@clients), filename: "clients-#{Date.current}.csv" }
+    end
   end
 
   def show
+    @editing_history_id = params[:edit_history_id]&.to_i
     @client_histories = @client.client_histories.order(created_at: :desc)
     @new_client_history = @client.client_histories.build
   end
@@ -43,7 +133,14 @@ class ClientsController < ApplicationController
       render :edit
     end
   end
-
+  def update_note
+  @client = Client.find(params[:id])
+  if @client.update(note: params[:client][:note])
+    redirect_to client_diets_path(@client), notice: "Observação atualizada com sucesso!"
+  else
+    redirect_to client_diets_path(@client), alert: "Erro ao atualizar observação."
+  end
+end
   def destroy
     @client.destroy
     redirect_to clients_url, notice: "Cliente foi removido com sucesso."
@@ -59,24 +156,25 @@ class ClientsController < ApplicationController
       redirect_to @client, alert: "Nenhuma foto foi selecionada."
     end
   end
-  def diet_pdf
-  @diets = @client.diets
-                .includes(diet_foods: [ :food, { food_substitutions: :substitute_food } ])
-                .order(:meal_type)
-  @daily_totals = calculate_daily_totals(@diets)
+def diet_pdf
+    client_id = params[:client_id] || params[:id]
+    @client = Client.find(client_id)
+    @diets = @client.diets
+      .includes(diet_foods: [ :food, { food_substitutions: :substitute_food } ])
+      .order(:meal_type)
 
-  # Determinar o tema baseado no parâmetro
-  theme = params[:theme] || "light"
+    # Determinar o tema baseado no parâmetro
+    theme = params[:theme] || "light"
 
-  # Determinar o layout baseado no tema
-  layout_name = case theme
-  when "dark"
-                  "pdf_dark"
-  when "professional"
-                  "pdf_professional"
-  else
-                  "pdf" # tema claro padrão
-  end
+    # Determinar o layout baseado no tema
+    layout_name = case theme
+    when "dark"
+                    "pdf_dark"
+    when "professional"
+                    "pdf_professional"
+    else
+                    "pdf" # tema claro padrão
+    end
 
   respond_to do |format|
     format.html do
@@ -192,11 +290,12 @@ end
   private
 
   def set_client
-    Rails.logger.info "Procurando cliente com ID: #{params[:id]}"
-    @client = current_user.clients.find(params[:id])
+    client_id = params[:client_id] || params[:id]
+    Rails.logger.info "Procurando cliente com ID: #{client_id}"
+    @client = current_user.clients.find(client_id)
     Rails.logger.info "Cliente encontrado: #{@client.name}" if @client
   rescue ActiveRecord::RecordNotFound
-    Rails.logger.error "Cliente não encontrado com ID: #{params[:id]}"
+    Rails.logger.error "Cliente não encontrado com ID: #{client_id}"
     redirect_to clients_path, alert: "Cliente não encontrado."
   end
 

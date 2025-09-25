@@ -19,6 +19,26 @@ class ClientHistoriesController < ApplicationController
     redirect_to @client, alert: "Entrada de histórico removida com sucesso!"
   end
 
+  def edit
+  end
+
+  def update
+    @client = Client.find(params[:client_id])
+    @history = @client.client_histories.find(params[:id])
+    if @history.update(history_params)
+      redirect_to client_path(@client), notice: "Histórico atualizado com sucesso."
+    else
+      @client_histories = @client.client_histories.order(created_at: :desc)
+      render "clients/show"
+    end
+  end
+
+private
+
+def history_params
+  params.require(:client_history).permit(:description, images: [])
+end
+
   private
 
   def set_client

@@ -1,7 +1,6 @@
 <!-- Fancybox CDN -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.css" />
 <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.js"></script>
-
 <!-- Header Section -->
 <div class="mb-8">
   <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -24,7 +23,6 @@
         </div>
       </div>
     </div>
-
     <!-- Action Buttons -->
     <div class="flex flex-wrap gap-3">
       <%= link_to client_diets_path(@client), 
@@ -34,7 +32,6 @@
         </svg>
         Gerenciar Dietas
       <% end %>
-      
       <%= link_to edit_client_path(@client), 
           class: "inline-flex items-center gap-2 rounded-lg bg-gray-600 px-4 py-2 text-sm font-medium text-white hover:bg-gray-700 transition-colors" do %>
         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -42,7 +39,6 @@
         </svg>
         Editar
       <% end %>
-
       <%= link_to clients_path, 
           class: "inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors" do %>
         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -53,19 +49,15 @@
     </div>
   </div>
 </div>
-
 <!-- Main Content Grid -->
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-  
   <!-- Left Column - Main Info -->
   <div class="lg:col-span-2 space-y-8">
-    
     <!-- Client Information Card -->
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
       <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
         <h2 class="text-lg font-semibold text-gray-900">Informações do Cliente</h2>
       </div>
-      
       <div class="p-6">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <!-- Contact & Basic Info -->
@@ -81,7 +73,6 @@
                 <p class="font-medium text-gray-900"><%= @client.phone_number %></p>
               </div>
             </div>
-
             <div class="flex items-center gap-3">
               <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-green-100">
                 <svg class="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -93,7 +84,6 @@
                 <p class="font-medium text-gray-900"><%= @client.email || 'Não informado' %></p>
               </div>
             </div>
-
             <div class="flex items-center gap-3">
               <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-purple-100">
                 <svg class="h-5 w-5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -108,7 +98,6 @@
               </div>
             </div>
           </div>
-
           <!-- Status & Plan Info -->
           <div class="space-y-4">
             <div class="flex items-center gap-3">
@@ -143,14 +132,13 @@
                 <% end %>
               </div>
             </div>
-
             <div class="flex items-center gap-3">
               <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-100">
                 <svg class="h-5 w-5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                 </svg>
               </div>
-             <div>
+              <div>
                 <p class="text-sm text-gray-500">Plano</p>
                 <p class="font-medium text-gray-900 flex items-center gap-2">
                   <%= @client.plan_type_humanized %>
@@ -160,7 +148,6 @@
                 </p>
               </div>
             </div>
-
             <div class="flex items-center gap-3">
               <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-orange-100">
                 <svg class="h-5 w-5 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -174,7 +161,6 @@
             </div>
           </div>
         </div>
-
         <!-- Period Timeline -->
         <div class="mt-6 pt-6 border-t border-gray-200">
           <div class="flex items-center justify-between">
@@ -183,24 +169,20 @@
             <% days_remaining = (@client.end_date - Date.current).to_i %>
             <span class="text-sm text-gray-500"><%= pluralize(days_total, 'dia') %> total</span>
           </div>
-          
           <div class="mt-3 flex items-center gap-4">
             <div class="flex items-center gap-2">
               <div class="h-3 w-3 rounded-full bg-green-500"></div>
               <span class="text-sm text-gray-600"><%= @client.start_date.strftime('%d/%m/%Y') %></span>
             </div>
-            
             <div class="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
               <% progress = days_total > 0 ? [(days_total - [days_remaining, 0].max).to_f / days_total * 100, 100].min : 0 %>
               <div class="h-full bg-gradient-to-r from-green-500 to-blue-500 transition-all duration-300" style="width: <%= progress %>%"></div>
             </div>
-            
             <div class="flex items-center gap-2">
               <div class="h-3 w-3 rounded-full bg-blue-500"></div>
               <span class="text-sm text-gray-600"><%= @client.end_date.strftime('%d/%m/%Y') %></span>
             </div>
           </div>
-          
           <div class="mt-2 text-center">
             <% if days_remaining > 0 %>
               <span class="text-sm text-green-600 font-medium"><%= pluralize(days_remaining, 'dia') %> restante(s)</span>
@@ -213,104 +195,94 @@
         </div>
       </div>
     </div>
-
     <!-- Photos Section -->
     <!-- Photos Section -->
-<div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-  <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
-    <div class="flex items-center justify-between">
-      <h2 class="text-lg font-semibold text-gray-900">Fotos do Físico</h2>
-    </div>
-  </div>
-  
-  <div class="p-6">
-    <% if @client.photos.any? %>
-      <!-- Fotos Grid - Sempre múltiplo de 4 -->
-      <div class="grid grid-cols-4 gap-4 mb-4">
-        <% @client.photos.each_with_index do |image, idx| %>
-          <% if image.content_type.starts_with?('image') %>
-            <div class="relative group aspect-square">
-              <a data-fancybox="client-photos" href="<%= url_for(image) %>" data-caption="Foto inicial <%= idx + 1 %>">
-                <%= image_tag url_for(image), class: "w-full h-full object-cover rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-all cursor-pointer" %>
-              </a>
-              
-              <!-- Action Overlay -->
-              <div class="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center gap-2">
-                <button type="button" 
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+      <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+        <div class="flex items-center justify-between">
+          <h2 class="text-lg font-semibold text-gray-900">Fotos do Físico</h2>
+        </div>
+      </div>
+      <div class="p-6">
+        <% if @client.photos.any? %>
+          <!-- Fotos Grid - Sempre múltiplo de 4 -->
+          <div class="grid grid-cols-4 gap-4 mb-4">
+            <% @client.photos.each_with_index do |image, idx| %>
+              <% if image.content_type.starts_with?('image') %>
+                <div class="relative group aspect-square">
+                  <a data-fancybox="client-photos" href="<%= url_for(image) %>" data-caption="Foto inicial <%= idx + 1 %>">
+                    <%= image_tag url_for(image), class: "w-full h-full object-cover rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-all cursor-pointer" %>
+                  </a>
+                  <!-- Action Overlay -->
+                  <div class="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center gap-2">
+                    <button type="button" 
                         onclick="openReplaceModal('<%= image.id %>', 'initial')"
                         class="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-full transition-colors"
                         title="Substituir">
-                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                  </svg>
-                </button>
-                
-                <%= button_to remove_photo_client_path(@client, photo_id: image.id), 
+                      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                      </svg>
+                    </button>
+                    <%= button_to remove_photo_client_path(@client, photo_id: image.id), 
                     method: :delete,
                     data: { turbo_confirm: "Remover esta foto?", turbo_method: :delete },
                     class: "bg-red-500 hover:bg-red-600 text-white p-2 rounded-full transition-colors",
                     title: "Remover" do %>
-                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                  </svg>
-                <% end %>
-              </div>
-            </div>
-          <% end %>
-        <% end %>
-        
-        <!-- Preencher slots vazios se necessário -->
-        <% remaining_slots = (4 - (@client.photos.count % 4)) % 4 %>
-        <% if remaining_slots > 0 %>
-          <!-- Add Photo Card sempre no último slot -->
-          <div class="aspect-square border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center hover:border-blue-400 hover:bg-blue-50 transition-all cursor-pointer group"
+                      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    <% end %>
+                  </div>
+                </div>
+              <% end %>
+            <% end %>
+            <!-- Preencher slots vazios se necessário -->
+            <% remaining_slots = (4 - (@client.photos.count % 4)) % 4 %>
+            <% if remaining_slots > 0 %>
+              <!-- Add Photo Card sempre no último slot -->
+              <div class="aspect-square border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center hover:border-blue-400 hover:bg-blue-50 transition-all cursor-pointer group"
                onclick="document.getElementById('add-initial-photo').click()">
-            <svg class="w-8 h-8 text-gray-400 group-hover:text-blue-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-            </svg>
-            <span class="text-sm text-gray-500 group-hover:text-blue-600 mt-2">Adicionar</span>
+                <svg class="w-8 h-8 text-gray-400 group-hover:text-blue-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                <span class="text-sm text-gray-500 group-hover:text-blue-600 mt-2">Adicionar</span>
+              </div>
+              <!-- Slots vazios para manter o grid -->
+              <% (remaining_slots - 1).times do %>
+                <div class="aspect-square"></div>
+              <% end %>
+            <% end %>
           </div>
-          
-          <!-- Slots vazios para manter o grid -->
-          <% (remaining_slots - 1).times do %>
-            <div class="aspect-square"></div>
-          <% end %>
+          <!-- Upload Info -->
+          <div class="text-center">
+            <p class="text-sm text-gray-500">
+              <%= pluralize(@client.photos.count, 'foto') %> • 
+              Clique no botão "Adicionar" acima ou no card tracejado para enviar mais fotos
+            </p>
+          </div>
+        <% else %>
+          <!-- Estado vazio mais visual -->
+          <div class="text-center py-12 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-400 hover:bg-blue-50 transition-all cursor-pointer"
+           onclick="document.getElementById('add-initial-photo').click()">
+            <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <h3 class="text-lg font-medium text-gray-900 mb-2">Nenhuma foto cadastrada</h3>
+            <p class="text-gray-500 mb-4">Clique aqui para adicionar a primeira foto do cliente</p>
+            <button class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+              </svg>
+              Adicionar Primeira Foto
+            </button>
+          </div>
+        <% end %>
+        <!-- Hidden file input -->
+        <%= form_with model: @client, url: add_photos_client_path(@client), method: :patch, local: true, multipart: true, id: "add-photos-form" do |form| %>
+          <%= form.file_field :photos, multiple: true, style: "display:none", id: "add-initial-photo", accept: "image/*", onchange: "handlePhotoSelection(this)" %>
         <% end %>
       </div>
-      
-      <!-- Upload Info -->
-      <div class="text-center">
-        <p class="text-sm text-gray-500">
-          <%= pluralize(@client.photos.count, 'foto') %> • 
-          Clique no botão "Adicionar" acima ou no card tracejado para enviar mais fotos
-        </p>
-      </div>
-      
-    <% else %>
-      <!-- Estado vazio mais visual -->
-      <div class="text-center py-12 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-400 hover:bg-blue-50 transition-all cursor-pointer"
-           onclick="document.getElementById('add-initial-photo').click()">
-        <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-        </svg>
-        <h3 class="text-lg font-medium text-gray-900 mb-2">Nenhuma foto cadastrada</h3>
-        <p class="text-gray-500 mb-4">Clique aqui para adicionar a primeira foto do cliente</p>
-        <button class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors">
-          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-          </svg>
-          Adicionar Primeira Foto
-        </button>
-      </div>
-    <% end %>
-    
-    <!-- Hidden file input -->
-    <%= form_with model: @client, url: add_photos_client_path(@client), method: :patch, local: true, multipart: true, id: "add-photos-form" do |form| %>
-      <%= form.file_field :photos, multiple: true, style: "display:none", id: "add-initial-photo", accept: "image/*", onchange: "handlePhotoSelection(this)" %>
-    <% end %>
-  </div>
-</div>
-
+    </div>
     <!-- Photo Comparison Section -->
     <% 
       # Collect all photos for comparison
@@ -339,7 +311,6 @@
       
       fotos_para_comparar = fotos_para_comparar.select { |foto| foto[:content_type].starts_with?('image') }
     %>
-
     <% if fotos_para_comparar.length >= 2 %>
       <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
@@ -348,7 +319,6 @@
             <span class="text-sm text-gray-500">Selecione 2 fotos para comparar</span>
           </div>
         </div>
-        
         <div class="p-6">
           <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3" id="photo-gallery">
             <% fotos_para_comparar.each_with_index do |foto, idx| %>
@@ -358,13 +328,11 @@
                      data-photo-date="<%= foto[:date].strftime('%d/%m/%Y') %>"
                      data-photo-type="<%= foto[:type] %>">
                   <%= image_tag foto[:url], class: "w-full h-full object-cover transition-transform group-hover:scale-105" %>
-                  
                   <!-- Checkbox -->
                   <input type="checkbox" class="compare-photo-checkbox absolute top-2 left-2 w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity z-10" 
                          value="<%= foto[:url] %>" 
                          data-date="<%= foto[:date].strftime('%d/%m/%Y') %>"
                          data-type="<%= foto[:type] %>">
-                  
                   <!-- Info overlay -->
                   <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-2">
                     <span class="text-white text-xs font-medium block truncate">
@@ -374,7 +342,6 @@
                       <%= foto[:date].strftime('%d/%m') %>
                     </span>
                   </div>
-                  
                   <!-- Selection indicator -->
                   <div class="absolute inset-0 bg-blue-500/20 opacity-0 transition-opacity duration-200 selected-overlay rounded-lg"></div>
                 </div>
@@ -384,22 +351,7 @@
         </div>
       </div>
     <% end %>
-
-    <!-- Notes Section -->
-    <% if @client.note.present? %>
-      <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-        <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
-          <h2 class="text-lg font-semibold text-gray-900">Observações</h2>
-        </div>
-        <div class="p-6">
-          <div class="prose max-w-none text-gray-700">
-            <%= simple_format(@client.note) %>
-          </div>
-        </div>
-      </div>
-    <% end %>
   </div>
-
   <!-- Right Column - Financial Summary Only -->
   <div class="space-y-8">
     <!-- Financial Summary -->
@@ -419,7 +371,6 @@
           </h3>
           <p class="text-gray-500">Valor Pago</p>
         </div>
-
         <div class="space-y-3">
           <div class="flex items-center justify-between py-2 border-b border-gray-100">
             <span class="text-gray-600">Início:</span>
@@ -430,11 +381,10 @@
             <span class="font-medium"><%= @client.end_date.strftime('%d/%m/%Y') %></span>
           </div>
           <div class="flex items-center justify-between py-2">
-            <span class="text-gray-600">Dietas:</span>
+            <span class="text-gray-600">Dieta:</span>
             <span class="font-medium"><%= pluralize(@client.diets.count, 'refeição', 'refeições') %></span>
           </div>
         </div>
-
         <div class="mt-6">
           <%= link_to client_diets_path(@client), 
               class: "w-full inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-3 text-sm font-medium text-white hover:bg-blue-700 transition-colors" do %>
@@ -448,11 +398,9 @@
     </div>
   </div>
 </div>
-
 <!-- Client History Section - Side by Side Layout -->
 <div class="mt-8">
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-    
     <!-- Add New History Entry - Left Side -->
     <div class="lg:col-span-1">
       <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
@@ -465,7 +413,6 @@
               method: :post, 
               local: true, 
               class: "space-y-4" do |form| %>
-          
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">Descrição</label>
               <%= form.text_area :description, 
@@ -473,13 +420,11 @@
                   class: "w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-blue-500",
                   placeholder: "Descreva os ajustes realizados..." %>
             </div>
-
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">Fotos desta atualização</label>
               <%= form.file_field :images, multiple: true, accept: "image/*",
                   class: "w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" %>
             </div>
-
             <div class="pt-2">
               <%= form.submit "Adicionar Entrada", 
                   class: "w-full inline-flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 transition-colors" %>
@@ -488,8 +433,8 @@
         </div>
       </div>
     </div>
-
     <!-- History Timeline - Right Side (2/3 of width) -->
+    <!-- ... Outras partes do show do cliente ... -->
     <div class="lg:col-span-2">
       <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
@@ -499,7 +444,7 @@
           <% if @client_histories.any? %>
             <div class="space-y-6">
               <% @client_histories.each do |history| %>
-                <div class="flex gap-4">
+                <div class="flex gap-4 group relative hover:bg-gray-50 rounded-lg transition">
                   <div class="flex-shrink-0">
                     <div class="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100">
                       <svg class="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -507,34 +452,50 @@
                       </svg>
                     </div>
                   </div>
-
                   <div class="flex-1 min-w-0">
                     <div class="flex items-start justify-between">
                       <div>
-                        <h3 class="text-sm font-medium text-gray-900">
-                          
-                        </h3>
-                        <p class="text-xs text-gray-500 mt-1">
-                          <%= history.formatted_date %>
-                        </p>
+                        <p class="text-xs text-gray-500 mt-1"><%= history.formatted_date %></p>
                       </div>
                       <%= button_to client_client_history_path(@client, history), 
-                          method: :delete,
-                          data: { turbo_confirm: "Tem certeza?" },
-                          class: "text-red-600 hover:text-red-800 p-1 flex-shrink-0",
-                          title: "Remover entrada" do %>
+                      method: :delete,
+                      data: { turbo_confirm: "Tem certeza?" },
+                      class: "text-red-600 hover:text-red-800 p-1 flex-shrink-0",
+                      title: "Remover entrada" do %>
                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                         </svg>
                       <% end %>
                     </div>
-                    
-                    <% if history.description.present? %>
-                      <p class="mt-2 text-sm text-gray-600 leading-relaxed">
-                        <%= simple_format(history.description) %>
-                      </p>
-                    <% end %>
-                    
+                    <!-- INLINE EDIT NOTE (puro JS) -->
+                    <div class="description-inline-edit" data-history-id="<%= history.id %>">
+                      <div class="note-display flex items-center gap-2 group" style="cursor:pointer;" onclick="showEditForm(this)" title="Clique para editar">
+                        <% if history.description.present? %>
+                          <p class="mt-2 text-sm text-gray-600 leading-relaxed group-hover:underline">
+                            <%= simple_format(history.description) %>
+                          </p>
+                        <% else %>
+                          <span class="italic text-gray-400">Clique para adicionar uma descrição</span>
+                        <% end %>
+                        <!-- Ícone de lápis + dica -->
+                        <span class="ml-2 text-gray-400 group-hover:text-blue-500 flex items-center gap-1 text-xs">
+                          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536M9 13l6-6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                          </svg>
+                          <span class="hidden sm:inline">Editar</span>
+                        </span>
+                      </div>
+                      <form class="note-edit-form hidden" method="post" action="<%= client_client_history_path(@client, history) %>" onsubmit="return submitEditForm(this)">
+                        <input type="hidden" name="_method" value="patch">
+                        <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+                        <textarea name="client_history[description]" rows="3" class="w-full rounded border-gray-300"><%= history.description %></textarea>
+                        <div class="flex gap-2 mt-2">
+                          <button type="submit" class="inline-flex items-center px-3 py-1.5 bg-blue-600 text-white rounded hover:bg-blue-700">Salvar</button>
+                          <button type="button" class="inline-flex items-center px-3 py-1.5 bg-gray-200 text-gray-700 rounded hover:bg-gray-300" onclick="cancelEditForm(this)">Cancelar</button>
+                        </div>
+                      </form>
+                    </div>
+                    <!-- END INLINE EDIT NOTE -->
                     <% if history.images.any? %>
                       <div class="mt-3">
                         <p class="text-xs text-gray-500 mb-2">Fotos desta atualização:</p>
@@ -543,19 +504,16 @@
                             <% if image.content_type.starts_with?('image') %>
                               <div class="relative group">
                                 <a data-fancybox="history-<%= history.id %>-photos" 
-                                   href="<%= url_for(image) %>" 
-                                   data-caption="<%= history.formatted_date %>">
+                               href="<%= url_for(image) %>" 
+                               data-caption="<%= history.formatted_date %>">
                                   <%= image_tag url_for(image), class: "w-16 h-16 object-cover rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow" %>
                                 </a>
-                                
-                                <!-- Small action overlay for history photos -->
-                               <!-- Substituir o button_to atual por: -->
                                 <div class="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
                                   <%= button_to remove_photo_client_path(@client, photo_id: image.id, history_id: history.id), 
-                                      method: :delete,
-                                      data: { turbo_confirm: "Remover esta foto?", turbo_method: :delete },
-                                      class: "bg-red-500 hover:bg-red-600 text-white p-1 rounded-full transition-colors",
-                                      title: "Remover foto" do %>
+                                  method: :delete,
+                                  data: { turbo_confirm: "Remover esta foto?", turbo_method: :delete },
+                                  class: "bg-red-500 hover:bg-red-600 text-white p-1 rounded-full transition-colors",
+                                  title: "Remover foto" do %>
                                     <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                     </svg>
@@ -583,650 +541,654 @@
         </div>
       </div>
     </div>
-  </div>
-</div>
-
-<!-- Replace Photo Modal -->
-<div id="replace-photo-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" style="display:none;">
-  <div class="bg-white rounded-xl p-6 max-w-md w-full mx-4 shadow-xl">
-    <div class="flex justify-between items-center mb-4">
-      <h3 class="text-lg font-semibold text-gray-900">Substituir Foto</h3>
-      <button onclick="closeReplaceModal()" class="text-gray-400 hover:text-gray-600">
-        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-    </div>
-    
-    <form id="replace-photo-form" method="post" enctype="multipart/form-data">
-      <input type="hidden" name="_method" value="patch">
-      <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
-      
-      <div class="mb-4">
-        <label class="block text-sm font-medium text-gray-700 mb-2">Nova foto:</label>
-        <input type="file" name="photo" accept="image/*" required 
+    <!-- Replace Photo Modal -->
+    <div id="replace-photo-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" style="display:none;">
+      <div class="bg-white rounded-xl p-6 max-w-md w-full mx-4 shadow-xl">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-lg font-semibold text-gray-900">Substituir Foto</h3>
+          <button onclick="closeReplaceModal()" class="text-gray-400 hover:text-gray-600">
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        <form id="replace-photo-form" method="post" enctype="multipart/form-data">
+          <input type="hidden" name="_method" value="patch">
+          <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Nova foto:</label>
+            <input type="file" name="photo" accept="image/*" required 
                class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
-      </div>
-      
-      <div class="flex justify-end gap-3">
-        <button type="button" onclick="closeReplaceModal()" 
+          </div>
+          <div class="flex justify-end gap-3">
+            <button type="button" onclick="closeReplaceModal()" 
                 class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
-          Cancelar
-        </button>
-        <button type="submit" 
+              Cancelar
+            </button>
+            <button type="submit" 
                 class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-          Substituir
-        </button>
+              Substituir
+            </button>
+          </div>
+        </form>
       </div>
-    </form>
-  </div>
-</div>
-
-<!-- Comparison Bar -->
-<div id="compare-bar" class="fixed left-0 right-0 bottom-0 bg-white border-t shadow-lg flex justify-center items-center gap-4 py-4 px-6 transition-all transform translate-y-full z-40" style="display:none;">
-  <span class="font-medium text-gray-900">Comparando fotos selecionadas:</span>
-  <div id="compare-preview" class="flex gap-2"></div>
-  <button type="button" id="compare-btn" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors">
-    Comparar
-  </button>
-  <button type="button" id="clear-btn" class="px-3 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors">
-    Limpar
-  </button>
-</div>
-
-<!-- Comparison Modal -->
-<!-- Comparison Modal - ATUALIZADO -->
-<!-- Comparison Modal - ATUALIZADO COM DOWNLOAD -->
-<div id="compare-modal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 transition-all" style="display:none;">
-  <div class="bg-white rounded-xl p-6 max-w-6xl w-full mx-4 shadow-xl">
-    <div class="flex justify-between items-center mb-6">
-      <h3 class="text-xl font-semibold text-gray-900">Comparação de Evolução</h3>
-      <button onclick="closeComparisonModal()" class="text-gray-400 hover:text-gray-600">
-        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-        </svg>
+    </div>
+    <!-- Comparison Bar -->
+    <div id="compare-bar" class="fixed left-0 right-0 bottom-0 bg-white border-t shadow-lg flex justify-center items-center gap-4 py-4 px-6 transition-all transform translate-y-full z-40" style="display:none;">
+      <span class="font-medium text-gray-900">Comparando fotos selecionadas:</span>
+      <div id="compare-preview" class="flex gap-2"></div>
+      <button type="button" id="compare-btn" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors">
+        Comparar
+      </button>
+      <button type="button" id="clear-btn" class="px-3 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors">
+        Limpar
       </button>
     </div>
-    
-    <!-- Canvas oculto para gerar a imagem -->
-    <canvas id="comparison-canvas" style="display: none;"></canvas>
-    
-    <div id="compare-images" class="flex gap-8 justify-center items-start"></div>
-    
-    <div class="mt-8 flex justify-center gap-4">
-      <button onclick="downloadComparison()"
+    <!-- Comparison Modal -->
+    <!-- Comparison Modal - ATUALIZADO -->
+    <!-- Comparison Modal - ATUALIZADO COM DOWNLOAD -->
+    <div id="compare-modal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 transition-all" style="display:none;">
+      <div class="bg-white rounded-xl p-6 max-w-6xl w-full mx-4 shadow-xl">
+        <div class="flex justify-between items-center mb-6">
+          <h3 class="text-xl font-semibold text-gray-900">Comparação de Evolução</h3>
+          <button onclick="closeComparisonModal()" class="text-gray-400 hover:text-gray-600">
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        <!-- Canvas oculto para gerar a imagem -->
+        <canvas id="comparison-canvas" style="display: none;"></canvas>
+        <div id="compare-images" class="flex gap-8 justify-center items-start"></div>
+        <div class="mt-8 flex justify-center gap-4">
+          <button onclick="downloadComparison()"
         class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium transition-colors inline-flex items-center gap-2">
-        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-4-4m4 4l4-4m-6 4h8m-8 0H8a2 2 0 01-2-2V8a2 2 0 012-2h2M16 2h2a2 2 0 012 2v8a2 2 0 01-2 2h-2" />
-        </svg>
-        Baixar Comparação
-      </button>
-      
-      <button onclick="closeComparisonModal()"
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-4-4m4 4l4-4m-6 4h8m-8 0H8a2 2 0 01-2-2V8a2 2 0 012-2h2M16 2h2a2 2 0 012 2v8a2 2 0 01-2 2h-2" />
+            </svg>
+            Baixar Comparação
+          </button>
+          <button onclick="closeComparisonModal()"
         class="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 font-medium transition-colors">
-        Fechar
-      </button>
+            Fechar
+          </button>
+        </div>
+        <!-- Status do download -->
+        <div id="download-status" class="mt-4 text-center text-sm text-gray-600" style="display: none;">
+          Preparando download...
+        </div>
+      </div>
     </div>
-    
-    <!-- Status do download -->
-    <div id="download-status" class="mt-4 text-center text-sm text-gray-600" style="display: none;">
-      Preparando download...
+    <!-- Loading Overlay -->
+    <div id="upload-loading" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" style="display:none;">
+      <div class="bg-white rounded-xl p-6 flex items-center gap-3 shadow-xl">
+        <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+        <span class="text-gray-700 font-medium">Enviando fotos...</span>
+      </div>
     </div>
-  </div>
-</div>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // Initialize Fancybox
+        Fancybox.bind('[data-fancybox="client-photos"]', {
+          Toolbar: {
+            display: {
+              left: ["infobar"],
+              middle: ["zoomIn", "zoomOut", "toggle1to1", "rotateCCW", "rotateCW", "flipX", "flipY"],
+              right: ["slideshow", "thumbs", "close"],
+            },
+          },
+        });
 
-<!-- Loading Overlay -->
-<div id="upload-loading" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" style="display:none;">
-  <div class="bg-white rounded-xl p-6 flex items-center gap-3 shadow-xl">
-    <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-    <span class="text-gray-700 font-medium">Enviando fotos...</span>
-  </div>
-</div>
+        Fancybox.bind('[data-fancybox*="history-"]', {
+          Toolbar: {
+            display: {
+              left: ["infobar"],
+              middle: ["zoomIn", "zoomOut", "toggle1to1", "rotateCCW", "rotateCW", "flipX", "flipY"],
+              right: ["slideshow", "thumbs", "close"],
+            },
+          },
+        });
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  // Initialize Fancybox
-  Fancybox.bind('[data-fancybox="client-photos"]', {
-    Toolbar: {
-      display: {
-        left: ["infobar"],
-        middle: ["zoomIn", "zoomOut", "toggle1to1", "rotateCCW", "rotateCW", "flipX", "flipY"],
-        right: ["slideshow", "thumbs", "close"],
-      },
-    },
-  });
-  
-  Fancybox.bind('[data-fancybox*="history-"]', {
-    Toolbar: {
-      display: {
-        left: ["infobar"],
-        middle: ["zoomIn", "zoomOut", "toggle1to1", "rotateCCW", "rotateCW", "flipX", "flipY"],
-        right: ["slideshow", "thumbs", "close"],
-      },
-    },
-  });
+        // Photo comparison functionality
+        const compareBar = document.getElementById('compare-bar');
+        const comparePreview = document.getElementById('compare-preview');
+        const checkboxes = document.querySelectorAll('.compare-photo-checkbox');
+        const photoSelectors = document.querySelectorAll('.photo-selector');
+        let selectedPhotos = [];
 
-  // Photo comparison functionality
-  const compareBar = document.getElementById('compare-bar');
-  const comparePreview = document.getElementById('compare-preview');
-  const checkboxes = document.querySelectorAll('.compare-photo-checkbox');
-  const photoSelectors = document.querySelectorAll('.photo-selector');
-  let selectedPhotos = [];
+        // Variável global para armazenar dados das fotos para download
+        window.comparisonData = [];
 
-  // Variável global para armazenar dados das fotos para download
-  window.comparisonData = [];
+        photoSelectors.forEach(selector => {
+          selector.addEventListener('click', function(e) {
+            if (e.target.type !== 'checkbox') {
+              const checkbox = this.querySelector('.compare-photo-checkbox');
+              checkbox.checked = !checkbox.checked;
+              checkbox.dispatchEvent(new Event('change'));
+            }
+          });
+        });
 
-  photoSelectors.forEach(selector => {
-    selector.addEventListener('click', function(e) {
-      if (e.target.type !== 'checkbox') {
-        const checkbox = this.querySelector('.compare-photo-checkbox');
-        checkbox.checked = !checkbox.checked;
-        checkbox.dispatchEvent(new Event('change'));
-      }
-    });
-  });
+        checkboxes.forEach(cb => {
+          cb.addEventListener('change', function() {
+            const container = this.closest('.photo-selector');
+            const overlay = container.querySelector('.selected-overlay');
 
-  checkboxes.forEach(cb => {
-    cb.addEventListener('change', function() {
-      const container = this.closest('.photo-selector');
-      const overlay = container.querySelector('.selected-overlay');
-      
-      if (this.checked) {
-        const currentlySelected = document.querySelectorAll('.compare-photo-checkbox:checked');
-        if (currentlySelected.length > 2) {
-          const firstSelected = currentlySelected[0];
-          firstSelected.checked = false;
-          const firstContainer = firstSelected.closest('.photo-selector');
-          const firstOverlay = firstContainer.querySelector('.selected-overlay');
-          firstOverlay.style.opacity = '0';
-          firstContainer.style.borderColor = 'transparent';
+            if (this.checked) {
+              const currentlySelected = document.querySelectorAll('.compare-photo-checkbox:checked');
+              if (currentlySelected.length > 2) {
+                const firstSelected = currentlySelected[0];
+                firstSelected.checked = false;
+                const firstContainer = firstSelected.closest('.photo-selector');
+                const firstOverlay = firstContainer.querySelector('.selected-overlay');
+                firstOverlay.style.opacity = '0';
+                firstContainer.style.borderColor = 'transparent';
+              }
+
+              overlay.style.opacity = '1';
+              container.style.borderColor = '#2563eb';
+            } else {
+              overlay.style.opacity = '0';
+              container.style.borderColor = 'transparent';
+            }
+
+            selectedPhotos = Array.from(document.querySelectorAll('.compare-photo-checkbox:checked')).map(cb => ({
+              url: cb.value,
+              date: cb.dataset.date,
+              type: cb.dataset.type
+            }));
+
+            comparePreview.innerHTML = selectedPhotos.map(photo =>
+              `<div class="text-center">
+                <img src="${photo.url}" class="w-14 h-14 object-cover rounded-lg shadow-sm border border-gray-200">
+                <span class="text-xs text-gray-600 block mt-1">${photo.date}</span>
+              </div>`
+            ).join('');
+
+            if (selectedPhotos.length === 2) {
+              compareBar.style.display = 'flex';
+              compareBar.style.transform = 'translateY(0)';
+            } else {
+              compareBar.style.transform = 'translateY(100%)';
+              setTimeout(() => {
+                if (selectedPhotos.length !== 2) {
+                  compareBar.style.display = 'none';
+                }
+              }, 300);
+            }
+          });
+        });
+
+        // Função de comparação ATUALIZADA com suporte a download
+        document.getElementById('compare-btn').onclick = function() {
+          if(selectedPhotos.length !== 2) return;
+
+          // Armazenar dados para download
+          window.comparisonData = selectedPhotos;
+
+          document.getElementById('compare-images').innerHTML = selectedPhotos.map(photo =>
+            `<div class="text-center">
+              <img src="${photo.url}" class="max-w-sm max-h-96 rounded-xl shadow-lg border border-gray-200 mb-4 comparison-img">
+              <div class="text-base font-medium text-gray-900">${photo.type}</div>
+              <div class="text-sm text-gray-500">${photo.date}</div>
+            </div>`
+          ).join('');
+
+          document.getElementById('compare-modal').style.display = 'flex';
+          compareBar.style.transform = 'translateY(100%)';
+          setTimeout(() => compareBar.style.display = 'none', 300);
+        };
+
+        document.getElementById('clear-btn').onclick = function() {
+          checkboxes.forEach(cb => {
+            cb.checked = false;
+            const container = cb.closest('.photo-selector');
+            const overlay = container.querySelector('.selected-overlay');
+            overlay.style.opacity = '0';
+            container.style.borderColor = 'transparent';
+          });
+          compareBar.style.transform = 'translateY(100%)';
+          setTimeout(() => compareBar.style.display = 'none', 300);
+          comparePreview.innerHTML = '';
+          selectedPhotos = [];
+          window.comparisonData = [];
+        };
+      });
+
+      // Funções para upload de fotos (mantidas)
+      function handlePhotoSelection(input) {
+        if (input.files && input.files.length > 0) {
+          document.getElementById('upload-loading').style.display = 'flex';
+          document.getElementById('add-photos-form').submit();
         }
-        
-        overlay.style.opacity = '1';
-        container.style.borderColor = '#2563eb';
-      } else {
-        overlay.style.opacity = '0';
-        container.style.borderColor = 'transparent';
       }
 
-      selectedPhotos = Array.from(document.querySelectorAll('.compare-photo-checkbox:checked')).map(cb => ({
-        url: cb.value,
-        date: cb.dataset.date,
-        type: cb.dataset.type
-      }));
+      function openReplaceModal(photoId, type, historyId = null) {
+        const modal = document.getElementById('replace-photo-modal');
+        const form = document.getElementById('replace-photo-form');
 
-      comparePreview.innerHTML = selectedPhotos.map(photo => 
-        `<div class="text-center">
-          <img src="${photo.url}" class="w-14 h-14 object-cover rounded-lg shadow-sm border border-gray-200">
-          <span class="text-xs text-gray-600 block mt-1">${photo.date}</span>
-        </div>`
-      ).join('');
+        if (type === 'initial') {
+          form.action = `/clients/<%= @client.id %>/replace_photo/${photoId}`;
+        } else {
+          form.action = `/clients/<%= @client.id %>/client_histories/${historyId}/replace_photo/${photoId}`;
+        }
 
-      if (selectedPhotos.length === 2) {
-        compareBar.style.display = 'flex';
-        compareBar.style.transform = 'translateY(0)';
-      } else {
-        compareBar.style.transform = 'translateY(100%)';
-        setTimeout(() => {
-          if (selectedPhotos.length !== 2) {
-            compareBar.style.display = 'none';
-          }
-        }, 300);
+        modal.style.display = 'flex';
       }
-    });
-  });
 
-  // Função de comparação ATUALIZADA com suporte a download
-  document.getElementById('compare-btn').onclick = function() {
-    if(selectedPhotos.length !== 2) return;
-    
-    // Armazenar dados para download
-    window.comparisonData = selectedPhotos;
-    
-    document.getElementById('compare-images').innerHTML = selectedPhotos.map(photo => 
-      `<div class="text-center">
-        <img src="${photo.url}" class="max-w-sm max-h-96 rounded-xl shadow-lg border border-gray-200 mb-4 comparison-img">
-        <div class="text-base font-medium text-gray-900">${photo.type}</div>
-        <div class="text-sm text-gray-500">${photo.date}</div>
-      </div>`
-    ).join('');
-    
-    document.getElementById('compare-modal').style.display = 'flex';
-    compareBar.style.transform = 'translateY(100%)';
-    setTimeout(() => compareBar.style.display = 'none', 300);
-  };
+      function closeReplaceModal() {
+        document.getElementById('replace-photo-modal').style.display = 'none';
+        document.getElementById('replace-photo-form').reset();
+      }
 
-  document.getElementById('clear-btn').onclick = function() {
-    checkboxes.forEach(cb => {
-      cb.checked = false;
-      const container = cb.closest('.photo-selector');
-      const overlay = container.querySelector('.selected-overlay');
-      overlay.style.opacity = '0';
-      container.style.borderColor = 'transparent';
-    });
-    compareBar.style.transform = 'translateY(100%)';
-    setTimeout(() => compareBar.style.display = 'none', 300);
-    comparePreview.innerHTML = '';
-    selectedPhotos = [];
-    window.comparisonData = [];
-  };
-});
+      // ========== VERSÃO MELHORADA PARA DOWNLOAD ==========
 
-// Funções para upload de fotos (mantidas)
-function handlePhotoSelection(input) {
-  if (input.files && input.files.length > 0) {
-    document.getElementById('upload-loading').style.display = 'flex';
-    document.getElementById('add-photos-form').submit();
-  }
-}
+      // Versão DEBUG para descobrir o problema
+      // VERSÃO SIMPLES - Captura apenas o modal atual
+      // ... código anterior permanece igual até a função de download ...
 
-function openReplaceModal(photoId, type, historyId = null) {
-  const modal = document.getElementById('replace-photo-modal');
-  const form = document.getElementById('replace-photo-form');
-  
-  if (type === 'initial') {
-    form.action = `/clients/<%= @client.id %>/replace_photo/${photoId}`;
-  } else {
-    form.action = `/clients/<%= @client.id %>/client_histories/${historyId}/replace_photo/${photoId}`;
-  }
-  
-  modal.style.display = 'flex';
-}
+      // NOVA VERSÃO usando endpoint do Rails
+      // Substituir o botão de download por isso:
+      // VERSÃO OTIMIZADA - Imagens maiores e melhor aproveitamento do espaço
+      async function downloadComparison() {
+        if (!window.comparisonData || window.comparisonData.length !== 2) {
+          alert('Erro: Dados de comparação não encontrados');
+          return;
+        }
 
-function closeReplaceModal() {
-  document.getElementById('replace-photo-modal').style.display = 'none';
-  document.getElementById('replace-photo-form').reset();
-}
+        const statusDiv = document.getElementById('download-status');
+        statusDiv.style.display = 'block';
+        statusDiv.textContent = 'Preparando download...';
+        statusDiv.style.color = '#6b7280';
 
-// ========== VERSÃO MELHORADA PARA DOWNLOAD ==========
+        try {
+          // Carregar imagens via fetch (sem CORS)
+          statusDiv.textContent = 'Baixando imagens...';
 
-// Versão DEBUG para descobrir o problema
-// VERSÃO SIMPLES - Captura apenas o modal atual
-// ... código anterior permanece igual até a função de download ...
+          const [img1Blob, img2Blob] = await Promise.all([
+            fetch(window.comparisonData[0].url).then(r => r.blob()),
+            fetch(window.comparisonData[1].url).then(r => r.blob())
+          ]);
 
-// NOVA VERSÃO usando endpoint do Rails
-// Substituir o botão de download por isso:
-// VERSÃO OTIMIZADA - Imagens maiores e melhor aproveitamento do espaço
-async function downloadComparison() {
-  if (!window.comparisonData || window.comparisonData.length !== 2) {
-    alert('Erro: Dados de comparação não encontrados');
-    return;
-  }
+          // Converter para URLs locais
+          const img1Url = URL.createObjectURL(img1Blob);
+          const img2Url = URL.createObjectURL(img2Blob);
 
-  const statusDiv = document.getElementById('download-status');
-  statusDiv.style.display = 'block';
-  statusDiv.textContent = 'Preparando download...';
-  statusDiv.style.color = '#6b7280';
+          statusDiv.textContent = 'Gerando comparação...';
 
-  try {
-    // Carregar imagens via fetch (sem CORS)
-    statusDiv.textContent = 'Baixando imagens...';
-    
-    const [img1Blob, img2Blob] = await Promise.all([
-      fetch(window.comparisonData[0].url).then(r => r.blob()),
-      fetch(window.comparisonData[1].url).then(r => r.blob())
-    ]);
-    
-    // Converter para URLs locais
-    const img1Url = URL.createObjectURL(img1Blob);
-    const img2Url = URL.createObjectURL(img2Blob);
-    
-    statusDiv.textContent = 'Gerando comparação...';
-    
-    // Criar canvas - OTIMIZADO
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    
-    // Dimensões otimizadas para melhor aproveitamento
-    canvas.width = 1400;
-    canvas.height = 900;
-    
-    // Fundo branco
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
-    // Carregar e desenhar imagens
-    const images = await Promise.all([
-      loadImageFromUrl(img1Url),
-      loadImageFromUrl(img2Url)
-    ]);
-    
-    // HEADER - Mais compacto
-    ctx.fillStyle = '#1f2937';
-    ctx.font = 'bold 32px Arial, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('Comparação de Evolução - <%= @client.name %>', canvas.width / 2, 45);
-    
-    // Data - mais próxima do título
-    ctx.fillStyle = '#6b7280';
-    ctx.font = '18px Arial, sans-serif';
-    const today = new Date().toLocaleDateString('pt-BR');
-    ctx.fillText(`Gerado em: ${today}`, canvas.width / 2, 75);
-    
-    // IMAGENS - Muito maiores e melhor posicionadas
-    const margin = 80;
-    const headerSpace = 100;
-    const footerSpace = 120;
-    const availableHeight = canvas.height - headerSpace - footerSpace;
-    const availableWidth = canvas.width - (margin * 3); // espaço para 2 imagens + separador
-    const imageWidth = availableWidth / 2;
-    
-    // Tamanho máximo das imagens (bem maior agora)
-    const maxImageSize = Math.min(imageWidth - 40, availableHeight - 60);
-    
-    images.forEach((img, index) => {
-      const x = margin + (index * (imageWidth + margin));
-      const y = headerSpace + 20;
-      
-      // Calcular dimensões mantendo proporção - IMAGENS MAIORES
-      let width = img.width;
-      let height = img.height;
-      
-      // Escalar para aproveitar melhor o espaço
-      const scale = Math.min(maxImageSize / width, maxImageSize / height);
-      width = width * scale;
-      height = height * scale;
-      
-      // Centralizar na área disponível
-      const drawX = x + (imageWidth - width) / 2;
-      const drawY = y + (availableHeight - height - 60) / 2; // 60 para labels
-      
-      // Desenhar sombra sutil
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
-      ctx.fillRect(drawX + 5, drawY + 5, width, height);
-      
-      // Desenhar borda mais elegante
-      ctx.strokeStyle = '#d1d5db';
-      ctx.lineWidth = 3;
-      ctx.strokeRect(drawX - 3, drawY - 3, width + 6, height + 6);
-      
-      // Desenhar imagem
-      ctx.drawImage(img, drawX, drawY, width, height);
-      
-      // Labels - posicionadas abaixo das imagens
-      const labelY = drawY + height + 35;
-      
-      // Tipo da foto
-      ctx.fillStyle = '#1f2937';
-      ctx.font = 'bold 24px Arial, sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText(window.comparisonData[index].type, x + imageWidth / 2, labelY);
-      
-      // Data
-      ctx.fillStyle = '#6b7280';
-      ctx.font = '18px Arial, sans-serif';
-      ctx.fillText(window.comparisonData[index].date, x + imageWidth / 2, labelY + 30);
-    });
-    
-    // Linha separadora - mais elegante
-    const separatorX = canvas.width / 2;
-    const separatorStartY = headerSpace + 20;
-    const separatorEndY = canvas.height - footerSpace;
-    
-    // Gradiente para a linha
-    const gradient = ctx.createLinearGradient(separatorX, separatorStartY, separatorX, separatorEndY);
-    gradient.addColorStop(0, 'rgba(209, 213, 219, 0.3)');
-    gradient.addColorStop(0.5, 'rgba(209, 213, 219, 1)');
-    gradient.addColorStop(1, 'rgba(209, 213, 219, 0.3)');
-    
-    ctx.strokeStyle = gradient;
-    ctx.lineWidth = 3;
-    ctx.beginPath();
-    ctx.moveTo(separatorX, separatorStartY);
-    ctx.lineTo(separatorX, separatorEndY);
-    ctx.stroke();
-    
-    // Watermark - menor e mais discreto
-    ctx.fillStyle = '#9ca3af';
-    ctx.font = '14px Arial, sans-serif';
-    ctx.textAlign = 'right';
-    ctx.fillText('Sistema de Consultoria Nutricional', canvas.width - 30, canvas.height - 25);
-    
-    statusDiv.textContent = 'Finalizando download...';
-    
-    // Download
-    canvas.toBlob(function(blob) {
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      const clientName = '<%= @client.name.parameterize %>' || 'cliente';
-      const dateStr = new Date().toISOString().split('T')[0];
-      a.href = url;
-      a.download = `comparacao-evolucao-${clientName}-${dateStr}.png`;
-      
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      
-      // Limpar URLs temporárias
-      URL.revokeObjectURL(url);
-      URL.revokeObjectURL(img1Url);
-      URL.revokeObjectURL(img2Url);
-      
-      statusDiv.textContent = 'Download concluído!';
-      statusDiv.style.color = '#059669';
-      setTimeout(() => {
+          // Criar canvas - OTIMIZADO
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+
+          // Dimensões otimizadas para melhor aproveitamento
+          canvas.width = 1400;
+          canvas.height = 900;
+
+          // Fundo branco
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+          // Carregar e desenhar imagens
+          const images = await Promise.all([
+            loadImageFromUrl(img1Url),
+            loadImageFromUrl(img2Url)
+          ]);
+
+          // HEADER - Mais compacto
+          ctx.fillStyle = '#1f2937';
+          ctx.font = 'bold 32px Arial, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText('Comparação de Evolução - <%= @client.name %>', canvas.width / 2, 45);
+
+          // Data - mais próxima do título
+          ctx.fillStyle = '#6b7280';
+          ctx.font = '18px Arial, sans-serif';
+          const today = new Date().toLocaleDateString('pt-BR');
+          ctx.fillText(`Gerado em: ${today}`, canvas.width / 2, 75);
+
+          // IMAGENS - Muito maiores e melhor posicionadas
+          const margin = 80;
+          const headerSpace = 100;
+          const footerSpace = 120;
+          const availableHeight = canvas.height - headerSpace - footerSpace;
+          const availableWidth = canvas.width - (margin * 3); // espaço para 2 imagens + separador
+          const imageWidth = availableWidth / 2;
+
+          // Tamanho máximo das imagens (bem maior agora)
+          const maxImageSize = Math.min(imageWidth - 40, availableHeight - 60);
+
+          images.forEach((img, index) => {
+            const x = margin + (index * (imageWidth + margin));
+            const y = headerSpace + 20;
+
+            // Calcular dimensões mantendo proporção - IMAGENS MAIORES
+            let width = img.width;
+            let height = img.height;
+
+            // Escalar para aproveitar melhor o espaço
+            const scale = Math.min(maxImageSize / width, maxImageSize / height);
+            width = width * scale;
+            height = height * scale;
+
+            // Centralizar na área disponível
+            const drawX = x + (imageWidth - width) / 2;
+            const drawY = y + (availableHeight - height - 60) / 2; // 60 para labels
+
+            // Desenhar sombra sutil
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+            ctx.fillRect(drawX + 5, drawY + 5, width, height);
+
+            // Desenhar borda mais elegante
+            ctx.strokeStyle = '#d1d5db';
+            ctx.lineWidth = 3;
+            ctx.strokeRect(drawX - 3, drawY - 3, width + 6, height + 6);
+
+            // Desenhar imagem
+            ctx.drawImage(img, drawX, drawY, width, height);
+
+            // Labels - posicionadas abaixo das imagens
+            const labelY = drawY + height + 35;
+
+            // Tipo da foto
+            ctx.fillStyle = '#1f2937';
+            ctx.font = 'bold 24px Arial, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(window.comparisonData[index].type, x + imageWidth / 2, labelY);
+
+            // Data
+            ctx.fillStyle = '#6b7280';
+            ctx.font = '18px Arial, sans-serif';
+            ctx.fillText(window.comparisonData[index].date, x + imageWidth / 2, labelY + 30);
+          });
+
+          // Linha separadora - mais elegante
+          const separatorX = canvas.width / 2;
+          const separatorStartY = headerSpace + 20;
+          const separatorEndY = canvas.height - footerSpace;
+
+          // Gradiente para a linha
+          const gradient = ctx.createLinearGradient(separatorX, separatorStartY, separatorX, separatorEndY);
+          gradient.addColorStop(0, 'rgba(209, 213, 219, 0.3)');
+          gradient.addColorStop(0.5, 'rgba(209, 213, 219, 1)');
+          gradient.addColorStop(1, 'rgba(209, 213, 219, 0.3)');
+
+          ctx.strokeStyle = gradient;
+          ctx.lineWidth = 3;
+          ctx.beginPath();
+          ctx.moveTo(separatorX, separatorStartY);
+          ctx.lineTo(separatorX, separatorEndY);
+          ctx.stroke();
+
+          // Watermark - menor e mais discreto
+          ctx.fillStyle = '#9ca3af';
+          ctx.font = '14px Arial, sans-serif';
+          ctx.textAlign = 'right';
+          ctx.fillText('Sistema de Consultoria Nutricional', canvas.width - 30, canvas.height - 25);
+
+          statusDiv.textContent = 'Finalizando download...';
+
+          // Download
+          canvas.toBlob(function(blob) {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            const clientName = '<%= @client.name.parameterize %>' || 'cliente';
+            const dateStr = new Date().toISOString().split('T')[0];
+            a.href = url;
+            a.download = `comparacao-evolucao-${clientName}-${dateStr}.png`;
+
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+
+            // Limpar URLs temporárias
+            URL.revokeObjectURL(url);
+            URL.revokeObjectURL(img1Url);
+            URL.revokeObjectURL(img2Url);
+
+            statusDiv.textContent = 'Download concluído!';
+            statusDiv.style.color = '#059669';
+            setTimeout(() => {
+              statusDiv.style.display = 'none';
+              statusDiv.style.color = '#6b7280';
+            }, 3000);
+
+          }, 'image/png', 0.95);
+
+        } catch (error) {
+          console.error('Erro no download:', error);
+          statusDiv.textContent = 'Erro: ' + error.message;
+          statusDiv.style.color = '#dc2626';
+          setTimeout(() => {
+            statusDiv.style.display = 'none';
+            statusDiv.style.color = '#6b7280';
+          }, 5000);
+        }
+      }
+
+      // Função auxiliar permanece igual
+      function loadImageFromUrl(url) {
+        return new Promise((resolve, reject) => {
+          const img = new Image();
+          img.onload = () => resolve(img);
+          img.onerror = () => reject(new Error('Falha ao carregar imagem'));
+          img.src = url;
+        });
+      }
+
+      function extractSignedId(url) {
+        // Extrair signed_id da URL do Active Storage
+        // Formato: /rails/active_storage/blobs/redirect/SIGNED_ID/filename
+        const match = url.match(/\/blobs\/redirect\/([^\/]+)/);
+        if (match) {
+          return match[1];
+        }
+
+        // Formato alternativo: /rails/active_storage/blobs/SIGNED_ID/filename
+        const match2 = url.match(/\/blobs\/([^\/]+)/);
+        if (match2) {
+          return match2[1];
+        }
+
+        return null;
+      }
+
+      function extractPhotoId(url) {
+        // Extrair ID da URL do Active Storage
+        // Formato típico: /rails/active_storage/blobs/redirect/.../filename
+        const match = url.match(/\/blobs\/redirect\/([^\/]+)/);
+        if (match) {
+          return match[1];
+        }
+
+        // Tentar outro formato
+        const match2 = url.match(/\/blobs\/([^\/]+)/);
+        if (match2) {
+          return match2[1];
+        }
+
+        // Se não conseguir extrair, usar a URL completa como ID
+        return btoa(url).replace(/[^a-zA-Z0-9]/g, '').substring(0, 20);
+      }
+
+      // ... resto do código permanece igual ...
+      function createComparisonImage(ctx, images, canvasWidth, canvasHeight) {
+        const statusDiv = document.getElementById('download-status');
+
+        try {
+          // Configurações
+          const margin = 40;
+          const titleHeight = 80;
+          const labelHeight = 60;
+          const imageWidth = (canvasWidth - margin * 3) / 2;
+          const imageHeight = canvasHeight - titleHeight - labelHeight - margin * 2;
+
+          // Título principal
+          ctx.fillStyle = '#1f2937';
+          ctx.font = 'bold 28px Arial, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText('Comparação de Evolução - <%= @client.name %>', canvasWidth / 2, 40);
+
+          // Data de geração
+          ctx.font = '16px Arial, sans-serif';
+          ctx.fillStyle = '#6b7280';
+          const today = new Date().toLocaleDateString('pt-BR');
+          ctx.fillText(`Gerado em: ${today}`, canvasWidth / 2, 65);
+
+          // Desenhar as duas imagens lado a lado
+          images.forEach((imageData, index) => {
+            const x = margin + (index * (imageWidth + margin));
+            const y = titleHeight + margin;
+
+            // Calcular dimensões mantendo proporção
+            const imgAspect = imageData.img.width / imageData.img.height;
+            const canvasAspect = imageWidth / imageHeight;
+
+            let drawWidth, drawHeight, drawX, drawY;
+
+            if (imgAspect > canvasAspect) {
+              // Imagem mais larga
+              drawWidth = imageWidth;
+              drawHeight = imageWidth / imgAspect;
+              drawX = x;
+              drawY = y + (imageHeight - drawHeight) / 2;
+            } else {
+              // Imagem mais alta
+              drawHeight = imageHeight;
+              drawWidth = imageHeight * imgAspect;
+              drawX = x + (imageWidth - drawWidth) / 2;
+              drawY = y;
+            }
+
+            // Desenhar borda
+            ctx.strokeStyle = '#e5e7eb';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(x - 2, y - 2, imageWidth + 4, imageHeight + 4);
+
+            // Desenhar imagem
+            ctx.drawImage(imageData.img, drawX, drawY, drawWidth, drawHeight);
+
+            // Label da imagem
+            const labelY = y + imageHeight + 30;
+
+            ctx.fillStyle = '#1f2937';
+            ctx.font = 'bold 20px Arial, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(imageData.data.type, x + imageWidth / 2, labelY);
+
+            ctx.fillStyle = '#6b7280';
+            ctx.font = '16px Arial, sans-serif';
+            ctx.fillText(imageData.data.date, x + imageWidth / 2, labelY + 25);
+          });
+
+          // Linha separadora vertical
+          ctx.strokeStyle = '#d1d5db';
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.moveTo(canvasWidth / 2, titleHeight + margin);
+          ctx.lineTo(canvasWidth / 2, titleHeight + margin + imageHeight);
+          ctx.stroke();
+
+          // Adicionar watermark/assinatura
+          ctx.fillStyle = '#9ca3af';
+          ctx.font = '12px Arial, sans-serif';
+          ctx.textAlign = 'right';
+          ctx.fillText('Sistema de Consultoria Nutricional', canvasWidth - 20, canvasHeight - 20);
+
+          statusDiv.textContent = 'Finalizando download...';
+
+          // Converter para blob e fazer download
+          canvas.toBlob(function(blob) {
+            if (!blob) {
+              throw new Error('Erro ao gerar imagem');
+            }
+
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            const clientName = '<%= @client.name.parameterize %>' || 'cliente';
+            const dateStr = new Date().toISOString().split('T')[0];
+            a.href = url;
+            a.download = `comparacao-evolucao-${clientName}-${dateStr}.png`;
+
+            // Adicionar ao DOM temporariamente e clicar
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+
+            // Limpar URL
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
+
+            statusDiv.textContent = 'Download concluído!';
+            statusDiv.style.color = '#059669';
+            setTimeout(() => {
+              statusDiv.style.display = 'none';
+              statusDiv.style.color = '#6b7280';
+            }, 3000);
+
+          }, 'image/png', 0.95);
+
+        } catch (error) {
+          console.error('Erro ao criar comparação:', error);
+          statusDiv.textContent = 'Erro ao gerar imagem';
+          statusDiv.style.color = '#dc2626';
+          setTimeout(() => {
+            statusDiv.style.display = 'none';
+            statusDiv.style.color = '#6b7280';
+          }, 5000);
+        }
+      }
+
+      // Função para fechar modal de comparação
+      function closeComparisonModal() {
+        document.getElementById('compare-modal').style.display = 'none';
+        const statusDiv = document.getElementById('download-status');
         statusDiv.style.display = 'none';
         statusDiv.style.color = '#6b7280';
-      }, 3000);
-      
-    }, 'image/png', 0.95);
-    
-  } catch (error) {
-    console.error('Erro no download:', error);
-    statusDiv.textContent = 'Erro: ' + error.message;
-    statusDiv.style.color = '#dc2626';
-    setTimeout(() => {
-      statusDiv.style.display = 'none';
-      statusDiv.style.color = '#6b7280';
-    }, 5000);
-  }
-}
-
-// Função auxiliar permanece igual
-function loadImageFromUrl(url) {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.onload = () => resolve(img);
-    img.onerror = () => reject(new Error('Falha ao carregar imagem'));
-    img.src = url;
-  });
-}
-
-function extractSignedId(url) {
-  // Extrair signed_id da URL do Active Storage
-  // Formato: /rails/active_storage/blobs/redirect/SIGNED_ID/filename
-  const match = url.match(/\/blobs\/redirect\/([^\/]+)/);
-  if (match) {
-    return match[1];
-  }
-  
-  // Formato alternativo: /rails/active_storage/blobs/SIGNED_ID/filename
-  const match2 = url.match(/\/blobs\/([^\/]+)/);
-  if (match2) {
-    return match2[1];
-  }
-  
-  return null;
-}
-
-function extractPhotoId(url) {
-  // Extrair ID da URL do Active Storage
-  // Formato típico: /rails/active_storage/blobs/redirect/.../filename
-  const match = url.match(/\/blobs\/redirect\/([^\/]+)/);
-  if (match) {
-    return match[1];
-  }
-  
-  // Tentar outro formato
-  const match2 = url.match(/\/blobs\/([^\/]+)/);
-  if (match2) {
-    return match2[1];
-  }
-  
-  // Se não conseguir extrair, usar a URL completa como ID
-  return btoa(url).replace(/[^a-zA-Z0-9]/g, '').substring(0, 20);
-}
-
-// ... resto do código permanece igual ...
-function createComparisonImage(ctx, images, canvasWidth, canvasHeight) {
-  const statusDiv = document.getElementById('download-status');
-  
-  try {
-    // Configurações
-    const margin = 40;
-    const titleHeight = 80;
-    const labelHeight = 60;
-    const imageWidth = (canvasWidth - margin * 3) / 2;
-    const imageHeight = canvasHeight - titleHeight - labelHeight - margin * 2;
-
-    // Título principal
-    ctx.fillStyle = '#1f2937';
-    ctx.font = 'bold 28px Arial, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('Comparação de Evolução - <%= @client.name %>', canvasWidth / 2, 40);
-
-    // Data de geração
-    ctx.font = '16px Arial, sans-serif';
-    ctx.fillStyle = '#6b7280';
-    const today = new Date().toLocaleDateString('pt-BR');
-    ctx.fillText(`Gerado em: ${today}`, canvasWidth / 2, 65);
-
-    // Desenhar as duas imagens lado a lado
-    images.forEach((imageData, index) => {
-      const x = margin + (index * (imageWidth + margin));
-      const y = titleHeight + margin;
-
-      // Calcular dimensões mantendo proporção
-      const imgAspect = imageData.img.width / imageData.img.height;
-      const canvasAspect = imageWidth / imageHeight;
-      
-      let drawWidth, drawHeight, drawX, drawY;
-      
-      if (imgAspect > canvasAspect) {
-        // Imagem mais larga
-        drawWidth = imageWidth;
-        drawHeight = imageWidth / imgAspect;
-        drawX = x;
-        drawY = y + (imageHeight - drawHeight) / 2;
-      } else {
-        // Imagem mais alta
-        drawHeight = imageHeight;
-        drawWidth = imageHeight * imgAspect;
-        drawX = x + (imageWidth - drawWidth) / 2;
-        drawY = y;
+      }
+    </script>
+    <script>
+      function showEditForm(displayDiv) {
+        const container = displayDiv.closest('.description-inline-edit');
+        container.querySelector('.note-display').classList.add('hidden');
+        container.querySelector('.note-edit-form').classList.remove('hidden');
+        container.querySelector('textarea').focus();
       }
 
-      // Desenhar borda
-      ctx.strokeStyle = '#e5e7eb';
-      ctx.lineWidth = 2;
-      ctx.strokeRect(x - 2, y - 2, imageWidth + 4, imageHeight + 4);
-
-      // Desenhar imagem
-      ctx.drawImage(imageData.img, drawX, drawY, drawWidth, drawHeight);
-
-      // Label da imagem
-      const labelY = y + imageHeight + 30;
-      
-      ctx.fillStyle = '#1f2937';
-      ctx.font = 'bold 20px Arial, sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText(imageData.data.type, x + imageWidth / 2, labelY);
-      
-      ctx.fillStyle = '#6b7280';
-      ctx.font = '16px Arial, sans-serif';
-      ctx.fillText(imageData.data.date, x + imageWidth / 2, labelY + 25);
-    });
-
-    // Linha separadora vertical
-    ctx.strokeStyle = '#d1d5db';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(canvasWidth / 2, titleHeight + margin);
-    ctx.lineTo(canvasWidth / 2, titleHeight + margin + imageHeight);
-    ctx.stroke();
-
-    // Adicionar watermark/assinatura
-    ctx.fillStyle = '#9ca3af';
-    ctx.font = '12px Arial, sans-serif';
-    ctx.textAlign = 'right';
-    ctx.fillText('Sistema de Consultoria Nutricional', canvasWidth - 20, canvasHeight - 20);
-
-    statusDiv.textContent = 'Finalizando download...';
-
-    // Converter para blob e fazer download
-    canvas.toBlob(function(blob) {
-      if (!blob) {
-        throw new Error('Erro ao gerar imagem');
+      function cancelEditForm(cancelBtn) {
+        const form = cancelBtn.closest('.note-edit-form');
+        const container = form.closest('.description-inline-edit');
+        form.classList.add('hidden');
+        container.querySelector('.note-display').classList.remove('hidden');
       }
-      
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      const clientName = '<%= @client.name.parameterize %>' || 'cliente';
-      const dateStr = new Date().toISOString().split('T')[0];
-      a.href = url;
-      a.download = `comparacao-evolucao-${clientName}-${dateStr}.png`;
-      
-      // Adicionar ao DOM temporariamente e clicar
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      
-      // Limpar URL
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
 
-      statusDiv.textContent = 'Download concluído!';
-      statusDiv.style.color = '#059669';
-      setTimeout(() => {
-        statusDiv.style.display = 'none';
-        statusDiv.style.color = '#6b7280';
-      }, 3000);
-      
-    }, 'image/png', 0.95);
+      function submitEditForm(form) {
+        // Se quiser AJAX, troque para fetch aqui e retorne false.
+        return true;
+      }
+    </script>
+    <style>
+      #download-status {
+        animation: pulse 2s infinite;
+        transition: color 0.3s ease;
+      }
 
-  } catch (error) {
-    console.error('Erro ao criar comparação:', error);
-    statusDiv.textContent = 'Erro ao gerar imagem';
-    statusDiv.style.color = '#dc2626';
-    setTimeout(() => {
-      statusDiv.style.display = 'none';
-      statusDiv.style.color = '#6b7280';
-    }, 5000);
-  }
-}
+      @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.7; }
+      }
 
-// Função para fechar modal de comparação
-function closeComparisonModal() {
-  document.getElementById('compare-modal').style.display = 'none';
-  const statusDiv = document.getElementById('download-status');
-  statusDiv.style.display = 'none';
-  statusDiv.style.color = '#6b7280';
-}
-</script>
+      .comparison-img {
+        max-width: 350px !important;
+        max-height: 400px !important;
+      }
 
-<style>
-#download-status {
-  animation: pulse 2s infinite;
-  transition: color 0.3s ease;
-}
+      #comparison-canvas {
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+      }
 
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; }
-}
-
-.comparison-img {
-  max-width: 350px !important;
-  max-height: 400px !important;
-}
-
-#comparison-canvas {
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-}
-
-/* Animação do botão de download */
-button:hover svg {
-  transform: translateY(-1px);
-  transition: transform 0.2s ease;
-}
-</style>
+      /* Animação do botão de download */
+      button:hover svg {
+        transform: translateY(-1px);
+        transition: transform 0.2s ease;
+      }
+    </style>

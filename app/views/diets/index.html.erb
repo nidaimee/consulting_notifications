@@ -55,92 +55,126 @@
   </div>
 </div>
 
-<% if @diets.any? %>
-  <!-- Cards das refeições -->
-  <div class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-    <% @diets.each do |diet| %>
-      <div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm flex flex-col gap-4">
-        <div class="flex items-center justify-between">
-          <h3 class="text-lg font-semibold text-gray-900"><%= diet.name %></h3>
-          <span class="rounded bg-blue-50 px-3 py-1 text-xs font-bold text-blue-600">
-            <%= diet.total_calories.round(1) %> kcal
-          </span>
-        </div>
-        <% if diet.notes.present? %>
-          <div class="flex items-center gap-2 text-sm text-gray-500">
-            <span><%= diet.notes.truncate(80) %></span>
+<!-- Grid Layout: refeições à esquerda, observação à direita -->
+<div class="flex flex-col md:flex-row gap-6">
+  <div class="flex-1 min-w-0">
+    <% if @diets.any? %>
+      <!-- Cards das refeições -->
+      <div class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+        <% @diets.each do |diet| %>
+          <div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm flex flex-col gap-4">
+            <div class="flex items-center justify-between">
+              <h3 class="text-lg font-semibold text-gray-900"><%= diet.name %></h3>
+              <span class="rounded bg-blue-50 px-3 py-1 text-xs font-bold text-blue-600">
+                <%= diet.total_calories.round(1) %> kcal
+              </span>
+            </div>
+            <% if diet.notes.present? %>
+              <div class="flex items-center gap-2 text-sm text-gray-500">
+                <span><%= diet.notes.truncate(80) %></span>
+              </div>
+            <% end %>
+            <% if diet.diet_foods.any? %>
+              <ul class="flex flex-col gap-1 text-sm text-gray-700">
+                <% diet.diet_foods.limit(5).each do |df| %>
+                  <li>
+                    <span class="font-bold text-gray-900"><%= df.quantity_grams.to_i %>g</span>
+                    <%= df.food.name.split(',').first %>
+                  </li>
+                <% end %>
+                <% if diet.diet_foods.count > 5 %>
+                  <li class="text-xs text-gray-400">+ <%= diet.diet_foods.count - 5 %> mais alimento<%= 's' if diet.diet_foods.count - 5 > 1 %></li>
+                <% end %>
+              </ul>
+            <% else %>
+              <p class="text-sm italic text-gray-400">Nenhum alimento adicionado</p>
+            <% end %>
+            <!-- Macros -->
+            <div class="grid grid-cols-3 gap-2">
+              <div class="rounded bg-blue-50 p-2 text-center text-blue-700">
+                <span class="font-bold"><%= diet.total_protein.round(1) %>g</span>
+                <span class="block text-xs">Proteína</span>
+              </div>
+              <div class="rounded bg-green-50 p-2 text-center text-green-700">
+                <span class="font-bold"><%= diet.total_carbs.round(1) %>g</span>
+                <span class="block text-xs">Carboidratos</span>
+              </div>
+              <div class="rounded bg-red-50 p-2 text-center text-red-700">
+                <span class="font-bold"><%= diet.total_fat.round(1) %>g</span>
+                <span class="block text-xs">Gordura</span>
+              </div>
+            </div>
+            <!-- Footer -->
+            <div class="flex gap-2 pt-3">
+              <%= link_to client_diet_path(@client, diet), class: "flex-1 rounded border border-blue-600 bg-white px-2 py-1 text-blue-600 text-sm hover:bg-blue-50" do %>
+                Editar
+              <% end %>
+              <%= button_to client_diet_path(@client, diet), method: :delete, data: { turbo_confirm: "Excluir #{diet.name}?" }, class: "flex-1 rounded border border-red-600 bg-white px-2 py-1 text-red-600 text-sm hover:bg-red-50" do %>
+                Excluir
+              <% end %>
+            </div>
           </div>
         <% end %>
-        <% if diet.diet_foods.any? %>
-          <ul class="flex flex-col gap-1 text-sm text-gray-700">
-            <% diet.diet_foods.limit(5).each do |df| %>
-              <li>
-                <span class="font-bold text-gray-900"><%= df.quantity_grams.to_i %>g</span>
-                <%= df.food.name.split(',').first %>
-              </li>
-            <% end %>
-            <% if diet.diet_foods.count > 5 %>
-              <li class="text-xs text-gray-400">+ <%= diet.diet_foods.count - 5 %> mais alimento<%= 's' if diet.diet_foods.count - 5 > 1 %></li>
-            <% end %>
-          </ul>
-        <% else %>
-          <p class="text-sm italic text-gray-400">Nenhum alimento adicionado</p>
+      </div>
+      <!-- Resumo total de macros -->
+      <div class="mt-8 grid grid-cols-2 gap-6 md:grid-cols-4">
+        <div class="rounded-lg border border-gray-200 bg-white p-6 shadow text-center">
+          <h3 class="text-2xl font-bold text-orange-700"><%= @daily_total_calories.round(1) %></h3>
+          <p class="text-sm text-gray-500">Total Kcal</p>
+        </div>
+        <div class="rounded-lg border border-gray-200 bg-white p-6 shadow text-center">
+          <h3 class="text-2xl font-bold text-blue-700"><%= @diets.sum(&:total_protein).round(1) %>g</h3>
+          <p class="text-sm text-gray-500">Proteínas</p>
+        </div>
+        <div class="rounded-lg border border-gray-200 bg-white p-6 shadow text-center">
+          <h3 class="text-2xl font-bold text-green-700"><%= @diets.sum(&:total_carbs).round(1) %>g</h3>
+          <p class="text-sm text-gray-500">Carboidratos</p>
+        </div>
+        <div class="rounded-lg border border-gray-200 bg-white p-6 shadow text-center">
+          <h3 class="text-2xl font-bold text-red-700"><%= @diets.sum(&:total_fat).round(1) %>g</h3>
+          <p class="text-sm text-gray-500">Gorduras</p>
+        </div>
+      </div>
+    <% else %>
+      <div class="py-12 text-center">
+        <h4 class="mb-4 text-lg text-gray-500">Comece criando a primeira refeição para <%= @client.name %>!</h4>
+        <%= link_to new_client_diet_path(@client), 
+          class: "inline-flex items-center gap-2.5 rounded bg-green-600 px-6 py-2 text-white font-medium hover:bg-green-700 transition" do %>
+          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+          </svg>
+          Nova Refeição
         <% end %>
-        <!-- Macros -->
-        <div class="grid grid-cols-3 gap-2">
-          <div class="rounded bg-blue-50 p-2 text-center text-blue-700">
-            <span class="font-bold"><%= diet.total_protein.round(1) %>g</span>
-            <span class="block text-xs">Proteína</span>
-          </div>
-          <div class="rounded bg-green-50 p-2 text-center text-green-700">
-            <span class="font-bold"><%= diet.total_carbs.round(1) %>g</span>
-            <span class="block text-xs">Carboidratos</span>
-          </div>
-          <div class="rounded bg-red-50 p-2 text-center text-red-700">
-            <span class="font-bold"><%= diet.total_fat.round(1) %>g</span>
-            <span class="block text-xs">Gordura</span>
-          </div>
-        </div>
-        <!-- Footer -->
-        <div class="flex gap-2 pt-3">
-          <%= link_to client_diet_path(@client, diet), class: "flex-1 rounded border border-blue-600 bg-white px-2 py-1 text-blue-600 text-sm hover:bg-blue-50" do %>
-            Editar
-          <% end %>
-          <%= button_to client_diet_path(@client, diet), method: :delete, data: { turbo_confirm: "Excluir #{diet.name}?" }, class: "flex-1 rounded border border-red-600 bg-white px-2 py-1 text-red-600 text-sm hover:bg-red-50" do %>
-            Excluir
-          <% end %>
-        </div>
       </div>
     <% end %>
   </div>
-  <!-- Resumo total de macros -->
-  <div class="mt-8 grid grid-cols-2 gap-6 md:grid-cols-4">
-    <div class="rounded-lg border border-gray-200 bg-white p-6 shadow text-center">
-      <h3 class="text-2xl font-bold text-orange-700"><%= @daily_total_calories.round(1) %></h3>
-      <p class="text-sm text-gray-500">Total Kcal</p>
-    </div>
-    <div class="rounded-lg border border-gray-200 bg-white p-6 shadow text-center">
-      <h3 class="text-2xl font-bold text-blue-700"><%= @diets.sum(&:total_protein).round(1) %>g</h3>
-      <p class="text-sm text-gray-500">Proteínas</p>
-    </div>
-    <div class="rounded-lg border border-gray-200 bg-white p-6 shadow text-center">
-      <h3 class="text-2xl font-bold text-green-700"><%= @diets.sum(&:total_carbs).round(1) %>g</h3>
-      <p class="text-sm text-gray-500">Carboidratos</p>
-    </div>
-    <div class="rounded-lg border border-gray-200 bg-white p-6 shadow text-center">
-      <h3 class="text-2xl font-bold text-red-700"><%= @diets.sum(&:total_fat).round(1) %>g</h3>
-      <p class="text-sm text-gray-500">Gorduras</p>
+  <!-- Observações do cliente: lateral em telas médias+ e abaixo em telas pequenas -->
+  <div class="md:w-96 w-full shrink-0">
+    <div class="mb-6 rounded-lg border border-gray-200 bg-white p-6 shadow">
+      <h3 class="mb-2 text-lg font-semibold text-gray-900 flex items-center gap-2">
+        <span>📝</span> Orientações
+      </h3>
+      <%= form_with model: @client, url: update_note_client_path(@client), method: :patch, local: true do |form| %>
+        <div>
+          <%= form.text_area :note, rows: 4, 
+            class: "w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-medium outline-none transition focus:border-blue-500 active:border-blue-500 dark:border-form-strokedark dark:bg-form-input dark:focus:border-blue-500",
+            placeholder: "Adicione observações sobre recomendações gerais, modo de preparo, hidratação, etc." %>
+        </div>
+        <div class="flex items-center gap-4 mt-2">
+          <%= form.hidden_field :redirect_to_diets_index, value: "1" %>
+          <%= form.submit @client.persisted? ?  "Salvar Orientação" : "Criar Cliente", 
+              class: "inline-flex items-center justify-center rounded-md bg-blue-500 px-6 py-3 text-center font-medium text-white hover:bg-opacity-90" %>
+        </div>
+      <% end %>
+      <% if @client.note.present? %>
+        <div class="mt-4 text-sm text-gray-700">
+          <ul class="space-y-1">
+            <% @client.note.split("\n").each do |linha| %>
+              <li class="pl-2 border-l-2 border-blue-200"><%= linha.strip %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
     </div>
   </div>
-<% else %>
-  <div class="py-12 text-center">
-    <h4 class="mb-4 text-lg text-gray-500">Comece criando a primeira refeição para <%= @client.name %>!</h4>
-    <%= link_to new_client_diet_path(@client), 
-      class: "inline-flex items-center gap-2.5 rounded bg-green-600 px-6 py-2 text-white font-medium hover:bg-green-700 transition" do %>
-      <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-      </svg>
-      Nova Refeição
-    <% end %>
-  </div>
-<% end %>
+</div>

@@ -87,12 +87,6 @@
           class: "relative z-20 w-full appearance-none rounded border border-stroke bg-transparent px-5 py-3 outline-none transition focus:border-blue-500 active:border-blue-500 dark:border-form-strokedark dark:bg-form-input" %>
     </div>
   </div>
-  <div>
-    <label for="client_note" class="mb-2.5 block text-black dark:text-white">Observações</label>
-    <%= form.text_area :note, rows: 4, 
-        class: "w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-medium outline-none transition focus:border-blue-500 active:border-blue-500 dark:border-form-strokedark dark:bg-form-input dark:focus:border-blue-500",
-        placeholder: "Adicione observações sobre as recomendações do que você pretende para o seu paciente (cardio, modo de preparo, quantidade de água consumida e recomendações gerais...)" %>
-  </div>
 
   <div class="flex items-center gap-4">
     <%= form.submit client.persisted? ? "Atualizar Cliente" : "Criar Cliente", 

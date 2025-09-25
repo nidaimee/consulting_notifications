@@ -79,10 +79,10 @@
     <div class="p-8">
       <% if @recent_clients.any? %>
         <div class="space-y-4">
-          <% @recent_clients.each do |client| %>
+          <% @recent_clients.first(4).each do |client| %>
             <div class="flex items-center justify-between rounded-lg border border-gray-100 bg-gray-50 p-4 hover:shadow transition">
               <div>
-                <%= link_to client_path(client), class: "font-semibold text-gray-900 hover:text-indigo-600 transition-colors" do %>
+                <%= link_to client_path(client), class: "font-semibold text-blue-900 hover:text-indigo-600 transition-colors" do %>
                   <%= client.name %>
                 <% end %>
                 <p class="text-sm text-gray-500"><%= client.phone_number %></p>
@@ -94,8 +94,6 @@
             </div>
           <% end %>
         </div>
-        
-     
       <% end %>
     </div>
   </div>

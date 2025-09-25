@@ -9,6 +9,7 @@ Rails.application.routes.draw do
 
   resources :clients do
     member do
+      patch :update_note
       get :diet_pdf
       patch :add_photos
       delete "remove_photo/:photo_id", to: "clients#remove_photo", as: :remove_photo
@@ -17,7 +18,7 @@ Rails.application.routes.draw do
       get :serve_image
     end
 
-    resources :client_histories, only: [ :create, :destroy ], path: "historico" do
+    resources :client_histories, only: [ :create, :destroy, :update, :edit ], path: "historico" do
       member do
         delete "remove_photo/:photo_id", to: "client_histories#remove_photo", as: :remove_history_photo
         patch "replace_photo/:photo_id", to: "client_histories#replace_photo", as: :replace_history_photo
