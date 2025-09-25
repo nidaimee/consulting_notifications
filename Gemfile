@@ -19,7 +19,7 @@ gem "jbuilder"
 gem "sidekiq"
 gem "sidekiq-cron"
 gem "whenever", require: false
-gem "twilio-ruby"
+# gem "twilio-ruby"
 gem "devise"
 
 gem "wicked_pdf"
