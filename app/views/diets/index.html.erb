@@ -52,39 +52,33 @@
 </div>
 <!-- Grid Layout: refeições à esquerda, observação à direita -->
 <div class="flex flex-col gap-6 md:flex-row md:items-start">
-  <div class="flex flex-col gap-6 md:flex-wrap md:flex-row flex-1 min-w-0">
+  <div class="flex flex-col gap-6 w-full md:flex-wrap md:flex-row md:gap-4 flex-1 min-w-0">
     <% if @diets.any? %>
       <div id="diets-list"
         data-client-id="<%= @client.id %>"
         data-reorder-url="<%= client_reorder_diets_path(@client) %>"
-        class="flex flex-wrap gap-6">
+        class="flex flex-col gap-6 sm:grid sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
         <% @diets.each_with_index do |diet, idx| %>
           <div id="diet-card-<%= diet.id %>"
-         draggable="true"
-         class="diet-card rounded-lg border border-gray-200 bg-white p-6 shadow-sm flex flex-col gap-4 relative"
-         data-id="<%= diet.id %>">
-         
+            draggable="true"
+            class="diet-card rounded-lg border border-gray-200 bg-white p-6 shadow-sm flex flex-col gap-4 relative w-full"
+            data-id="<%= diet.id %>">
             <div class="flex items-center justify-between">
-              <span class="drag-handle cursor-grab mr-2 flex items-center justify-center text-gray-400 hover:text-blue-500 transition duration-150"
-                
-                aria-label="Arraste para reordenar">
-                  <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
-                    <circle cx="5" cy="6" r="1.5"/>
-                    <circle cx="5" cy="10" r="1.5"/>
-                    <circle cx="5" cy="14" r="1.5"/>
-                    <circle cx="15" cy="6" r="1.5"/>
-                    <circle cx="15" cy="10" r="1.5"/>
-                    <circle cx="15" cy="14" r="1.5"/>
-                  </svg>
-                </span>
+              <span class="drag-handle cursor-grab mr-2 flex items-center justify-center text-gray-400 hover:text-blue-500 transition duration-150" aria-label="Arraste para reordenar">
+                <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
+                  <circle cx="5" cy="6" r="1.5"/>
+                  <circle cx="5" cy="10" r="1.5"/>
+                  <circle cx="5" cy="14" r="1.5"/>
+                  <circle cx="15" cy="6" r="1.5"/>
+                  <circle cx="15" cy="10" r="1.5"/>
+                  <circle cx="15" cy="14" r="1.5"/>
+                </svg>
+              </span>
               <div class="diet-name-group">
-                <span class="diet-name" data-id="<%= diet.id %>">
-                  <%= diet.name %></span>
+                <span class="diet-name" data-id="<%= diet.id %>"><%= diet.name %></span>
                 <input class="diet-name-input hidden" type="text" value="<%= diet.name %>" data-id="<%= diet.id %>" maxlength="60" />
               </div>
-              <span class="rounded bg-blue-50 px-3 py-1 text-xs font-bold text-blue-600">
-                <%= diet.total_calories.round(1) %> kcal
-              </span>
+              <span class="rounded bg-blue-50 px-3 py-1 text-xs font-bold text-blue-600"><%= diet.total_calories.round(1) %> kcal</span>
             </div>
             <% if diet.notes.present? %>
               <div class="flex items-center gap-2 text-sm text-gray-500">
@@ -114,7 +108,7 @@
               </div>
               <div class="rounded bg-green-50 p-2 text-center text-green-700">
                 <span class="font-bold"><%= diet.total_carbs.round(1) %>g</span>
-                <span class="block text-xs">Carboidratos</span>
+                <span class="block text-xs">Carb</span>
               </div>
               <div class="rounded bg-red-50 p-2 text-center text-red-700">
                 <span class="font-bold"><%= diet.total_fat.round(1) %>g</span>
@@ -122,13 +116,11 @@
               </div>
             </div>
             <!-- Footer -->
-            <div class="flex gap-2 pt-3">
+            <div class="flex gap-2 pt-3 flex-col sm:flex-row">
               <%= link_to client_diet_path(@client, diet), class: "flex-1 rounded border border-blue-600 bg-white px-2 py-1 text-blue-600 text-sm hover:bg-blue-50" do %>
                 Editar
               <% end %>
-              <%= button_to duplicate_client_diet_path(@client, diet), 
-                  method: :post, 
-                  class: "flex-1 rounded border border-indigo-600 bg-white px-2 py-1 text-indigo-600 text-sm hover:bg-indigo-50" do %>
+              <%= button_to duplicate_client_diet_path(@client, diet), method: :post, class: "flex-1 rounded border border-indigo-600 bg-white px-2 py-1 text-indigo-600 text-sm hover:bg-indigo-50" do %>
                 Duplicar
               <% end %>
               <%= button_to client_diet_path(@client, diet), method: :delete, data: { turbo_confirm: "Excluir #{diet.name}?" }, class: "flex-1 rounded border border-red-600 bg-white px-2 py-1 text-red-600 text-sm hover:bg-red-50" do %>
@@ -139,29 +131,32 @@
         <% end %>
       </div>
       <!-- Resumo total de macros -->
-      <div class="mt-8 grid grid-cols-2 gap-6 md:grid-cols-4">
-        <div class="rounded-lg border border-gray-200 bg-white p-6 shadow text-center">
+      <!-- Resumo total de macros: ajuste responsivo -->
+    <div class="w-full mt-8">
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="rounded-lg border border-gray-200 bg-white p-6 shadow text-center flex flex-col justify-center items-center">
           <h3 class="text-2xl font-bold text-orange-700"><%= @daily_total_calories.round(1) %></h3>
-          <p class="text-sm text-gray-500">Total Kcal</p>
+          <p class="text-sm text-gray-500 mt-1">Total Kcal</p>
         </div>
-        <div class="rounded-lg border border-gray-200 bg-white p-6 shadow text-center">
+        <div class="rounded-lg border border-gray-200 bg-white p-6 shadow text-center flex flex-col justify-center items-center">
           <h3 class="text-2xl font-bold text-blue-700"><%= @diets.sum(&:total_protein).round(1) %>g</h3>
-          <p class="text-sm text-gray-500">Proteínas</p>
+          <p class="text-sm text-gray-500 mt-1">Proteínas</p>
         </div>
-        <div class="rounded-lg border border-gray-200 bg-white p-6 shadow text-center">
+        <div class="rounded-lg border border-gray-200 bg-white p-6 shadow text-center flex flex-col justify-center items-center">
           <h3 class="text-2xl font-bold text-green-700"><%= @diets.sum(&:total_carbs).round(1) %>g</h3>
-          <p class="text-sm text-gray-500">Carboidratos</p>
+          <p class="text-sm text-gray-500 mt-1">Carboidratos</p>
         </div>
-        <div class="rounded-lg border border-gray-200 bg-white p-6 shadow text-center">
+        <div class="rounded-lg border border-gray-200 bg-white p-6 shadow text-center flex flex-col justify-center items-center">
           <h3 class="text-2xl font-bold text-red-700"><%= @diets.sum(&:total_fat).round(1) %>g</h3>
-          <p class="text-sm text-gray-500">Gorduras</p>
+          <p class="text-sm text-gray-500 mt-1">Gorduras</p>
         </div>
       </div>
+    </div>
     <% else %>
       <div class="py-12 text-center">
         <h4 class="mb-4 text-lg text-gray-500">Comece criando a primeira refeição para <%= @client.name %>!</h4>
         <%= link_to new_client_diet_path(@client), 
-          class: "inline-flex items-center gap-2.5 rounded bg-green-600 px-6 py-2 text-white font-medium hover:bg-green-700 transition" do %>
+          class: "inline-flex items-center gap-2.5 rounded bg-green-600 px-6 py-2 text-white font-medium hover:bg-green-700 transition w-full sm:w-auto" do %>
           <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
           </svg>
