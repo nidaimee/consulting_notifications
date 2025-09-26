@@ -1,4 +1,3 @@
-# Simplificado para evitar fallback em socket local em produção
 default: &default
   adapter: postgresql
   encoding: unicode
@@ -14,10 +13,4 @@ test:
 
 production:
   <<: *default
-  # Render injeta DATABASE_URL automaticamente se usar blueprint ou se você definir no painel
   url: <%= ENV["DATABASE_URL"] %>
-  # Evita qualquer tentativa de socket se a URL estiver presente
-  host: <%= URI(ENV["DATABASE_URL"]).host if ENV["DATABASE_URL"] %>
-  # Caso queira SSL explícito (se Render exigir explicitamente):
-  # variables:
-  #   sslmode: require
