@@ -13,7 +13,12 @@ test:
   database: consulting_notifications_test
 
 production:
-  <<: *default
-  url: <%= ENV["DATABASE_URL"] %>
-  # Se quiser forçar prepared statements off (às vezes em Render com conexões pequenas):
-  # prepared_statements: false
+  primary:
+    <<: *default
+    url: <%= ENV["DATABASE_URL"] %>
+
+  cable:
+    <<: *default
+    url: <%= ENV["CABLE_DATABASE_URL"] || ENV["DATABASE_URL"] %>
+    # Opcional: ajuste pool se precisar
+    # pool: 5
