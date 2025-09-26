@@ -24,5 +24,8 @@ production:
   queue:
     <<: *default
     url: <%= ENV["QUEUE_DATABASE_URL"] || ENV["DATABASE_URL"] %>
-    # Se usar migrations separadas para a fila, opcional:
-    # migrations_paths: db/queue_migrate
+
+  cache:
+    <<: *default
+    url: <%= ENV["CACHE_DATABASE_URL"] || ENV["DATABASE_URL"] %>
+    # migrations_paths: db/cache_migrate # use se separar migrations
