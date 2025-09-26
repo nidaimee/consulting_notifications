@@ -1,6 +1,7 @@
 # app/models/client.rb
 
 class Client < ApplicationRecord
+  include Searchable
   # Associações
   belongs_to :user
   has_many :diets, dependent: :destroy
