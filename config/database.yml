@@ -21,7 +21,10 @@ production:
     <<: *default
     url: <%= ENV["CABLE_DATABASE_URL"] || ENV["DATABASE_URL"] %>
 
-  # (Opcional, não será usado se você apontar queue para :primary no production.rb)
   queue:
     <<: *default
     url: <%= ENV["QUEUE_DATABASE_URL"] || ENV["DATABASE_URL"] %>
+
+  cache:
+    <<: *default
+    url: <%= ENV["CACHE_DATABASE_URL"] || ENV["DATABASE_URL"] %>
