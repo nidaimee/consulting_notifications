@@ -285,32 +285,46 @@
     </div>
     <!-- Photo Comparison Section -->
     <% 
-      # Collect all photos for comparison
-      fotos_para_comparar = []
-      
+  # ✅ OTIMIZADO: Coletar fotos sem N+1 queries
+  fotos_para_comparar = []
+  
+    # Fotos principais do cliente
+    if @client.photos.attached?
       @client.photos.each do |img|
+        next unless img.content_type.starts_with?('image')
+        
         fotos_para_comparar << {
           image: img,
           url: url_for(img),
-          date: @client.start_date,
+          date: @client.start_date || @client.created_at,
           type: 'Inicial',
-          content_type: img.content_type
+          content_type: img.content_type,
+          signed_id: img.signed_id
         }
       end
-      
-      @client_histories.each do |history|
+    end
+    
+    # Fotos dos históricos (já carregadas com includes)
+    @client_histories.each do |history|
+      if history.images.attached?
         history.images.each do |img|
+          next unless img.content_type.starts_with?('image')
+          
           fotos_para_comparar << {
             image: img,
             url: url_for(img),
             date: history.created_at,
-            content_type: img.content_type
+            content_type: img.content_type,
+            signed_id: img.signed_id,
+            history_id: history.id
           }
         end
       end
-      
-      fotos_para_comparar = fotos_para_comparar.select { |foto| foto[:content_type].starts_with?('image') }
-    %>
+    end
+    
+    # Ordenar por data
+    fotos_para_comparar = fotos_para_comparar.sort_by { |foto| foto[:date] }
+  %>
     <% if fotos_para_comparar.length >= 2 %>
       <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">

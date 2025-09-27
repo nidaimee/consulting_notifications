@@ -8,7 +8,7 @@ class User < ApplicationRecord
   has_many :clients, dependent: :destroy
   has_many :foods, dependent: :destroy
   has_many :diets, dependent: :destroy
-
+  has_many :client_histories, dependent: :destroy
   # Validações
   validates :name, presence: true
   validates :phone, presence: true

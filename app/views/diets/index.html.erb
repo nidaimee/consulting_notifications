@@ -132,26 +132,7 @@
       </div>
       <!-- Resumo total de macros -->
       <!-- Resumo total de macros: ajuste responsivo -->
-    <div class="w-full mt-8">
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-        <div class="rounded-lg border border-gray-200 bg-white p-6 shadow text-center flex flex-col justify-center items-center">
-          <h3 class="text-2xl font-bold text-orange-700"><%= @daily_total_calories.round(1) %></h3>
-          <p class="text-sm text-gray-500 mt-1">Total Kcal</p>
-        </div>
-        <div class="rounded-lg border border-gray-200 bg-white p-6 shadow text-center flex flex-col justify-center items-center">
-          <h3 class="text-2xl font-bold text-blue-700"><%= @diets.sum(&:total_protein).round(1) %>g</h3>
-          <p class="text-sm text-gray-500 mt-1">Proteínas</p>
-        </div>
-        <div class="rounded-lg border border-gray-200 bg-white p-6 shadow text-center flex flex-col justify-center items-center">
-          <h3 class="text-2xl font-bold text-green-700"><%= @diets.sum(&:total_carbs).round(1) %>g</h3>
-          <p class="text-sm text-gray-500 mt-1">Carboidratos</p>
-        </div>
-        <div class="rounded-lg border border-gray-200 bg-white p-6 shadow text-center flex flex-col justify-center items-center">
-          <h3 class="text-2xl font-bold text-red-700"><%= @diets.sum(&:total_fat).round(1) %>g</h3>
-          <p class="text-sm text-gray-500 mt-1">Gorduras</p>
-        </div>
-      </div>
-    </div>
+  
     <% else %>
       <div class="py-12 text-center">
         <h4 class="mb-4 text-lg text-gray-500">Comece criando a primeira refeição para <%= @client.name %>!</h4>
@@ -193,6 +174,25 @@
         </div>
       <% end %>
     </div>
+  
+    <div class="grid grid-cols-2 gap-4">
+        <div class="rounded-lg border border-gray-200 bg-white p-6 shadow text-center">
+          <h3 class="text-2xl font-bold text-orange-700"><%= @daily_total_calories.round(1) %></h3>
+          <p class="text-sm text-gray-500 mt-1">Total Kcal</p>
+        </div>
+        <div class="rounded-lg border border-gray-200 bg-white p-6 shadow text-center">
+          <h3 class="text-2xl font-bold text-blue-700"><%= @diets.sum(&:total_protein).round(1) %>g</h3>
+          <p class="text-sm text-gray-500 mt-1">Proteínas</p>
+        </div>
+        <div class="rounded-lg border border-gray-200 bg-white p-6 shadow text-center">
+          <h3 class="text-2xl font-bold text-green-700"><%= @diets.sum(&:total_carbs).round(1) %>g</h3>
+          <p class="text-sm text-gray-500 mt-1">Carboidratos</p>
+        </div>
+        <div class="rounded-lg border border-gray-200 bg-white p-6 shadow text-center">
+          <h3 class="text-2xl font-bold text-red-700"><%= @diets.sum(&:total_fat).round(1) %>g</h3>
+          <p class="text-sm text-gray-500 mt-1">Gorduras</p>
+        </div>
+      </div>
   </div>
 </div>
 <script>

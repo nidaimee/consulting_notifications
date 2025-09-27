@@ -1,5 +1,6 @@
 class ClientHistory < ApplicationRecord
   belongs_to :client
+  belongs_to :user, optional: true
   # Imagens
   has_many_attached :images
 

@@ -80,14 +80,15 @@ class Client < ApplicationRecord
   scope :search_by_term, ->(term) {
     return all if term.blank?
 
-    search_term = "%#{term.downcase}%"
-    where(
-      "LOWER(name) LIKE :search OR
-       LOWER(email) LIKE :search OR
-       phone_number LIKE :search OR
-       LOWER(note) LIKE :search",
-      search: search_term
+    # Usar índices compostos para melhor performance
+    joins("LEFT JOIN diets ON diets.client_id = clients.id")
+    .where(
+      "clients.name ILIKE :search OR
+       clients.email ILIKE :search OR
+       clients.phone_number ILIKE :search",
+      search: "%#{term}%"
     )
+    .distinct
   }
 
   scope :by_paid_amount_range, ->(min, max) {

@@ -324,3 +324,17 @@
   </div>
 <% end %>
 </div>
+<% unless defined?(Kaminari) %>
+  <div class="pagination">
+    <% if @prev_page %>
+      <%= link_to "← Anterior", clients_path(page: @prev_page), class: "btn btn-outline-primary" %>
+    <% end %>
+    
+    <span>Página <%= @current_page %> de <%= @total_pages %></span>
+    <span>(<%= @total_count %> clientes)</span>
+    
+    <% if @next_page %>
+      <%= link_to "Próxima →", clients_path(page: @next_page), class: "btn btn-outline-primary" %>
+    <% end %>
+  </div>
+<% end %>
