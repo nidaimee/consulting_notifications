@@ -21,7 +21,13 @@ Rails.application.configure do
   # Enable serving of images, stylesheets, and JavaScripts from an asset server.
   # config.asset_host = "http://assets.example.com"
 
-  # Store uploaded files on the local file system (see config/storage.yml for options).
+  # ✅ CORREÇÃO: Configure apenas UMA opção do Active Storage
+  # Para desenvolvimento/teste temporário use :local
+  config.active_storage.service = :local
+
+  # ✅ OU para produção real use :amazon (recomendado)
+  # config.active_storage.service = :amazon
+
   config.active_storage.variant_processor = :mini_magick
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
@@ -47,23 +53,19 @@ Rails.application.configure do
   # Don't log any deprecations.
   config.active_support.report_deprecations = false
 
-  # ADICIONADO: Cache store para produção
+  # Cache store para produção
   config.cache_store = :memory_store
 
-  # ADICIONADO: Queue adapter para produção (async é suficiente para Render)
+  # Queue adapter para produção
   config.active_job.queue_adapter = :async
 
-  # REMOVIDO: Configurações comentadas que causavam conflitos
-  # config.solid_queue.connects_to = { database: { writing: :queue } }
-
-  # ADICIONADO: Configuração do Action Mailer para Render
+  # Configuração do Action Mailer para Render
   config.action_mailer.default_url_options = {
     host: ENV.fetch("RENDER_EXTERNAL_HOSTNAME", "localhost"),
     protocol: "https"
   }
 
-  # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
-  # the I18n.default_locale when a translation cannot be found).
+  # Enable locale fallbacks for I18n
   config.i18n.fallbacks = true
 
   # Do not dump schema after migrations.
@@ -72,12 +74,6 @@ Rails.application.configure do
   # Only use :id for inspections in production.
   config.active_record.attributes_for_inspect = [ :id ]
 
-  # Enable DNS rebinding protection and other `Host` header attacks.
-  # config.hosts = [
-  #   "example.com",     # Allow requests from example.com
-  #   /.*\.example\.com/ # Allow requests from subdomains like `www.example.com`
-  # ]
-  #
-  # Skip DNS rebinding protection for the default health check endpoint.
-  # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
+  # ✅ ADIÇÃO: Serve static files (necessário para Render)
+  config.public_file_server.enabled = ENV["RAILS_SERVE_STATIC_FILES"].present?
 end
