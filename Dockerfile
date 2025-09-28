@@ -49,8 +49,8 @@ RUN bundle exec bootsnap precompile app/ lib/
 # Set Node.js options for memory-intensive builds
 ENV NODE_OPTIONS="--max-old-space-size=4096"
 
-# Precompile assets without requiring master key
-RUN /bin/sh -c bundle exec rails assets:precompile
+# Run the render build script instead of just assets:precompile
+RUN ./bin/render-build.sh
 
 # Final stage for app image
 FROM base

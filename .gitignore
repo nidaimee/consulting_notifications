@@ -44,3 +44,7 @@
 /yarn-error.log
 yarn-debug.log*
 .yarn-integrity
+
+# Temporary build directories for Render deployment
+/tmp/assets/
+/tmp/builds/
