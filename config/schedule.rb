@@ -19,6 +19,6 @@
 
 # Learn more: http://github.com/javan/whenever
 
-every 2.weeks do
-  runner "NotifyClientsJob.perform_later"
+every 1.day, at: "6:00 am" do
+  rake "clients:update_status"
 end

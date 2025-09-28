@@ -18,4 +18,58 @@ module ApplicationHelper
     return "Não definido" if status.blank?
     I18n.t("status.#{status}", default: status.humanize)
   end
+
+  def client_status_translation(status)
+    case status
+    when "active"
+      "Ativo"
+    when "expiring"
+      "Expira em Breve"
+    when "expired"
+      "Período Finalizado"
+    else
+      "Ativo"
+    end
+  end
+
+  def client_status_color(status)
+    case status
+    when "active"
+      "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+    when "expiring"
+      "bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200"
+    when "expired"
+      "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
+    else
+      "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+    end
+  end
+
+  def client_status_with_days(client)
+    case client.status
+    when "active"
+      days = client.days_remaining
+      if days && days > 7
+        "Ativo (#{days} dias restantes)"
+      else
+        "Ativo"
+      end
+    when "expiring"
+      days = client.days_remaining
+      if days && days >= 0
+        "⚠️ Expira em #{days} dia#{'s' if days != 1}"
+      else
+        "⚠️ Expira em Breve"
+      end
+    when "expired"
+      days = client.days_remaining
+      if days && days < 0
+        "🔴 Expirado há #{days.abs} dia#{'s' if days.abs != 1}"
+      else
+        "🔴 Período Finalizado"
+      end
+    else
+      client_status_translation(client.status)
+    end
+  end
 end

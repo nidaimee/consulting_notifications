@@ -6,18 +6,70 @@ class Client < ApplicationRecord
   belongs_to :user
   has_many :diets, dependent: :destroy
   has_many :client_histories, dependent: :destroy
+
   # Validações
   validates :name, presence: true
   validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }, allow_blank: true
   validates :phone_number, format: { with: /\A[\d\s\-\(\)]+\z/ }, allow_blank: true
   validates :paid_amount, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
-  validates :status, inclusion: { in: %w[active inactive pending] }
+  validates :status, inclusion: { in: %w[active expiring expired] }
   validates :age, numericality: { only_integer: true, greater_than: 0 }, allow_nil: true
   validates :height, numericality: { greater_than: 0 }, allow_nil: true
-
   SEXES = %w[Masculino Feminino]
   # Callbacks
+  before_save :set_automatic_status
   before_validation :set_default_status, on: :create
+  before_validation :set_automatic_status, on: [ :create, :update ]
+
+  scope :active_records, -> { where(archived_at: nil) }  # Clientes não arquivados
+  scope :archived, -> { where.not(archived_at: nil) }    # Clientes arquivados
+
+  scope :default, -> { where(archived_at: nil) }
+
+  def automatic_status
+    return "active" if start_date.blank? || end_date.blank?
+
+    days_remaining = (end_date - Date.current).to_i
+
+    case days_remaining
+    when ...-1
+      "expired"      # Já passou da data
+    when 0..7
+      "expiring"     # Faltam 7 dias ou menos
+    else
+      "active"       # Mais de 7 dias restantes
+    end
+  end
+
+  def update_automatic_status!
+    new_status = automatic_status
+    update_column(:status, new_status) if status != new_status
+  end
+
+  def expired?
+    end_date.present? && end_date < Date.current
+  end
+
+  def expiring?(days = 7)
+    end_date.present? && end_date.between?(Date.current, days.days.from_now)
+  end
+
+  def days_remaining
+    return nil unless end_date.present?
+    (end_date - Date.current).to_i
+  end
+
+  def archive!
+  update!(archived_at: Time.current)
+  end
+
+  def unarchive!
+    update!(archived_at: nil)
+  end
+
+  def archived?
+    archived_at.present?
+  end
 
   def plan_type_humanized
     case plan_type
@@ -58,10 +110,12 @@ class Client < ApplicationRecord
       [ "Anual", "anual" ]
     ]
   end
-  # Scopes básicos
-  scope :active, -> { where(status: "active") }
-  scope :inactive, -> { where(status: "inactive") }
-  scope :pending, -> { where(status: "pending") }
+
+
+
+  scope :active, -> { where(status: "active", archived_at: nil) }
+  scope :expiring, -> { where(status: "expiring", archived_at: nil) }
+  scope :expired, -> { where(status: "expired", archived_at: nil) }
 
   # Imagens
   has_many_attached :photos
@@ -69,7 +123,7 @@ class Client < ApplicationRecord
   # Scopes de período
   scope :current, -> { where("end_date >= ?", Date.current) }
   scope :expired, -> { where("end_date < ?", Date.current) }
-  scope :expiring_soon, ->(days = 7) { where("end_date BETWEEN ? AND ?", Date.current, days.days.from_now) }
+  scope :expiring, ->(days = 7) { where("end_date BETWEEN ? AND ?", Date.current, days.days.from_now) }
 
   # Scopes de contato
   scope :recently_contacted, ->(days = 7) { where("last_contacted_at >= ?", days.days.ago) }
@@ -112,8 +166,8 @@ class Client < ApplicationRecord
       results = results.current
     when "expired"
       results = results.expired
-    when "expiring_soon"
-      results = results.expiring_soon
+    when "expiring"
+      results = results.expiring
     end
 
     # Ordenação
@@ -156,7 +210,7 @@ class Client < ApplicationRecord
     end_date && end_date < Date.current
   end
 
-  def expiring_soon?(days = 7)
+  def expiring?(days = 7)
     return false unless end_date
     end_date.between?(Date.current, days.days.from_now)
   end
@@ -203,6 +257,10 @@ class Client < ApplicationRecord
   end
 
   private
+
+  def set_automatic_status
+    self.status = automatic_status unless archived_at.present?
+  end
 
   def set_default_status
     self.status ||= "active"

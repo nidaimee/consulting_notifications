@@ -1,17 +1,22 @@
 class ClientsController < ApplicationController
   include TailadminLayout
-  before_action :set_client, only: [ :show, :edit, :update, :destroy, :add_photos, :remove_photo, :replace_photo, :download_comparison, :diet_pdf, :serve_image, :update_note ]
+  before_action :set_client, only: [ :show, :edit, :update, :destroy, :add_photos, :remove_photo, :replace_photo, :download_comparison, :diet_pdf, :serve_image, :update_note, :archive, :unarchive ]
 
   def index
-    @clients = current_user.clients
+    @clients = current_user.clients.where(archived_at: nil)
 
+    if params[:archived] == "true"
+    @clients = current_user.clients.where.not(archived_at: nil)  # Só arquivados
+    else
+    @clients = current_user.clients.where(archived_at: nil)      # Só ativos
+    end
     # TODOS os filtros existentes
     if params[:search].present?
-      search_term = "%#{params[:search].downcase}%"
+    search_term = "%#{params[:search].downcase}%"
       @clients = @clients.where(
         "LOWER(name) LIKE :search OR LOWER(email) LIKE :search OR phone_number LIKE :search OR LOWER(note) LIKE :search",
         search: search_term
-      )
+    )
     end
 
     if params[:status].present?
@@ -108,6 +113,22 @@ class ClientsController < ApplicationController
     end
   end
 
+  def archive
+    if @client.update(archived_at: Time.current)
+      redirect_to clients_path, notice: "#{@client.name} foi arquivado com sucesso."
+    else
+      redirect_to clients_path, alert: "Erro ao arquivar #{@client.name}."
+    end
+  end
+
+  def unarchive
+    if @client.update(archived_at: nil)
+      redirect_to clients_path(archived: true), notice: "#{@client.name} foi reativado com sucesso."
+    else
+      redirect_to clients_path(archived: true), alert: "Erro ao reativar #{@client.name}."
+    end
+  end
+
   def show
     @editing_history_id = params[:edit_history_id]&.to_i
 
@@ -176,11 +197,14 @@ class ClientsController < ApplicationController
     end
   end
 
+  def archive
+    @client.archive!
+    redirect_to clients_path, notice: "#{@client.name} foi arquivado."
+  end
   def destroy
     client_id = @client.id
     @client.destroy
 
-    # ✅ Limpar todos os caches relacionados
     expire_all_client_caches(client_id)
 
     redirect_to clients_url, notice: "Cliente foi removido com sucesso."

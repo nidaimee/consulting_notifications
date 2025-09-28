@@ -16,7 +16,7 @@
             <%= @client.name %>
           </h1>
           <nav class="flex items-center gap-2 text-sm text-gray-500">
-            <%= link_to "Clientes", clients_path, class: "hover:text-blue-600" %>
+            <%= link_to "Pacientes", clients_path, class: "hover:text-blue-600" %>
             <span>/</span>
             <span>Detalhes</span>
           </nav>
@@ -108,28 +108,12 @@
               </div>
               <div>
                 <p class="text-sm text-gray-500">Status</p>
-                <% case @client.status
-                   when 'active' %>
-                  <span class="inline-flex items-center gap-1 rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-800">
-                    <div class="h-1.5 w-1.5 rounded-full bg-green-600"></div>
-                    Ativo
-                  </span>
-                <% when 'completed' %>
-                  <span class="inline-flex items-center gap-1 rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-800">
-                    <div class="h-1.5 w-1.5 rounded-full bg-blue-600"></div>
-                    Concluído
-                  </span>
-                <% when 'pending' %>
-                  <span class="inline-flex items-center gap-1 rounded-full bg-yellow-100 px-2 py-1 text-xs font-medium text-yellow-800">
-                    <div class="h-1.5 w-1.5 rounded-full bg-yellow-600"></div>
-                    Pendente
-                  </span>
-                <% else %>
-                  <span class="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2 py-1 text-xs font-medium text-gray-800">
-                    <div class="h-1.5 w-1.5 rounded-full bg-gray-600"></div>
-                    <%= @client.status.present? ? @client.status : 'Indefinido' %>
-                  </span>
+                <span class="inline-flex rounded-full px-3 py-1 text-xs font-medium <%= client_status_color(@client.status) %>">
+                <%= client_status_translation(@client.status) %>
+                <% if @client.expiring? && @client.status == 'active' %>
+                  <span class="ml-1" title="Expira em <%= @client.days_remaining %> dias">⚠️</span>
                 <% end %>
+              </span>
               </div>
             </div>
             <div class="flex items-center gap-3">
@@ -189,7 +173,7 @@
             <% elsif days_remaining == 0 %>
               <span class="text-sm text-yellow-600 font-medium">Último dia</span>
             <% else %>
-              <span class="text-sm text-red-600 font-medium">Vencido há <%= pluralize(days_remaining.abs, 'dia') %></span>
+              <span class="text-sm text-red-600 font-medium">Vencido há <%= pluralize(days_remaining.abs, 'dias') %></span>
             <% end %>
           </div>
         </div>

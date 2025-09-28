@@ -11,6 +11,8 @@ Rails.application.routes.draw do
     post "reorder_diets", to: "diets#reorder", as: :reorder_diets
 
     member do
+      patch :archive     # POST /clients/:id/archive
+      patch :unarchive
       patch :update_note
       get :diet_pdf
       patch :add_photos

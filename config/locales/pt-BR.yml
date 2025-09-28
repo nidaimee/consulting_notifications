@@ -132,7 +132,7 @@ pt-BR:
         other: "Usuários"
       client:
         one: "Cliente"
-        other: "Clientes"
+        other: "Pacientes"
       diet:
         one: "Dieta"
         other: "Dietas"
@@ -327,7 +327,7 @@ pt-BR:
   # === NAVEGAÇÃO ===
   navigation:
     dashboard: "Dashboard"
-    clients: "Clientes"
+    clients: "Pacientes"
     foods: "Alimentos"
     diets: "Dietas"
     profile: "Perfil"
@@ -339,11 +339,11 @@ pt-BR:
   # === CLIENTS ===
   clients:
     index:
-      title: "Clientes"
-      new_client: "Novo Cliente"
+      title: "Pacientes"
+      new_client: "Novo Paciente"
       no_clients: "Nenhum cliente cadastrado"
     new:
-      title: "Novo Cliente"
+      title: "Novo Paciente"
     edit:
       title: "Editar Cliente"
     show:

@@ -4,7 +4,9 @@ class DashboardController < ApplicationController
     @clients_count = current_user.clients.count
     @active_clients = current_user.clients.where(status: "active").count
     @foods_count = current_user.foods.count
-    @recent_clients = current_user.clients.order(created_at: :desc).limit(5)
+    @recent_clients = current_user.clients.where(archived_at: nil)
+                                       .order(created_at: :desc)
+                                       .limit(5)
     @total_revenue = current_user.clients.sum(:paid_amount)
   end
 

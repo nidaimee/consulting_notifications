@@ -27,7 +27,7 @@ Things you may want to cover:
 
 ### 1. Cadastro de Cliente
 1. Nutricionista faz login.
-2. Navega à área de “Clientes”.
+2. Navega à área de “Pacientes”.
 3. Clica em “Adicionar novo cliente”.
 4. Preenche os campos obrigatórios:
    - Nome
@@ -51,8 +51,8 @@ Things you may want to cover:
 2. Sistema gera PDF da dieta.
 3. Nutricionista pode baixar, enviar por e-mail/WhatsApp.
 
-### 4. Gestão de Clientes/Dietas
-1. Acessa painel “Clientes”.
+### 4. Gestão de Pacientes/Dietas
+1. Acessa painel “Pacientes”.
 2. Visualiza lista de clientes.
 3. Busca, filtra, visualiza detalhes.
 4. Visualiza histórico de dietas.
@@ -66,5 +66,5 @@ Things you may want to cover:
 ---
 
 **Resumo Visual dos Fluxos**
-- Login → Painel de Clientes → Cadastro/Seleção de Cliente → Montagem de Dieta → Exportação PDF
-- Painel de Clientes → Histórico de Dietas → Visualizar/Duplicar/Editar Dieta
+- Login → Painel de Pacientes → Cadastro/Seleção de Cliente → Montagem de Dieta → Exportação PDF
+- Painel de Pacientes → Histórico de Dietas → Visualizar/Duplicar/Editar Dieta

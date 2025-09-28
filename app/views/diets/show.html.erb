@@ -9,7 +9,7 @@
     <nav>
       <ol class="flex items-center gap-2">
         <%= link_to clients_path, class: "text-primary" do %>
-          Clientes
+          Pacientes
         <% end %>
         <span class="text-primary">/</span>
         <%= link_to client_diets_path(@client), class: "text-primary" do %>
@@ -997,53 +997,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
   
-  // AUTO-SAVE DAS OBSERVAÇÕES
-  const notesForm = document.querySelector('.notes-form');
-  const notesTextarea = notesForm ? notesForm.querySelector('textarea[name="diet[notes]"]') : null;
-  let saveTimeout;
-  
-  if (notesTextarea) {
-    notesTextarea.addEventListener('input', function() {
-      clearTimeout(saveTimeout);
-      notesTextarea.style.borderColor = '#ffc107';
-      
-      saveTimeout = setTimeout(function() {
-        const submitButton = notesForm.querySelector('input[type="submit"]');
-        if (submitButton) {
-          submitButton.value = 'Salvando...';
-          submitButton.disabled = true;
-        }
-        
-        fetch(notesForm.action, {
-          method: 'PATCH',
-          body: new FormData(notesForm),
-          headers: {
-            'X-CSRF-Token': document.querySelector('[name="csrf-token"]').content,
-            'Accept': 'text/html'
-          }
-        }).then(response => {
-          if (response.ok) {
-            notesTextarea.style.borderColor = '#28a745';
-            if (submitButton) {
-              submitButton.value = 'Observações Salvas ✓';
-              setTimeout(() => {
-                submitButton.value = 'Salvar Observações';
-                submitButton.disabled = false;
-                notesTextarea.style.borderColor = '';
-              }, 2000);
-            }
-          }
-        }).catch(error => {
-          notesTextarea.style.borderColor = '#dc3545';
-          if (submitButton) {
-            submitButton.value = 'Erro ao salvar';
-            submitButton.disabled = false;
-          }
-        });
-      }, 2000);
-    });
-  }
-
   // Drag & Drop functionality
   const foodRows = document.querySelectorAll('.food-row[draggable="true"]');
   let draggedElement = null;

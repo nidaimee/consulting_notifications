@@ -46,7 +46,7 @@ class DietsController < ApplicationController
 
     if @diet.save
       expire_diet_caches
-      redirect_to [ @client, @diet ], notice: "Dieta criada com sucesso."
+      redirect_to [ @client, @diet ], notice: "#{@diet.name} criada com sucesso!"
     else
       render :new, status: :unprocessable_entity
     end
@@ -62,7 +62,7 @@ class DietsController < ApplicationController
       expire_diet_caches
 
       respond_to do |format|
-        format.html { redirect_to client_diet_path(@client, @diet), notice: "Refeição atualizada com sucesso!" }
+        format.html { redirect_to client_diet_path(@client, @diet), notice: "#{@diet.name} atualizada com sucesso!" }
         format.json { render json: { name: @diet.name, notice: "Refeição atualizada com sucesso!" }, status: :ok }
       end
     else
@@ -74,9 +74,10 @@ class DietsController < ApplicationController
   end
 
   def destroy
+    diet_name = @diet.name
     @diet.destroy
     expire_diet_caches
-    redirect_to [ @client, :diets ], alert: "Refeição removida com sucesso."
+    redirect_to [ @client, :diets ], alert: "#{diet_name} removida com sucesso."
   end
 
   def duplicate
@@ -107,7 +108,7 @@ class DietsController < ApplicationController
     end
 
     expire_diet_caches
-    redirect_to client_diets_path(@client), notice: "Dieta duplicada com sucesso!"
+    redirect_to client_diets_path(@client), notice: "#{original_diet.name} duplicada com sucesso'!"
 
   rescue ActiveRecord::RecordInvalid => e
     redirect_to client_diets_path(@client), alert: "Erro ao duplicar dieta: #{e.message}"
