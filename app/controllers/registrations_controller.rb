@@ -5,7 +5,9 @@ class RegistrationsController < Devise::RegistrationsController
   def edit
     super
   end
-
+  def new
+    super
+  end
   # PATCH/PUT /users
   def update
     super
