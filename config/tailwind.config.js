@@ -5,8 +5,7 @@ module.exports = {
     './public/*.html',
     './app/helpers/**/*.rb',
     './app/javascript/**/*.js',
-    './app/views/**/*.{erb,haml,html,slim}',
-    './app/components/**/*.{erb,rb}' // Caso use view components
+    './app/views/**/*.{erb,haml,html,slim}'
   ],
   theme: {
     extend: {
@@ -16,8 +15,9 @@ module.exports = {
     },
   },
   plugins: [
-    require('@tailwindcss/forms'),
-    require('@tailwindcss/aspect-ratio'),
-    require('@tailwindcss/typography'),
+    // Remover temporariamente os plugins que podem causar problema
+    // require('@tailwindcss/forms'),
+    // require('@tailwindcss/aspect-ratio'),
+    // require('@tailwindcss/typography'),
   ]
 }
