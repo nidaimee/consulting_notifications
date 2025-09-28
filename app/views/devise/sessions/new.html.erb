@@ -1,45 +1,186 @@
-<div class="d-flex align-items-center justify-content-center min-vh-100" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-  <div class="card shadow-lg" style="width: 100%; max-width: 400px;">
-    <div class="card-body p-4">
-      <!-- Avatar/Ícone -->
-      <div class="text-center mb-4">
-        <div class="rounded-circle d-inline-flex align-items-center justify-content-center" 
-             style="width: 60px; height: 60px; background-color: #e0e7ff;">
-          <svg width="30" height="30" fill="#6366f1" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14c-4 0-7 2-7 4v2h14v-2c0-2-3-4-7-4z"/>
-          </svg>
-        </div>
+<style>
+.login-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.login-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+  padding: 40px;
+  width: 100%;
+  max-width: 420px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.login-icon {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
+}
+
+.login-title {
+  color: #1e293b;
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.login-subtitle {
+  color: #64748b;
+  font-size: 16px;
+  margin-bottom: 0;
+}
+
+.form-floating {
+  margin-bottom: 20px;
+}
+
+.form-floating input {
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 20px 16px 8px;
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+.form-floating input:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.form-floating label {
+  color: #64748b;
+  font-weight: 500;
+}
+
+.btn-login {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  border: none;
+  border-radius: 12px;
+  padding: 16px;
+  font-size: 16px;
+  font-weight: 600;
+  width: 100%;
+  color: white;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+}
+
+.btn-login:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+  background: linear-gradient(135deg, #5b5fd9, #7c3aed);
+}
+
+.alert-custom {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  color: #dc2626;
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+.create-account-link {
+  text-align: center;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.create-account-link a {
+  color: #6366f1;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.create-account-link a:hover {
+  color: #5b5fd9;
+}
+
+@media (max-width: 480px) {
+  .login-card {
+    padding: 30px 20px;
+    margin: 20px;
+  }
+  
+  .login-icon {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .login-title {
+    font-size: 24px;
+  }
+}
+</style>
+
+<div class="login-container">
+  <div class="login-card">
+    <div class="login-header">
+      <div class="login-icon">
+        <svg width="40" height="40" fill="white" viewBox="0 0 24 24">
+          <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 7V9C15 10.1 14.1 11 13 11V19H15V21H9V19H11V11C9.9 11 9 10.1 9 9V7H3V9H5V19H7V21H1V19H3V9C3 7.9 3.9 7 5 7H9C9 5.9 9.9 5 11 5H13C14.1 5 15 5.9 15 7H19C20.1 7 21 7.9 21 9Z"/>
+        </svg>
       </div>
-      
-      <h2 class="text-center mb-2 fw-bold">Bem-vindo</h2>
-      <p class="text-center text-muted mb-4">Faça login para acessar sua conta</p>
-
-      <% if flash[:alert] %>
-        <div class="alert alert-danger text-center mb-3">
-          <%= flash[:alert] %>
-        </div>
-      <% end %>
-
-      <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
-        <div class="mb-3">
-          <%= f.label :email, class: "form-label fw-semibold" %>
-          <%= f.email_field :email, autofocus: true, class: "form-control", placeholder: "Digite seu email" %>
-        </div>
-        
-        <div class="mb-4">
-          <%= f.label :password, class: "form-label fw-semibold" %>
-          <%= f.password_field :password, class: "form-control", placeholder: "Digite sua senha" %>
-        </div>
-
-        <%= f.submit "Entrar", class: "btn btn-primary w-100 py-2 fw-semibold" %>
-      <% end %>
-
-      <% if devise_mapping.registerable? %>
-        <div class="text-center mt-3">
-          <%= link_to "Criar conta", new_registration_path(resource_name), class: "text-decoration-none" %>
-        </div>
-      <% end %>
+      <h2 class="login-title">Bem-vindo!</h2>
+      <p class="login-subtitle">Faça login para acessar sua conta</p>
     </div>
+
+    <% if flash[:alert] %>
+      <div class="alert-custom">
+        <i class="fas fa-exclamation-triangle me-2"></i>
+        <%= flash[:alert] %>
+      </div>
+    <% end %>
+
+    <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
+      <div class="form-floating">
+        <%= f.email_field :email, 
+            autofocus: true, 
+            class: "form-control", 
+            id: "email",
+            placeholder: "seu@email.com",
+            required: true %>
+        <%= f.label :email, "E-mail", for: "email" %>
+      </div>
+
+      <div class="form-floating">
+        <%= f.password_field :password, 
+            class: "form-control", 
+            id: "password",
+            placeholder: "Digite sua senha",
+            required: true %>
+        <%= f.label :password, "Senha", for: "password" %>
+      </div>
+
+      <%= f.submit "Entrar", class: "btn btn-login" %>
+    <% end %>
+
+    <% if devise_mapping.registerable? %>
+      <div class="create-account-link">
+        <%= link_to "Criar nova conta", new_registration_path(resource_name) %>
+      </div>
+    <% end %>
   </div>
 </div>
