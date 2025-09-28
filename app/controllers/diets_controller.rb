@@ -99,9 +99,7 @@ class DietsController < ApplicationController
           quantity_grams: food.quantity_grams,
           position: food.position,
           created_at: Time.current,
-          updated_at: Time.current,
-          user: current_user
-
+          updated_at: Time.current
         }
       end
 
