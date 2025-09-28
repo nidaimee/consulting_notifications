@@ -6,8 +6,8 @@
   "scripts": {
     "start": "webpack serve --open --mode development",
     "build": "webpack --mode production",
-    "build:css": "tailwindcss -i ./app/assets/stylesheets/tailwind.css -o /tmp/assets/builds/tailwind.css --minify",
-    "watch:css": "tailwindcss -i ./app/assets/stylesheets/tailwind.css -o /tmp/assets/builds/tailwind.css --watch"
+    "build:css": "tailwindcss --config ./config/tailwind.config.js -i ./app/assets/stylesheets/tailwind.css -o /tmp/assets/builds/tailwind.css --minify",
+    "watch:css": "tailwindcss --config ./config/tailwind.config.js -i ./app/assets/stylesheets/tailwind.css -o /tmp/assets/builds/tailwind.css --watch"
   },
   "keywords": [],
   "author": "Raphael",
