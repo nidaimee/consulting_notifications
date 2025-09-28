@@ -40,11 +40,11 @@ class DietsController < ApplicationController
 
   def create
     @diet = @client.diets.build(diet_params)
+    @diet.user = current_user
     @diet.created_date = Date.current
     @diet.position = next_position
 
     if @diet.save
-      # ✅ Limpar cache relacionado
       expire_diet_caches
       redirect_to [ @client, @diet ], notice: "Dieta criada com sucesso."
     else
