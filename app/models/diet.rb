@@ -14,6 +14,23 @@ class Diet < ApplicationRecord
     diet_foods.includes(:food).map { |df| "#{df.quantity_grams.to_i}g #{df.food.name}" }.join(" • ")
   end
   # Cálculos automáticos dos totais
+  class Diet < ApplicationRecord
+  belongs_to :user
+  belongs_to :client
+  has_many :diet_foods, dependent: :destroy
+  has_many :foods, through: :diet_foods
+  validates :name, presence: true
+
+  # acts_as_list scope: :client
+
+  def foods_list
+    diet_foods.includes(:food).map { |df| df.food.name }.join(", ")
+  end
+
+  def foods_with_quantities
+    diet_foods.includes(:food).map { |df| "#{df.quantity_grams.to_i}g #{df.food.name}" }.join(" • ")
+  end
+
   def total_calories
     diet_foods.sum(&:calories) || 0
   end
@@ -29,6 +46,10 @@ class Diet < ApplicationRecord
   def total_fat
     diet_foods.sum(&:fat) || 0
   end
+
+  private
+  end
+
 
   private
 end
