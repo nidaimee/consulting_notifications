@@ -138,11 +138,6 @@
 <div class="login-container">
   <div class="login-card">
     <div class="login-header">
-      <div class="login-icon">
-        <svg width="40" height="40" fill="white" viewBox="0 0 24 24">
-          <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 7V9C15 10.1 14.1 11 13 11V19H15V21H9V19H11V11C9.9 11 9 10.1 9 9V7H3V9H5V19H7V21H1V19H3V9C3 7.9 3.9 7 5 7H9C9 5.9 9.9 5 11 5H13C14.1 5 15 5.9 15 7H19C20.1 7 21 7.9 21 9Z"/>
-        </svg>
-      </div>
       <h2 class="login-title">Bem-vindo!</h2>
       <p class="login-subtitle">Faça login para acessar sua conta</p>
     </div>
@@ -177,10 +172,5 @@
       <%= f.submit "Entrar", class: "btn btn-login" %>
     <% end %>
 
-    <% if devise_mapping.registerable? %>
-      <div class="create-account-link">
-        <%= link_to "Criar nova conta", new_registration_path(resource_name) %>
-      </div>
-    <% end %>
   </div>
 </div>
