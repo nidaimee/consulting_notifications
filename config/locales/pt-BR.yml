@@ -1,0 +1,476 @@
+pt-BR:
+  # === DATAS E FORMATOS ===
+  date:
+    formats:
+      default: "%d/%m/%Y"
+      short: "%d de %B"
+      long: "%d de %B de %Y"
+    day_names:
+      - Domingo
+      - Segunda-feira
+      - Terça-feira
+      - Quarta-feira
+      - Quinta-feira
+      - Sexta-feira
+      - Sábado
+    abbr_day_names:
+      - Dom
+      - Seg
+      - Ter
+      - Qua
+      - Qui
+      - Sex
+      - Sáb
+    month_names:
+      - ~
+      - Janeiro
+      - Fevereiro
+      - Março
+      - Abril
+      - Maio
+      - Junho
+      - Julho
+      - Agosto
+      - Setembro
+      - Outubro
+      - Novembro
+      - Dezembro
+    abbr_month_names:
+      - ~
+      - Jan
+      - Fev
+      - Mar
+      - Abr
+      - Mai
+      - Jun
+      - Jul
+      - Ago
+      - Set
+      - Out
+      - Nov
+      - Dez
+
+  time:
+    formats:
+      default: "%a, %d de %B de %Y, %H:%M:%S %z"
+      short: "%d de %B, %H:%M"
+      long: "%A, %d de %B de %Y, %H:%M"
+    am: "manhã"
+    pm: "tarde"
+
+  # === NÚMEROS ===
+  number:
+    format:
+      separator: ","
+      delimiter: "."
+      precision: 2
+    currency:
+      format:
+        format: "R$ %n"
+        unit: "R$"
+        separator: ","
+        delimiter: "."
+        precision: 2
+    percentage:
+      format:
+        delimiter: "."
+        separator: ","
+    precision:
+      format:
+        delimiter: "."
+        separator: ","
+    human:
+      format:
+        delimiter: "."
+        separator: ","
+        precision: 2
+
+  # === ACTIVE RECORD ===
+  activerecord:
+    errors:
+      messages:
+        record_invalid: "A validação falhou: %{errors}"
+        restrict_dependent_destroy:
+          has_one: "Não é possível excluir o registro pois existe um %{record} dependente"
+          has_many: "Não é possível excluir o registro pois existem %{record} dependentes"
+        inclusion: "não está incluído na lista"
+        exclusion: "não está disponível"
+        invalid: "não é válido"
+        confirmation: "não é igual à %{attribute}"
+        accepted: "deve ser aceito"
+        empty: "não pode ficar vazio"
+        blank: "não pode ficar em branco"
+        present: "deve ficar em branco"
+        too_long: "é muito longo (máximo: %{count} caracteres)"
+        too_short: "é muito curto (mínimo: %{count} caracteres)"
+        wrong_length: "não possui o tamanho esperado (%{count} caracteres)"
+        not_a_number: "não é um número"
+        not_an_integer: "não é um número inteiro"
+        greater_than: "deve ser maior que %{count}"
+        greater_than_or_equal_to: "deve ser maior ou igual a %{count}"
+        equal_to: "deve ser igual a %{count}"
+        less_than: "deve ser menor que %{count}"
+        less_than_or_equal_to: "deve ser menor ou igual a %{count}"
+        other_than: "deve ser diferente de %{count}"
+        odd: "deve ser ímpar"
+        even: "deve ser par"
+        taken: "já está em uso"
+        required: "é obrigatório(a)"
+        invalid_date: "não é uma data válida"
+        invalid_time: "não é um horário válido"
+        invalid_datetime: "não é uma data/hora válida"
+        is_at: "deve ser exatamente %{restriction}"
+        before: "deve ser antes de %{restriction}"
+        on_or_before: "deve ser antes ou exatamente %{restriction}"
+        after: "deve ser depois de %{restriction}"
+        on_or_after: "deve ser depois ou exatamente %{restriction}"
+        spoofed_media_type: "tem uma extensão que não corresponde ao seu conteúdo"
+
+    models:
+      user:
+        one: "Usuário"
+        other: "Usuários"
+      client:
+        one: "Cliente"
+        other: "Clientes"
+      diet:
+        one: "Dieta"
+        other: "Dietas"
+      food:
+        one: "Alimento"
+        other: "Alimentos"
+      diet_food:
+        one: "Alimento da Dieta"
+        other: "Alimentos da Dieta"
+      client_history:
+        one: "Histórico do Cliente"
+        other: "Históricos do Cliente"
+      food_substitution:
+        one: "Substituição de Alimento"
+        other: "Substituições de Alimentos"
+
+    attributes:
+      user:
+        name: "Nome"
+        email: "E-mail"
+        password: "Senha"
+        password_confirmation: "Confirmação da senha"
+        current_password: "Senha atual"
+        remember_me: "Lembrar de mim"
+        license_number: "Número do CRN"
+        created_at: "Criado em"
+        updated_at: "Atualizado em"
+      
+      client:
+        name: "Nome"
+        phone_number: "Telefone"
+        email: "E-mail"
+        sex: "Sexo"
+        age: "Idade"
+        height: "Altura"
+        start_date: "Data de início"
+        end_date: "Data de término"
+        paid_amount: "Valor pago"
+        plan_type: "Tipo do plano"
+        status: "Status"
+        note: "Observações"
+        photos: "Fotos"
+        created_at: "Criado em"
+        updated_at: "Atualizado em"
+      
+      diet:
+        name: "Nome da refeição"
+        meal_type: "Tipo da refeição"
+        notes: "Observações"
+        created_date: "Data de criação"
+        position: "Posição"
+        user: "Usuário"
+        client: "Cliente"
+        created_at: "Criado em"
+        updated_at: "Atualizado em"
+      
+      food:
+        name: "Nome"
+        calories_per_100g: "Calorias por 100g"
+        protein_per_100g: "Proteína por 100g"
+        carbs_per_100g: "Carboidratos por 100g"
+        fat_per_100g: "Gordura por 100g"
+        fiber_per_100g: "Fibra por 100g"
+        sodium_per_100g: "Sódio por 100g"
+        description: "Descrição"
+        user: "Usuário"
+        created_at: "Criado em"
+        updated_at: "Atualizado em"
+      
+      diet_food:
+        quantity_grams: "Quantidade (gramas)"
+        position: "Posição"
+        diet: "Dieta"
+        food: "Alimento"
+        created_at: "Criado em"
+        updated_at: "Atualizado em"
+      
+      client_history:
+        description: "Descrição"
+        images: "Imagens"
+        client: "Cliente"
+        user: "Usuário"
+        created_at: "Criado em"
+        updated_at: "Atualizado em"
+      
+      food_substitution:
+        substitute_food: "Alimento substituto"
+        quantity_grams: "Quantidade (gramas)"
+        notes: "Observações"
+        diet_food: "Alimento da dieta"
+        created_at: "Criado em"
+        updated_at: "Atualizado em"
+
+  # === DEVISE ===
+  devise:
+    confirmations:
+      confirmed: "A sua conta foi ativada com sucesso."
+      send_instructions: "Dentro de alguns minutos, você receberá um email com as instruções de confirmação da sua conta."
+      send_paranoid_instructions: "Se o seu email existir na nossa base de dados, você receberá um email com instruções sobre como confirmar a sua conta em alguns minutos."
+    failure:
+      already_authenticated: "Você já efetuou login."
+      inactive: "A sua conta ainda não foi ativada."
+      invalid: "Email ou senha inválida."
+      locked: "A sua conta está bloqueada."
+      last_attempt: "Você tem mais uma tentativa antes da sua conta ser bloqueada."
+      not_found_in_database: "Email ou senha inválida."
+      timeout: "A sua sessão expirou. Por favor, efetue login novamente para continuar."
+      unauthenticated: "Para continuar, efetue login ou registre-se."
+      unconfirmed: "Antes de continuar, confirme a sua conta."
+    mailer:
+      confirmation_instructions:
+        subject: "Instruções de confirmação"
+      reset_password_instructions:
+        subject: "Instruções de troca de senha"
+      unlock_instructions:
+        subject: "Instruções de desbloqueio"
+    omniauth_callbacks:
+      failure: "Não é possível autenticá-lo como %{kind} porque \"%{reason}\"."
+      success: "Autenticado com sucesso com uma conta de %{kind}."
+    passwords:
+      no_token: "Você só pode acessar essa página através de um email de troca de senha. Se já estiver acessando por um email, verifique se a URL fornecida está completa."
+      send_instructions: "Dentro de alguns minutos, você receberá um email com as instruções de troca da sua senha."
+      send_paranoid_instructions: "Se o seu email existir na nossa base de dados, você receberá um email com um link de recuperação da senha."
+      updated: "A sua senha foi alterada com sucesso. Você está autenticado."
+      updated_not_active: "Sua senha foi alterada com sucesso."
+    registrations:
+      destroyed: "Adeus! A sua conta foi cancelada com sucesso. Esperamos vê-lo novamente em breve."
+      signed_up: "Login efetuado com sucesso. Se não foi autorizado, a confirmação será enviada por email."
+      signed_up_but_inactive: "Você foi cadastrado com sucesso. No entanto, não foi possível efetuar login, pois a sua conta não foi ativada."
+      signed_up_but_locked: "Você foi cadastrado com sucesso. No entanto, não foi possível efetuar login, pois a sua conta está bloqueada."
+      signed_up_but_unconfirmed: "Uma mensagem com um link de confirmação foi enviada para o seu email. Por favor, acesse o link para ativar a sua conta."
+      update_needs_confirmation: "Você atualizou a sua conta com sucesso, mas o seu novo email precisa ser confirmado. Por favor, acesse o seu email e clique no link de confirmação para finalizar a confirmação do seu novo email."
+      updated: "A sua conta foi atualizada com sucesso."
+    sessions:
+      signed_in: "Login efetuado com sucesso!"
+      signed_out: "Logout efetuado com sucesso!"
+      already_signed_out: "Logout efetuado com sucesso!"
+    unlocks:
+      send_instructions: "Dentro de alguns minutos, você receberá um email com instruções de desbloqueio da sua conta."
+      send_paranoid_instructions: "Se a sua conta existir, você receberá um email com instruções de desbloqueio em alguns minutos."
+      unlocked: "A sua conta foi desbloqueada com sucesso. Por favor, efetue login para continuar."
+
+  # === ERRORS ===
+  errors:
+    format: "%{attribute} %{message}"
+    messages:
+      accepted: "deve ser aceito"
+      blank: "não pode ficar em branco"
+      confirmation: "não é igual à %{attribute}"
+      empty: "não pode ficar vazio"
+      equal_to: "deve ser igual a %{count}"
+      even: "deve ser par"
+      exclusion: "não está disponível"
+      greater_than: "deve ser maior que %{count}"
+      greater_than_or_equal_to: "deve ser maior ou igual a %{count}"
+      inclusion: "não está incluído na lista"
+      invalid: "não é válido"
+      less_than: "deve ser menor que %{count}"
+      less_than_or_equal_to: "deve ser menor ou igual a %{count}"
+      not_a_number: "não é um número"
+      not_an_integer: "não é um número inteiro"
+      odd: "deve ser ímpar"
+      other_than: "deve ser diferente de %{count}"
+      present: "deve ficar em branco"
+      required: "é obrigatório"
+      taken: "já está em uso"
+      too_long: "é muito longo (máximo: %{count} caracteres)"
+      too_short: "é muito curto (mínimo: %{count} caracteres)"
+      wrong_length: "não possui o tamanho esperado (%{count} caracteres)"
+
+  # === APLICAÇÃO ESPECÍFICA ===
+  application:
+    name: "Sistema de Consultoria Nutricional"
+    welcome: "Bem-vindo"
+    actions: "Ações"
+    edit: "Editar"
+    delete: "Excluir"
+    show: "Visualizar"
+    back: "Voltar"
+    save: "Salvar"
+    cancel: "Cancelar"
+    create: "Criar"
+    update: "Atualizar"
+    search: "Buscar"
+    filter: "Filtrar"
+    export: "Exportar"
+    import: "Importar"
+    loading: "Carregando..."
+    no_results: "Nenhum resultado encontrado"
+    confirm_delete: "Tem certeza que deseja excluir?"
+    
+  # === NAVEGAÇÃO ===
+  navigation:
+    dashboard: "Dashboard"
+    clients: "Clientes"
+    foods: "Alimentos"
+    diets: "Dietas"
+    profile: "Perfil"
+    settings: "Configurações"
+    logout: "Sair"
+    login: "Entrar"
+    register: "Cadastrar-se"
+
+  # === CLIENTS ===
+  clients:
+    index:
+      title: "Clientes"
+      new_client: "Novo Cliente"
+      no_clients: "Nenhum cliente cadastrado"
+    new:
+      title: "Novo Cliente"
+    edit:
+      title: "Editar Cliente"
+    show:
+      title: "Detalhes do Cliente"
+      client_info: "Informações do Cliente"
+      financial_summary: "Resumo Financeiro"
+      diet_management: "Gerenciar Dietas"
+      photos: "Fotos do Físico"
+      client_history: "Histórico do Cliente"
+      add_entry: "Adicionar Entrada"
+    messages:
+      created: "Cliente criado com sucesso."
+      updated: "Cliente atualizado com sucesso."
+      deleted: "Cliente removido com sucesso."
+      not_found: "Cliente não encontrado."
+      photo_added: "Foto adicionada com sucesso."
+      photo_removed: "Foto removida com sucesso."
+      history_added: "Entrada de histórico adicionada com sucesso."
+
+  # === DIETS ===  
+  diets:
+    index:
+      title: "Dietas"
+      new_diet: "Nova Dieta"
+      no_diets: "Nenhuma dieta cadastrada"
+    new:
+      title: "Nova Dieta"
+    edit:
+      title: "Editar Dieta"
+    show:
+      title: "Detalhes da Dieta"
+      add_food: "Adicionar Alimento"
+      total_calories: "Total de Calorias"
+      total_protein: "Total de Proteína"
+      total_carbs: "Total de Carboidratos"
+      total_fat: "Total de Gordura"
+    messages:
+      created: "Dieta criada com sucesso."
+      updated: "Dieta atualizada com sucesso."
+      deleted: "Dieta removida com sucesso."
+      duplicated: "Dieta duplicada com sucesso."
+      food_added: "Alimento adicionado à dieta com sucesso."
+      food_removed: "Alimento removido da dieta com sucesso."
+      reordered: "Ordem das dietas atualizada com sucesso."
+
+  # === FOODS ===
+  foods:
+    index:
+      title: "Alimentos"
+      new_food: "Novo Alimento"
+      no_foods: "Nenhum alimento cadastrado"
+    new:
+      title: "Novo Alimento"
+    edit:
+      title: "Editar Alimento"
+    show:
+      title: "Detalhes do Alimento"
+      nutritional_info: "Informações Nutricionais"
+      per_100g: "por 100g"
+    messages:
+      created: "Alimento criado com sucesso."
+      updated: "Alimento atualizado com sucesso."
+      deleted: "Alimento removido com sucesso."
+
+  # === MEAL TYPES ===
+  meal_types:
+    breakfast: "Café da Manhã"
+    morning_snack: "Lanche da Manhã"
+    lunch: "Almoço"
+    afternoon_snack: "Lanche da Tarde"
+    dinner: "Jantar"
+    supper: "Ceia"
+    pre_workout: "Pré-treino"
+    post_workout: "Pós-treino"
+
+  # === PLAN TYPES ===
+  plan_types:
+    weekly: "Semanal"
+    biweekly: "Quinzenal"
+    monthly: "Mensal"
+    quarterly: "Trimestral"
+    custom: "Personalizado"
+
+  # === STATUS ===
+  status:
+    active: "Ativo"
+    inactive: "Inativo"
+    pending: "Pendente"
+    completed: "Concluído"
+    expired: "Expirado"
+
+  # === UNITS ===
+  units:
+    grams: "gramas"
+    kg: "kg"
+    calories: "calorias"
+    kcal: "kcal"
+    protein: "proteína"
+    carbs: "carboidratos"
+    fat: "gordura"
+    fiber: "fibra"
+    sodium: "sódio"
+    mg: "mg"
+    g: "g"
+
+  # === HELPERS ===
+  helpers:
+    page_entries_info:
+      one_page:
+        display_entries:
+          zero: "Nenhum %{entry_name} encontrado"
+          one: "Exibindo <b>1</b> %{entry_name}"
+          other: "Exibindo <b>todos os %{count}</b> %{entry_name}"
+      more_pages:
+        display_entries: "Exibindo %{entry_name} <b>%{first}&nbsp;-&nbsp;%{last}</b> de <b>%{total}</b> no total"
+    select:
+      prompt: "Por favor selecione"
+    submit:
+      create: "Criar %{model}"
+      submit: "Salvar %{model}"
+      update: "Atualizar %{model}"
+
+  # === PAGINATION ===
+  views:
+    pagination:
+      first: "&laquo; Primeira"
+      last: "Última &raquo;"
+      previous: "&lsaquo; Anterior"
+      next: "Próxima &rsaquo;"
+      truncate: "&hellip;"

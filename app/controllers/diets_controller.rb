@@ -80,20 +80,18 @@ class DietsController < ApplicationController
   end
 
   def duplicate
-    # ✅ OTIMIZADO: Usa transação e bulk insert
     original_diet = @client.diets.includes(diet_foods: :food).find(params[:id])
 
     Diet.transaction do
-      # Criar dieta duplicada
       @duplicated_diet = @client.diets.create!(
         name: "#{original_diet.name} (Cópia)",
         meal_type: original_diet.meal_type,
         notes: original_diet.notes,
         created_date: Date.current,
-        position: next_position
+        position: next_position,
+        user: current_user
       )
 
-      # ✅ OTIMIZADO: Bulk insert dos alimentos
       diet_foods_data = original_diet.diet_foods.map do |food|
         {
           diet_id: @duplicated_diet.id,
@@ -101,7 +99,9 @@ class DietsController < ApplicationController
           quantity_grams: food.quantity_grams,
           position: food.position,
           created_at: Time.current,
-          updated_at: Time.current
+          updated_at: Time.current,
+          user: current_user
+
         }
       end
 
