@@ -18,10 +18,10 @@ puts "👨‍⚕️ Criando nutricionistas..."
 users = []
 
 user1 = User.create!(
-  email: 'nutricionista@example.com',
+  email: 'karen@nutri.com',
   password: '123456',
   password_confirmation: '123456',
-  name: 'Dr. Ana Silva',
+  name: 'Karen',
   phone: '(11) 99999-9999',
   specialty: 'Nutrição Clínica',
   license_number: 'CRN-3-12345'
@@ -70,6 +70,32 @@ user5 = User.create!(
   specialty: 'Nutrição Clínica',
   license_number: 'CRN-3-12345'
 )
+
+users << user5
+
+user6 = User.create!(
+  email: 'Karen@nutri.com',
+  password: '123456',
+  password_confirmation: '123456',
+  name: 'Karen',
+  phone: '(11) 99999-9999',
+  specialty: 'Nutrição Clínica',
+  license_number: 'CRN-3-12345'
+)
+
+users << user6
+
+user7 = User.create!(
+  email: 'teste@nutri.com',
+  password: '123456',
+  password_confirmation: '123456',
+  name: 'VJ',
+  phone: '(11) 99999-9999',
+  specialty: 'Nutrição Clínica',
+  license_number: 'CRN-3-12345'
+)
+
+users << user7
 
 puts "✅ #{users.count} nutricionistas criados!"
 users.each { |u| puts "  - #{u.name} (#{u.email})" }
