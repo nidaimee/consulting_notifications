@@ -74,10 +74,10 @@ user5 = User.create!(
 users << user5
 
 user6 = User.create!(
-  email: 'Karen@nutri.com',
+  email: 'teste2@nutri.com',
   password: '123456',
   password_confirmation: '123456',
-  name: 'Karen',
+  name: 'Teste2',
   phone: '(11) 99999-9999',
   specialty: 'Nutrição Clínica',
   license_number: 'CRN-3-12345'

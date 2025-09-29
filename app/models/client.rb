@@ -6,7 +6,7 @@ class Client < ApplicationRecord
   belongs_to :user
   has_many :diets, dependent: :destroy
   has_many :client_histories, dependent: :destroy
-
+  validates :start_date, :end_date, presence: true
   # Validações
   validates :name, presence: true
   validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }, allow_blank: true
