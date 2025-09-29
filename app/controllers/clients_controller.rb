@@ -354,7 +354,7 @@ class ClientsController < ApplicationController
     params.require(:client).permit(
       :name, :email, :phone_number, :sex, :age, :height,
       :start_date, :end_date, :paid_amount, :plan_type,
-      :status, :note, :last_contacted_at, :observation, photos: []
+      :status, :note, :last_contacted_at, :observation, :next_update_at, photos: []
     )
   end
 

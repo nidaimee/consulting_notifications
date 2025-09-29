@@ -8,6 +8,21 @@ class DashboardController < ApplicationController
                                        .order(created_at: :desc)
                                        .limit(5)
     @total_revenue = current_user.clients.sum(:paid_amount)
+    from = Date.current
+    to = Date.current + 7
+    @clients_to_update = current_user.clients
+      .select { |client| date = client.next_update_date; date && date >= from && date <= to }
+      .sort_by { |client| client.next_update_date }
+       today = Date.current
+    @to_update_soon_count = current_user.clients.select { |c| date = c.next_update_date; date && date >= today && date <= today + 7 }.count
+    @late_updates_count = current_user.clients.select { |c| date = c.next_update_date; date && date < today }.count
+    @new_clients_this_month = current_user.clients.where(created_at: today.beginning_of_month..today.end_of_month).count
+    @revenue_this_month = current_user.clients.where(created_at: today.beginning_of_month..today.end_of_month).sum(:paid_amount)
+    @consults_this_month = ClientHistory.where(client: current_user.clients, created_at: today.beginning_of_month..today.end_of_month).count
+    # Taxa de retenção: % de clientes que têm mais de 1 consultoria
+    total = current_user.clients.count
+    retained = current_user.clients.joins(:client_histories).group("clients.id").having("count(client_histories.id) > 1").count.size
+    @retention_rate = total > 0 ? ((retained.to_f / total) * 100).round(1) : 0
   end
 
   # Vista do plano diário completo - como sua imagem de referência

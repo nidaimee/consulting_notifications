@@ -13,49 +13,89 @@
 </div>
 
 <!-- Cards de Estatísticas -->
-<div class="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
-  <!-- Total de Pacientes -->
-  <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-md flex items-center gap-4">
-    <div class="flex items-center justify-center rounded-full bg-blue-100 h-14 w-14">
-      <svg class="h-7 w-7 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
-      </svg>
-    </div>
-    <div>
-      <h4 class="text-xl font-bold text-gray-900"><%= @clients_count %></h4>
-      <span class="text-sm text-gray-500 font-medium">Total de Pacientes</span>
-    </div>
-  </div>
-  <!-- Pacientes Ativos -->
-  <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-md flex items-center gap-4">
-    <div class="flex items-center justify-center rounded-full bg-green-100 h-14 w-14">
-      <svg class="h-7 w-7 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-      </svg>
-    </div>
-    <div>
-      <h4 class="text-xl font-bold text-gray-900"><%= @active_clients %></h4>
-      <span class="text-sm text-gray-500 font-medium">Pacientes Ativos</span>
-    </div>
-  </div>
-  <!-- Base de Alimentos -->
-  <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-md flex items-center gap-4">
-    <div class="flex items-center justify-center rounded-full bg-indigo-100 h-14 w-14">
-      <svg class="h-7 w-7 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
-      </svg>
-    </div>
-    <div>
-      <h4 class="text-xl font-bold text-gray-900"><%= @foods_count %></h4>
-      <span class="text-sm text-gray-500 font-medium">Base de Alimentos</span>
-    </div>
-  </div>
-  <!-- Receita Total -->
-  <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-md flex items-center gap-4">
+<div class="mb-8 grid grid-cols-2 gap-6 xl:grid-cols-4">
+  <!-- Próximos 7 dias -->
+  <div class="rounded-xl border bg-white p-6 shadow-md flex items-center gap-4">
     <div class="flex items-center justify-center rounded-full bg-amber-100 h-14 w-14">
-      <svg class="h-7 w-7 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <svg class="h-7 w-7 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10"/>
+      </svg>
+    </div>
+    <div>
+      <h4 class="text-xl font-bold text-gray-900"><%= @to_update_soon_count %></h4>
+      <span class="text-sm text-gray-500 font-medium">Próximos 7 dias</span>
+    </div>
+  </div>
+  <!-- Atrasados -->
+  <div class="rounded-xl border bg-white p-6 shadow-md flex items-center gap-4">
+    <div class="flex items-center justify-center rounded-full bg-red-100 h-14 w-14">
+      <svg class="h-7 w-7 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+      </svg>
+    </div>
+    <div>
+      <h4 class="text-xl font-bold text-gray-900"><%= @late_updates_count %></h4>
+      <span class="text-sm text-gray-500 font-medium">Atualização Atrasada</span>
+    </div>
+  </div>
+  <!-- Novos no mês -->
+  <div class="rounded-xl border bg-white p-6 shadow-md flex items-center gap-4">
+    <div class="flex items-center justify-center rounded-full bg-blue-100 h-14 w-14">
+      <svg class="h-7 w-7 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+      </svg>
+    </div>
+    <div>
+      <h4 class="text-xl font-bold text-gray-900"><%= @new_clients_this_month %></h4>
+      <span class="text-sm text-gray-500 font-medium">Novos no mês</span>
+    </div>
+  </div>
+  <!-- Receita do mês -->
+  <div class="rounded-xl border bg-white p-6 shadow-md flex items-center gap-4">
+    <div class="flex items-center justify-center rounded-full bg-green-100 h-14 w-14">
+      <svg class="h-7 w-7 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
       </svg>
+    </div>
+    <div>
+      <h4 class="text-xl font-bold text-gray-900">R$ <%= number_with_precision(@revenue_this_month, precision: 2, delimiter: '.', separator: ',') %></h4>
+      <span class="text-sm text-gray-500 font-medium">Receita do mês</span>
+    </div>
+  </div>
+</div>
+
+<!-- Indicadores básicos e rápidos -->
+<div class="mb-8 grid grid-cols-2 gap-6 xl:grid-cols-4">
+  <!-- Total de Pacientes -->
+  <!-- ... (seu card atual) ... -->
+  <!-- Pacientes Ativos -->
+  <!-- ... (seu card atual) ... -->
+  <!-- Base de Alimentos -->
+  <!-- ... (seu card atual) ... -->
+  <!-- Receita Total -->
+  <!-- ... (seu card atual) ... -->
+</div>
+
+<!-- Indicador de retenção e consultas -->
+<div class="mb-8 grid grid-cols-2 gap-6 xl:grid-cols-2">
+  <!-- Consultas no mês -->
+  <div class="rounded-xl border bg-white p-6 shadow-md flex items-center gap-4">
+    <div class="flex items-center justify-center rounded-full bg-indigo-100 h-14 w-14">
+      <svg class="h-7 w-7 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8h18M3 16h18"/>
+      </svg>
+    </div>
+    <div>
+      <h4 class="text-xl font-bold text-gray-900"><%= @consults_this_month %></h4>
+      <span class="text-sm text-gray-500 font-medium">Consultas no mês</span>
+    </div>
+  </div>
+  <!-- Taxa de retenção -->
+  <div class="rounded-xl border bg-white p-6 shadow-md flex items-center gap-4">
+    <div class="flex items-center justify-center rounded-full bg-purple-100 h-14 w-14">
+      <svg class="h-7 w-7 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5zm0 7v-7"/>
+      </svg> 
     </div>
     <div>
       <h4 class="text-xl font-bold text-gray-900">R$ <%= number_with_precision(@total_revenue, precision: 2, delimiter: '.', separator: ',') %></h4>
@@ -73,13 +113,13 @@
         <svg class="h-6 w-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
         </svg>
-        <h3 class="font-medium text-gray-900">Pacientes Recentes</h3>
+        <h3 class="font-medium text-gray-900">Pacientes Para Atualizar</h3>
       </div>
     </div>
     <div class="p-8">
-      <% if @recent_clients.any? %>
+      <% if @clients_to_update.any? %>
         <div class="space-y-4">
-          <% @recent_clients.first(4).each do |client| %>
+          <% @clients_to_update.first(4).each do |client| %>
             <div class="flex items-center justify-between rounded-lg border border-gray-100 bg-gray-50 p-4 hover:shadow transition">
               <div>
                 <%= link_to client_path(client), class: "font-semibold text-blue-900 hover:text-indigo-600 transition-colors" do %>
@@ -87,25 +127,24 @@
                 <% end %>
                 <p class="text-sm text-gray-500"><%= client.phone_number %></p>
               </div>
-              <span class="inline-flex rounded-full px-3 py-1 text-xs font-medium 
-              <%= case client.status
-                 when 'active' then 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                 when 'inactive' then 'bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200'
-                 when 'pending' then 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200'
-                 else 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                 end %>">
-              <%= case client.status
-                  when 'active' then 'Ativo'
-                  when 'inactive' then 'Inativo'
-                  when 'pending' then 'Pendente'
-                  else 'Ativo'
-                  end %>
-            </span>
+              <span class="inline-flex rounded-full px-3 py-1 text-xs font-medium <%= client_status_color(client.status) %>">
+                <%= client_status_translation(client.status) %>
+                <% if client.expiring? && client.status == 'active' %>
+                  <span class="ml-1" title="Expira em <%= client.days_remaining %> dias">⚠️</span>
+                <% end %>
+              </span>
+              <span class="text-sm text-gray-600 ml-2 font-medium">Atualizar em <%= l(client.next_update_at, format: :short) %></span>
+               <%= link_to "Atualizar", client_path(client), class: "px-4 py-2 rounded bg-blue-600 text-white font-medium hover:bg-blue-700" %>
             </div>
           <% end %>
         </div>
+          <% else %>
+        <div class="text-gray-500 text-sm">Nenhum paciente precisa de atualização nos próximos dias.</div>
       <% end %>
     </div>
+    
+    <!-- app/views/dashboard/index.html.erb -->
+      
   </div>
 
   <!-- Ações Rápidas -->

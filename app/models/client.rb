@@ -130,6 +130,16 @@ class Client < ApplicationRecord
   scope :not_contacted_recently, ->(days = 30) { where("last_contacted_at < ? OR last_contacted_at IS NULL", days.days.ago) }
   scope :never_contacted, -> { where(last_contacted_at: nil) }
 
+  # Scopes de atualização
+  scope :to_be_updated_soon, ->(days = 7) {
+  where("next_update_at BETWEEN ? AND ?", Date.current, Date.current + days)
+    .order(next_update_at: :asc)
+  }
+
+  def next_update_date
+    last_history = client_histories.order(next_update_at: :desc).where.not(next_update_at: nil).first
+    last_history&.next_update_at || next_update_at
+  end
   # Scopes de busca
   scope :search_by_term, ->(term) {
     return all if term.blank?

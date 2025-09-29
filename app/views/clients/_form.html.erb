@@ -71,6 +71,12 @@
       <%= form.text_area :observation, placeholder: "Digite observações relevantes sobre o paciente...", 
           class: "w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-medium outline-none transition focus:border-blue-500 active:border-blue-500 dark:border-form-strokedark dark:bg-form-input dark:focus:border-blue-500" %>
     </div>
+   
+    <div>
+      <label for="client_end_date" class="mb-2.5 block text-black dark:text-white">Próxima Atualização</label>
+      <%= form.date_field :next_update_at, 
+          class: "w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-medium outline-none transition focus:border-blue-500 active:border-blue-500 dark:border-form-strokedark dark:bg-form-input dark:focus:border-blue-500" %>
+    </div>
 
     <!-- Certifique-se que este campo existe no formulário -->
     <div class="mb-4">

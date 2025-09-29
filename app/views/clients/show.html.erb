@@ -437,11 +437,19 @@
               <%= form.file_field :images, multiple: true, accept: "image/*",
                   class: "w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" %>
             </div>
+            <div class="mb-4">
+            <label for="client_history_next_update_at" class="block text-sm font-medium text-gray-700 mb-2">
+                Próxima atualização recomendada
+              </label>
+              <%= form.date_field :next_update_at, class: "w-full rounded border px-5 py-3 font-medium outline-none transition focus:border-blue-500" %>
+              <p class="text-xs text-gray-500 mt-1">Informe quando o cliente deve ser reavaliado.</p>
+          </div>
             <div class="pt-2">
               <%= form.submit "Adicionar Entrada", 
                   class: "w-full inline-flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 transition-colors" %>
             </div>
           <% end %>
+          
         </div>
       </div>
     </div>
@@ -466,6 +474,9 @@
                   </div>
                   <div class="flex-1 min-w-0">
                     <div class="flex items-start justify-between">
+                      <span class="text-xs text-gray-500 mt-1">
+                        Próxima atualização: <%= l(history.next_update_at, format: :short) if history.next_update_at %>
+                      </span>
                       <div>
                         <p class="text-xs text-gray-500 mt-1"><%= history.formatted_date %></p>
                       </div>

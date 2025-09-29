@@ -6,11 +6,14 @@ class ClientHistoriesController < ApplicationController
 
   def create
     @client_history = @client.client_histories.build(client_history_params)
-
     if @client_history.save
-      redirect_to @client, notice: "Entrada de histórico adicionada com sucesso!"
+      # Atualizar campo de próxima atualização no cliente
+      if @client_history.next_update_at.present?
+        @client.update(next_update_at: @client_history.next_update_at)
+      end
+      redirect_to client_path(@client), notice: "Atualização registrada!"
     else
-      redirect_to @client, alert: "Erro ao adicionar entrada: #{@client_history.errors.full_messages.join(', ')}"
+      render :new
     end
   end
 
@@ -46,6 +49,6 @@ class ClientHistoriesController < ApplicationController
   end
 
   def client_history_params
-    params.require(:client_history).permit(:action, :description, :metadata, images: [])
+    params.require(:client_history).permit(:action, :description, :next_update_at, :metadata, images: [])
   end
 end
