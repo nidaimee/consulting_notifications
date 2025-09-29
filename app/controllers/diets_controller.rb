@@ -189,27 +189,14 @@ class DietsController < ApplicationController
   end
 
   def reorder
-    # ✅ OTIMIZADO: Bulk update mais eficiente
     order_data = params[:order] || []
-
-    return render json: { success: false, message: "Nenhum dado para reordenar" } if order_data.empty?
-
     Diet.transaction do
-      # ✅ Usar bulk update para melhor performance
-      updates = order_data.each_with_index.map do |item, idx|
-        { id: item["id"], position: idx + 1 }
-      end.select { |update| @client.diets.exists?(update[:id]) }
-
-      # Usar upsert_all para bulk update
-      Diet.upsert_all(updates, unique_by: :id) if updates.any?
+      order_data.each do |item|
+        diet = @client.diets.find(item[:id])
+        diet.update!(position: item[:position])
+      end
     end
-
-    expire_diet_caches
-    render json: { success: true }
-
-  rescue => e
-    Rails.logger.error "Erro em reorder: #{e.message}"
-    render json: { success: false, message: e.message }, status: 500
+    render json: { success: true, message: "Ordem das refeições atualizada com sucesso!" }
   end
 
   def reorder_foods
@@ -229,7 +216,6 @@ class DietsController < ApplicationController
         order_data.each_with_index do |item, index|
           Rails.logger.info "Processing item #{index}: #{item.inspect}"
 
-          # ✅ CORRIGIDO: Usar find_by com validação
           diet_food = @diet.diet_foods.find_by(id: item[:id] || item["id"])
 
           if diet_food
