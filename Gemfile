@@ -24,7 +24,7 @@ gem "devise"
 
 gem "wicked_pdf"
 gem "wkhtmltopdf-binary"
-gem "tailwindcss-rails", "~> 4.3"
+gem "tailwindcss-rails", "~> 4.4"
 gem "mini_magick"
 gem "jsbundling-rails"
 gem "cssbundling-rails"
