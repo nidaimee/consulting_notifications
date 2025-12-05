@@ -51,7 +51,9 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :foods
+  resources :foods do
+    resources :food_quantities, only: [ :create, :update, :destroy ]
+  end
 
   get "up" => "rails/health#show", as: :rails_health_check
 end

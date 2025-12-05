@@ -1,5 +1,4 @@
 <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/themes/light.css" />
-
 <!-- Tippy.js JS -->
 <script src="https://unpkg.com/@popperjs/core@2"></script>
 <script src="https://unpkg.com/tippy.js@6"></script>
@@ -32,7 +31,6 @@
         </svg>
         PDF
       <% end %>
-      
     </div>
     <%= link_to new_client_diet_path(@client), 
       class: "inline-flex items-center gap-2.5 rounded bg-green-600 px-4 py-2 text-white font-medium hover:bg-green-700 transition" do %>
@@ -117,52 +115,88 @@
             </div>
             <!-- Footer -->
             <!-- Botões de ação: centralizados e compactos -->
-        <div class="flex flex-col sm:flex-row gap-2 justify-center items-center pt-3 w-full">
-          <%= link_to client_diet_path(@client, diet),
+            <div class="flex flex-col sm:flex-row gap-2 justify-center items-center pt-3 w-full">
+              <%= link_to client_diet_path(@client, diet),
             class: "flex items-center justify-center gap-1 px-2.5 py-1.5 rounded bg-blue-50 text-blue-700 text-sm font-semibold shadow hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-400 transition min-w-[40px]" do %>
-            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0zm2 8v-2a4 4 0 00-3-3.87"/>
-            </svg>
-            Editar
-          <% end %>
-
-          <%= button_to duplicate_client_diet_path(@client, diet), method: :post,
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0zm2 8v-2a4 4 0 00-3-3.87"/>
+                </svg>
+                Editar
+              <% end %>
+              <%= button_to duplicate_client_diet_path(@client, diet), method: :post,
             class: "flex items-center justify-center gap-1 px-2.5 py-1.5 rounded bg-indigo-50 text-indigo-700 text-sm font-semibold shadow hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition min-w-[40px]" do %>
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 17v-1a4 4 0 014-4h5"/>
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8V7a4 4 0 00-4-4H7"/>
-              <rect x="2" y="9" width="8" height="13" rx="2"/>
-              <rect x="14" y="7" width="8" height="13" rx="2"/>
-            </svg>
-            Duplicar
-          <% end %>
-
-          <%= button_to client_diet_path(@client, diet), method: :delete,
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 17v-1a4 4 0 014-4h5"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8V7a4 4 0 00-4-4H7"/>
+                  <rect x="2" y="9" width="8" height="13" rx="2"/>
+                  <rect x="14" y="7" width="8" height="13" rx="2"/>
+                </svg>
+                Duplicar
+              <% end %>
+              <%= button_to client_diet_path(@client, diet), method: :delete,
             data: { turbo_confirm: "Excluir #{diet.name}?" },
             class: "flex items-center justify-center gap-1 px-2.5 py-1.5 rounded bg-red-50 text-red-700 text-sm font-semibold shadow hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-400 transition min-w-[40px]" do %>
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-            </svg>
-            Excluir
-          <% end %>
-        </div>
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+                Excluir
+              <% end %>
+            </div>
           </div>
         <% end %>
       </div>
       <!-- Resumo total de macros -->
       <!-- Resumo total de macros: ajuste responsivo -->
-  
     <% else %>
-      <div class="py-12 text-center">
-        <h4 class="mb-4 text-lg text-gray-500">Comece criando a primeira refeição para <%= @client.name %>!</h4>
-        <%= link_to new_client_diet_path(@client), 
-          class: "inline-flex items-center gap-2.5 rounded bg-green-600 px-6 py-2 text-white font-medium hover:bg-green-700 transition w-full sm:w-auto" do %>
-          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-          </svg>
-          Nova Refeição
-        <% end %>
+      <div class="w-full">
+  <!-- Wrapper -->
+  <div class="max-w-md mx-auto py-20">
+    <div class="bg-white p-10 rounded-2xl shadow-lg border border-gray-100 text-center space-y-6">
+      
+      <!-- Ícone ilustrativo -->
+      <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-green-100 shadow-sm">
+        <svg class="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+        </svg>
       </div>
+
+      <!-- Título -->
+      <h2 class="text-2xl font-bold text-gray-800">
+        Nenhuma refeição cadastrada
+      </h2>
+
+      <!-- Subtítulo com nome do cliente -->
+      <p class="text-gray-600 text-base">
+        Comece criando a primeira refeição para 
+        <span class="font-semibold text-blue-600"><%= @client.name %></span>.
+      </p>
+
+      <!-- Instruções adicionais -->
+      <ul class="text-sm text-gray-500 space-y-2 text-left inline-block">
+        <li class="flex items-center gap-2">
+          🍎 <span>Adicione alimentos e quantidades</span>
+        </li>
+        <li class="flex items-center gap-2">
+          ⚡ <span>Veja macros calculados automaticamente</span>
+        </li>
+        <li class="flex items-center gap-2">
+          📄 <span>Gere PDF da dieta personalizada</span>
+        </li>
+      </ul>
+
+      <!-- CTA -->
+      <%= link_to new_client_diet_path(@client),
+        class: "inline-flex items-center justify-center gap-2 rounded-lg bg-green-600 px-8 py-3 text-white text-base font-semibold shadow hover:bg-green-700 hover:shadow-md transition-all duration-200" do %>
+        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+        </svg>
+        Nova Refeição
+      <% end %>
+
+    </div>
+  </div>
+</div>
+
     <% end %>
   </div>
   <!-- Observações do cliente: lateral em telas médias+ e abaixo em telas pequenas -->
@@ -193,25 +227,24 @@
         </div>
       <% end %>
     </div>
-  
     <div class="grid grid-cols-2 gap-4">
-        <div class="rounded-lg border border-gray-200 bg-white p-6 shadow text-center">
-          <h3 class="text-2xl font-bold text-orange-700"><%= @daily_total_calories.round(1) %></h3>
-          <p class="text-sm text-gray-500 mt-1">Total Kcal</p>
-        </div>
-        <div class="rounded-lg border border-gray-200 bg-white p-6 shadow text-center">
-          <h3 class="text-2xl font-bold text-blue-700"><%= @diets.sum(&:total_protein).round(1) %>g</h3>
-          <p class="text-sm text-gray-500 mt-1">Proteínas</p>
-        </div>
-        <div class="rounded-lg border border-gray-200 bg-white p-6 shadow text-center">
-          <h3 class="text-2xl font-bold text-green-700"><%= @diets.sum(&:total_carbs).round(1) %>g</h3>
-          <p class="text-sm text-gray-500 mt-1">Carboidratos</p>
-        </div>
-        <div class="rounded-lg border border-gray-200 bg-white p-6 shadow text-center">
-          <h3 class="text-2xl font-bold text-red-700"><%= @diets.sum(&:total_fat).round(1) %>g</h3>
-          <p class="text-sm text-gray-500 mt-1">Gorduras</p>
-        </div>
+      <div class="rounded-lg border border-gray-200 bg-white p-6 shadow text-center">
+        <h3 class="text-2xl font-bold text-orange-700"><%= @daily_total_calories.round(1) %></h3>
+        <p class="text-sm text-gray-500 mt-1">Total Kcal</p>
       </div>
+      <div class="rounded-lg border border-gray-200 bg-white p-6 shadow text-center">
+        <h3 class="text-2xl font-bold text-blue-700"><%= @diets.sum(&:total_protein).round(1) %>g</h3>
+        <p class="text-sm text-gray-500 mt-1">Proteínas</p>
+      </div>
+      <div class="rounded-lg border border-gray-200 bg-white p-6 shadow text-center">
+        <h3 class="text-2xl font-bold text-green-700"><%= @diets.sum(&:total_carbs).round(1) %>g</h3>
+        <p class="text-sm text-gray-500 mt-1">Carboidratos</p>
+      </div>
+      <div class="rounded-lg border border-gray-200 bg-white p-6 shadow text-center">
+        <h3 class="text-2xl font-bold text-red-700"><%= @diets.sum(&:total_fat).round(1) %>g</h3>
+        <p class="text-sm text-gray-500 mt-1">Gorduras</p>
+      </div>
+    </div>
   </div>
 </div>
 <script>
@@ -431,68 +464,67 @@
   });
 </script>
 <script>
-function showTipToast(message, duration = 4000) {
-  let toast = document.getElementById('tip-toast');
-  if (!toast) {
-    toast = document.createElement('div');
-    toast.id = 'tip-toast';
-    toast.style.position = 'fixed';
-    toast.style.top = '20px';
-    toast.style.right = '20px';
-    toast.style.background = '#4299e1';
-    toast.style.color = 'white';
-    toast.style.padding = '14px 24px';
-    toast.style.borderRadius = '8px';
-    toast.style.zIndex = '9999';
-    toast.style.fontWeight = 'bold';
-    toast.style.boxShadow = '0 2px 8px rgba(0,0,0,0.15)';
-    toast.style.display = 'flex';
-    toast.style.alignItems = 'center';
-    toast.innerHTML = `<span>${message}</span><button id="tip-toast-ok" style="margin-left:16px;background:#2563eb;color:white;border:none;border-radius:5px;padding:4px 12px;cursor:pointer">OK</button>`;
-    document.body.appendChild(toast);
+  function showTipToast(message, duration = 4000) {
+    let toast = document.getElementById('tip-toast');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.id = 'tip-toast';
+      toast.style.position = 'fixed';
+      toast.style.top = '20px';
+      toast.style.right = '20px';
+      toast.style.background = '#4299e1';
+      toast.style.color = 'white';
+      toast.style.padding = '14px 24px';
+      toast.style.borderRadius = '8px';
+      toast.style.zIndex = '9999';
+      toast.style.fontWeight = 'bold';
+      toast.style.boxShadow = '0 2px 8px rgba(0,0,0,0.15)';
+      toast.style.display = 'flex';
+      toast.style.alignItems = 'center';
+      toast.innerHTML = `<span>${message}</span><button id="tip-toast-ok" style="margin-left:16px;background:#2563eb;color:white;border:none;border-radius:5px;padding:4px 12px;cursor:pointer">OK</button>`;
+      document.body.appendChild(toast);
 
-    document.getElementById('tip-toast-ok').onclick = function() {
-      toast.remove();
-      localStorage.setItem('tipToastDismissed', '1');
-    };
-  } else {
-    toast.style.display = 'flex';
-    toast.querySelector('span').textContent = message;
+      document.getElementById('tip-toast-ok').onclick = function() {
+        toast.remove();
+        localStorage.setItem('tipToastDismissed', '1');
+      };
+    } else {
+      toast.style.display = 'flex';
+      toast.querySelector('span').textContent = message;
+    }
+    if (!localStorage.getItem('tipToastDismissed')) {
+      setTimeout(() => {
+        if (toast) toast.style.display = 'none';
+      }, duration);
+    }
   }
+
+  // Exemplo de uso: Só mostra se não foi dispensado antes
   if (!localStorage.getItem('tipToastDismissed')) {
-    setTimeout(() => {
-      if (toast) toast.style.display = 'none';
-    }, duration);
+    showTipToast('💡 Dica: Arraste os cards para reordenar e clique no nome para editar!', 5000);
   }
-}
+</script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+   // Drag handle tooltip
+   tippy('.drag-handle', {
+     content: 'Arraste para reordenar',
+     placement: 'bottom',
+     theme: 'light',
+     delay: [0, 0],
+     duration: [300, 200],
+   });
 
-// Exemplo de uso: Só mostra se não foi dispensado antes
-if (!localStorage.getItem('tipToastDismissed')) {
-  showTipToast('💡 Dica: Arraste os cards para reordenar e clique no nome para editar!', 5000);
-}
-  </script>
-
-  <script>
-   document.addEventListener('DOMContentLoaded', function() {
-    // Drag handle tooltip
-    tippy('.drag-handle', {
-      content: 'Arraste para reordenar',
-      placement: 'bottom',
-      theme: 'light',
-      delay: [0, 0],
-      duration: [300, 200],
+   // Nome editável tooltip
+   tippy('.diet-name', {
+     content: 'Clique para editar o nome',
+     placement: 'bottom',
+     theme: 'light',
+     delay: [0, 0],
+     duration: [300, 200],
+   });
     });
-
-    // Nome editável tooltip
-    tippy('.diet-name', {
-      content: 'Clique para editar o nome',
-      placement: 'bottom',
-      theme: 'light',
-      delay: [0, 0],
-      duration: [300, 200],
-    });
-  });
-    </script>
+</script>
 <style>
   .diet-card {
     transition: box-shadow 0.2s, transform 0.2s;

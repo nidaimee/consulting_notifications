@@ -51,15 +51,20 @@ class FoodsController < ApplicationController
 
   def update
     if @food.update(food_params)
-      redirect_to @food, notice: "Alimento atualizado com sucesso."
+      redirect_to edit_food_path(@food), notice: "Alimento atualizado com sucesso."
     else
       render :edit
     end
   end
 
   def destroy
-    @food.destroy
-    redirect_to foods_url, alert: "Alimento removido com sucesso."
+    @food_quantity = FoodQuantity.find_by(id: params[:id])
+    if @food_quantity
+      @food_quantity.destroy
+      redirect_back(fallback_location: edit_food_path(@food_quantity.food), notice: "Unidade removida com sucesso.")
+    else
+      redirect_back(fallback_location: root_path, alert: "Unidade não encontrada.")
+    end
   end
 
   private
@@ -70,7 +75,7 @@ class FoodsController < ApplicationController
 
   def food_params
     params.require(:food).permit(:name, :calories_per_100g, :protein_per_100g,
-                                 :carbs_per_100g, :fat_per_100g, :category)
+                                 :carbs_per_100g, :fat_per_100g, :category, food_quantities_attributes: [ :id, :name, :grams, :_destroy ])
   end
 
   def ensure_nutritional_values

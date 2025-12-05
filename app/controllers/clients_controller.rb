@@ -158,7 +158,7 @@ class ClientsController < ApplicationController
     @client = current_user.clients.build
   end
 
-  def create
+ def create
     @client = current_user.clients.build(client_params)
 
     if @client.save
@@ -168,12 +168,13 @@ class ClientsController < ApplicationController
       # ✅ CORRIGIDO: Só processar se jobs existirem
       # ClientCreatedJob.perform_later(@client) if defined?(ClientCreatedJob) && @client.photos.attached?
 
-      redirect_to @client, notice: "Cliente criado com sucesso."
+      redirect_to client_diets_path(@client), notice: "Cliente criado com sucesso."
     else
       Rails.logger.error "Client validation errors: #{@client.errors.full_messages}"
       render :new, status: :unprocessable_entity
     end
   end
+
 
   def edit
     # Já otimizado com set_client

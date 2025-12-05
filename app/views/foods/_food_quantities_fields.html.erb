@@ -1,0 +1,11 @@
+<%= form.fields_for :food_quantities do |fq_form| %>
+  <div class="flex gap-2 mb-2">
+    <%= fq_form.text_field :name, placeholder: "Unidade (ex: concha, fatia, unidade)", class: "rounded border px-2 py-1 w-36" %>
+    <%= fq_form.number_field :grams, step: 1, min: 1, placeholder: "Gramas", class: "rounded border px-2 py-1 w-24" %>
+    <% if fq_form.object.persisted? %>
+      <%= fq_form.check_box :_destroy %>
+      <%= fq_form.label :_destroy, "Remover" %>
+    <% end %>
+  </div>
+<% end %>
+<%= link_to "Adicionar unidade", "#", class: "px-2 py-1 bg-green-100 rounded", id: "add-food-quantity" %>

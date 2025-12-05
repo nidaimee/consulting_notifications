@@ -80,6 +80,55 @@
           </div>
         </div>
       </div>
+
+      <!-- Unidades típicas do alimento -->
+      <div id="food-quantities-list" data-next-index="<%= food.food_quantities.size %>">
+        <%= form.fields_for :food_quantities do |fq_fields| %>
+          <% fq = fq_fields.object %>
+          <div
+            class="flex items-center gap-2 mb-2 food-quantity-fields"
+            data-id="<%= fq.id if fq.persisted? %>"
+            data-url="<%= fq.persisted? ? food_food_quantity_path(food, fq) : '' %>"
+          >
+            <%= fq_fields.text_field :name, placeholder: "Unidade (ex: Fatia)", class: "rounded border px-2 py-1 w-40" %>
+            <%= fq_fields.number_field :grams, placeholder: "Gramas", step: 0.1, class: "rounded border px-2 py-1 w-24" %>
+
+            <%# Fallback para submissão tradicional (se JS falhar): %>
+            <% if fq.persisted? %>
+              <%= fq_fields.check_box :_destroy, class: "hidden js-fallback-destroy" %>
+            <% end %>
+
+            <%# Botão de remoção imediata (AJAX para persistidos, client-side para novos) %>
+            <button type="button"
+                    class="inline-flex items-center gap-1 rounded bg-red-600 px-2 py-1 text-white text-sm hover:bg-red-700 btn-remove-fq">
+              Remover
+            </button>
+          </div>
+        <% end %>
+      </div>
+
+      <template id="food-quantity-template">
+        <div class="flex items-center gap-2 mb-2 food-quantity-fields">
+          <input type="text" name="food[food_quantities_attributes][NEW_INDEX][name]"
+                 placeholder="Unidade (ex: fatia, porção, concha, unidade, colher, xícara)"
+                 class="rounded border px-2 py-1 w-40" />
+          <input type="number" step="0.1" name="food[food_quantities_attributes][NEW_INDEX][grams]"
+                 placeholder="Gramas equivalentes"
+                 class="rounded border px-2 py-1 w-24" />
+          <button type="button"
+                  class="inline-flex items-center gap-1 rounded bg-red-600 px-2 py-1 text-white text-sm hover:bg-red-700 btn-remove-fq">
+            Remover
+          </button>
+        </div>
+      </template>
+
+      <div class="mt-2">
+        <button type="button" id="add-food-quantity"
+                class="inline-block px-4 py-2 bg-indigo-100 text-indigo-800 rounded-lg font-semibold hover:bg-indigo-200 transition">
+          Adicionar unidade
+        </button>
+      </div>
+      
       <div class="flex gap-3 mt-8">
         <%= form.submit food.persisted? ? "Atualizar Alimento" : "Criar Alimento", 
                         class: "inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-green-600 text-white font-semibold hover:bg-green-700 transition shadow" %>
@@ -89,3 +138,75 @@
     <% end %>
   </div>
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const addBtn = document.getElementById('add-food-quantity');
+    const list = document.getElementById('food-quantities-list');
+    const template = document.getElementById('food-quantity-template').content;
+    let index = Number(list.dataset.nextIndex || 0);
+
+    function csrfToken() {
+      const meta = document.querySelector('meta[name="csrf-token"]');
+      return meta ? meta.content : '';
+    }
+
+    function attachRemoveHandlers(scope = document) {
+      scope.querySelectorAll('.btn-remove-fq').forEach(btn => {
+        if (btn.dataset.bound) return;
+        btn.dataset.bound = '1';
+
+        btn.addEventListener('click', function(e) {
+          e.preventDefault();
+          const row = btn.closest('.food-quantity-fields');
+          const id = row?.dataset?.id;
+          const url = row?.dataset?.url;
+
+          // Se for um registro novo (sem id/url), apenas remove do DOM
+          if (!id || !url) {
+            row.remove();
+            return;
+          }
+
+          if (!confirm('Tem certeza que deseja remover esta unidade?')) return;
+
+          fetch(url, {
+            method: 'DELETE',
+            headers: {
+              'X-CSRF-Token': csrfToken(),
+              'Accept': 'application/json'
+            }
+          }).then(resp => {
+            if (resp.ok) {
+              // Remove a linha do DOM
+              row.remove();
+            } else {
+              // Fallback: marca _destroy e pede para salvar
+              const fallback = row.querySelector('.js-fallback-destroy');
+              if (fallback) fallback.checked = true;
+              alert('Erro ao remover unidade.');
+            }
+          }).catch(() => {
+            const fallback = row.querySelector('.js-fallback-destroy');
+            if (fallback) fallback.checked = true;
+            alert('Erro ao remover unidade.');
+          });
+        });
+      });
+    }
+
+    addBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      const clone = template.cloneNode(true);
+      clone.querySelectorAll('input[name]').forEach(function(input){
+        input.name = input.name.replace('NEW_INDEX', index);
+      });
+      index++;
+      list.appendChild(clone);
+      attachRemoveHandlers(list);
+    });
+
+    // vincula handlers iniciais
+    attachRemoveHandlers(document);
+  });
+</script>

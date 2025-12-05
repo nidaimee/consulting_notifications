@@ -1,11 +1,12 @@
 class DietFood < ApplicationRecord
   belongs_to :diet
   belongs_to :food
+  belongs_to :food_quantity, optional: true
 
   # Relacionamento com substituições
   has_many :food_substitutions, dependent: :destroy
 
-  validates :quantity_grams, presence: true, numericality: { greater_than: 0 }
+  # validates :quantity_grams, presence: true, numericality: { greater_than: 0 }
 
   before_save :calculate_nutrients
   before_create :set_position
@@ -35,6 +36,46 @@ class DietFood < ApplicationRecord
   # Exemplo: 150g de frango (165 kcal/100g) = (150 * 165) / 100 = 247.5 kcal
   def calculate_proportion(value_per_100g)
     (quantity_grams.to_f * value_per_100g.to_f) / 100.0
+  end
+
+  def total_grams
+    (quantity || 0).to_f * (food_quantity&.grams || 0).to_f
+  end
+
+  def foods_list
+    diet_foods.includes(:food).map { |df| df.food.name }.join(", ")
+  end
+
+  def foods_with_quantities
+    diet_foods.includes(:food).map { |df| "#{df.quantity_grams.to_i}g #{df.food.name}" }.join(" • ")
+  end
+
+  def total_calories
+    diet_foods.includes(:food).sum do |diet_food|
+      next 0 unless diet_food.food && diet_food.quantity_grams && diet_food.food.calories_per_100g
+      (diet_food.quantity_grams * diet_food.food.calories_per_100g) / 100.0
+    end.round(1)
+  end
+
+  def total_protein
+    diet_foods.includes(:food).sum do |diet_food|
+      next 0 unless diet_food.food && diet_food.quantity_grams && diet_food.food.protein_per_100g
+      (diet_food.quantity_grams * diet_food.food.protein_per_100g) / 100.0
+    end.round(1)
+  end
+
+  def total_carbs
+    diet_foods.includes(:food).sum do |diet_food|
+      next 0 unless diet_food.food && diet_food.quantity_grams && diet_food.food.carbs_per_100g
+      (diet_food.quantity_grams * diet_food.food.carbs_per_100g) / 100.0
+    end.round(1)
+  end
+
+  def total_fat
+    diet_foods.includes(:food).sum do |diet_food|
+      next 0 unless diet_food.food && diet_food.quantity_grams && diet_food.food.fat_per_100g
+      (diet_food.quantity_grams * diet_food.food.fat_per_100g) / 100.0
+    end.round(1)
   end
 
   # Resumo formatado para exibição

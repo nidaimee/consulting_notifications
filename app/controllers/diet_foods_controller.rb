@@ -29,49 +29,60 @@ class DietFoodsController < ApplicationController
     end
   end
 
-  def create
-    # ✅ OTIMIZADO: Transação para consistência
-    ActiveRecord::Base.transaction do
-      @food = current_user.foods.find(params[:diet_food][:food_id])
+ def create
+    Rails.logger.info "DietFoods#create params: #{params[:diet_food].inspect}"
 
-      # ✅ Verificar se já existe este alimento na dieta
-      existing_diet_food = @diet.diet_foods.find_by(food: @food)
-
-      if existing_diet_food
-        # ✅ OTIMIZADO: Atualizar quantidade se já existir
-        new_quantity = existing_diet_food.quantity_grams + params[:diet_food][:quantity_grams].to_f
-
-        if existing_diet_food.update(quantity_grams: new_quantity)
-          expire_diet_caches
-          redirect_to client_diet_path(@client, @diet),
-                     notice: "Quantidade de #{@food.name} atualizada na dieta (#{new_quantity}g)!"
-        else
-          redirect_to client_diet_path(@client, @diet),
-                     alert: "Erro ao atualizar quantidade: #{existing_diet_food.errors.full_messages.join(', ')}"
-        end
-      else
-        # ✅ Criar novo diet_food
-        @diet_food = @diet.diet_foods.build(diet_food_params)
-        @diet_food.food = @food
-        @diet_food.position = next_position
-
-        if @diet_food.save
-          expire_diet_caches
-          redirect_to client_diet_path(@client, @diet),
-                     notice: "#{@food.name} adicionado à dieta com sucesso!"
-        else
-          Rails.logger.error "DietFood creation failed: #{@diet_food.errors.full_messages}"
-          redirect_to client_diet_path(@client, @diet),
-                     alert: "Erro ao adicionar alimento: #{@diet_food.errors.full_messages.join(', ')}"
-        end
-      end
+    raw_fq = params.dig(:diet_food, :food_quantity_id).to_s
+    normalized_fq_id = if raw_fq.blank? || %w[g gram grams].include?(raw_fq.downcase)
+                        nil
+    else
+                        raw_fq.to_i
     end
 
-  rescue ActiveRecord::RecordNotFound
-    redirect_to client_diet_path(@client, @diet), alert: "Alimento não encontrado."
-  rescue => e
-    Rails.logger.error "Error in DietFoodsController#create: #{e.message}"
-    redirect_to client_diet_path(@client, @diet), alert: "Erro inesperado ao adicionar alimento."
+    fq = normalized_fq_id ? FoodQuantity.find_by(id: normalized_fq_id) : nil
+    food_id = params.dig(:diet_food, :food_id)
+    raw_quantity = params.dig(:diet_food, :quantity).to_f
+
+    if fq
+      quantity_units = raw_quantity
+      quantity_grams = quantity_units * fq.grams.to_f
+      attrs = {
+        food_id: food_id,
+        food_quantity_id: fq.id,
+        quantity: quantity_units,
+        quantity_grams: quantity_grams
+      }
+    else
+      # interpretar como gramas
+      attrs = {
+        food_id: food_id,
+        food_quantity_id: nil,
+        quantity: 1,
+        quantity_grams: raw_quantity
+      }
+    end
+
+    @diet_food = @diet.diet_foods.build(attrs)
+    @diet_food.position = (@diet.diet_foods.maximum(:position) || 0) + 1
+
+    respond_to do |format|
+      if @diet_food.save
+        @diet.reload
+        totals = {
+          protein: @diet.diet_foods.sum { |df| df.protein.to_f }.round(1),
+          carbs:   @diet.diet_foods.sum { |df| df.carbs.to_f }.round(1),
+          fat:     @diet.diet_foods.sum { |df| df.fat.to_f }.round(1),
+          calories: @diet.diet_foods.sum { |df| df.calories.to_f }.round(1)
+        }
+
+        row_html = render_to_string(partial: "diet_foods/row", locals: { diet_food: @diet_food }, formats: [ :html ])
+        format.json { render json: { row_html: row_html, totals: totals }, status: :created }
+        format.html { redirect_to client_diet_path(@client, @diet), notice: "Alimento adicionado." }
+      else
+        format.json { render json: { errors: @diet_food.errors.full_messages }, status: :unprocessable_entity }
+        format.html { redirect_to client_diet_path(@client, @diet), alert: "Erro ao adicionar: #{@diet_food.errors.full_messages.join(', ')}" }
+      end
+    end
   end
 
   def edit
@@ -79,45 +90,49 @@ class DietFoodsController < ApplicationController
   end
 
   def update
-    # ✅ OTIMIZADO: Transação e cache inteligente
-    ActiveRecord::Base.transaction do
-      if @diet_food.update(diet_food_params)
-        expire_diet_caches
+    @diet_food = DietFood.find(params[:id])
+    # Atualiza os atributos permitidos
+    if @diet_food.update(diet_food_params)
+      # Calcule os gramas após atualizar
+      if @diet_food.food_quantity.present? && @diet_food.quantity.present?
+        @diet_food.quantity_grams = @diet_food.quantity * @diet_food.food_quantity.grams
+        @diet_food.save
+      end
 
-        respond_to do |format|
-          format.html {
-            redirect_to client_diet_path(@client, @diet),
-                       notice: "Quantidade atualizada com sucesso!"
-          }
-          format.json {
-            # ✅ OTIMIZADO: Cálculos em cache
-            nutrition = Rails.cache.fetch("diet_food_#{@diet_food.id}_nutrition", expires_in: 1.hour) do
-              calculate_diet_food_nutrition(@diet_food)
-            end
+      expire_diet_caches
 
-            render json: {
-              success: true,
-              message: "Quantidade atualizada com sucesso!",
-              nutrition: nutrition,
-              diet_totals: calculate_diet_totals
-            }
-          }
-        end
-      else
-        Rails.logger.error "DietFood update failed: #{@diet_food.errors.full_messages}"
+      respond_to do |format|
+        format.html {
+          redirect_to client_diet_path(@client, @diet),
+                    notice: "Quantidade atualizada com sucesso!"
+        }
+        format.json {
+          nutrition = Rails.cache.fetch("diet_food_#{@diet_food.id}_nutrition", expires_in: 1.hour) do
+            calculate_diet_food_nutrition(@diet_food)
+          end
 
-        respond_to do |format|
-          format.html {
-            redirect_to client_diet_path(@client, @diet),
-                       alert: "Erro ao atualizar quantidade: #{@diet_food.errors.full_messages.join(', ')}"
+          render json: {
+            success: true,
+            message: "Quantidade atualizada com sucesso!",
+            nutrition: nutrition,
+            diet_totals: calculate_diet_totals
           }
-          format.json {
-            render json: {
-              success: false,
-              message: "Erro ao atualizar quantidade: #{@diet_food.errors.full_messages.join(', ')}"
-            }, status: :unprocessable_entity
-          }
-        end
+        }
+      end
+    else
+      Rails.logger.error "DietFood update failed: #{@diet_food.errors.full_messages}"
+
+      respond_to do |format|
+        format.html {
+          redirect_to client_diet_path(@client, @diet),
+                    alert: "Erro ao atualizar quantidade: #{@diet_food.errors.full_messages.join(', ')}"
+        }
+        format.json {
+          render json: {
+            success: false,
+            message: "Erro ao atualizar quantidade: #{@diet_food.errors.full_messages.join(', ')}"
+          }, status: :unprocessable_entity
+        }
       end
     end
 
@@ -266,7 +281,6 @@ class DietFoodsController < ApplicationController
   end
 
   def set_diet_food
-    # ✅ OTIMIZADO: Includes para evitar N+1
     @diet_food = @diet.diet_foods.includes(:food).find(params[:id])
 
   rescue ActiveRecord::RecordNotFound
@@ -275,10 +289,9 @@ class DietFoodsController < ApplicationController
   end
 
   def diet_food_params
-    params.require(:diet_food).permit(:quantity_grams, :calories, :protein, :carbs, :fat, :notes)
+    params.require(:diet_food).permit(:quantity_grams, :calories, :protein, :carbs, :fat, :notes, :food_quantity_id, :quantity)
   end
 
-  # ✅ NOVOS MÉTODOS DE OTIMIZAÇÃO
 
   def calculate_diet_food_nutrition(diet_food)
     return {} unless diet_food.food && diet_food.quantity_grams

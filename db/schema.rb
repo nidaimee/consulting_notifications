@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_29_152317) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_15_182239) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -92,6 +92,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_29_152317) do
     t.datetime "updated_at", null: false
     t.integer "position", default: 0
     t.text "notes"
+    t.integer "quantity", default: 1, null: false
+    t.integer "food_quantity_id"
     t.index ["diet_id", "position"], name: "index_diet_foods_on_diet_id_and_position"
     t.index ["diet_id"], name: "index_diet_foods_on_diet_id"
     t.index ["food_id"], name: "index_diet_foods_on_food_id"
@@ -134,6 +136,15 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_29_152317) do
     t.datetime "updated_at", null: false
     t.index ["category"], name: "index_food_equivalences_on_category"
     t.index ["food_name"], name: "index_food_equivalences_on_food_name"
+  end
+
+  create_table "food_quantities", force: :cascade do |t|
+    t.bigint "food_id", null: false
+    t.string "name"
+    t.float "grams"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["food_id"], name: "index_food_quantities_on_food_id"
   end
 
   create_table "food_substitutions", force: :cascade do |t|
@@ -188,6 +199,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_29_152317) do
   add_foreign_key "diet_foods", "foods"
   add_foreign_key "diets", "clients"
   add_foreign_key "diets", "users"
+  add_foreign_key "food_quantities", "foods"
   add_foreign_key "food_substitutions", "diet_foods"
   add_foreign_key "food_substitutions", "foods", column: "substitute_food_id"
   add_foreign_key "foods", "users"

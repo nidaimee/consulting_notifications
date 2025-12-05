@@ -117,17 +117,41 @@ class DietsController < ApplicationController
   def add_food
     # ✅ OTIMIZADO: Query única com lock
     food = current_user.foods.find(params[:food_id])
-    quantity = params[:quantity_grams].to_f
+
+    # Gramas vindas do hidden (prioritário)
+    quantity_grams = params[:quantity_grams].to_f
+
+    # Fallback robusto no servidor: se não veio ou é inválido, calcula a partir de quantidade + unidade
+    if quantity_grams.nil? || quantity_grams <= 0
+      quantity_units = params[:quantity].to_f
+      unit_param = params.dig(:diet_food, :food_quantity_id)
+
+      if unit_param.present?
+        if unit_param == "gram"
+          quantity_grams = quantity_units # usuário digitou em gramas
+        else
+          fq = FoodQuantity.find_by(id: unit_param)
+          quantity_grams = (quantity_units > 0 && fq&.grams.to_f > 0) ? (quantity_units * fq.grams.to_f) : 0
+        end
+      else
+        # Sem unidade enviada: assume que digitou em gramas
+        quantity_grams = quantity_units
+      end
+    end
+
+    if quantity_grams <= 0
+      return redirect_to [ @client, @diet ], alert: "Quantidade inválida. Selecione a unidade e informe a quantidade."
+    end
 
     # ✅ OTIMIZADO: Usar upsert para evitar race conditions
     diet_food = @diet.diet_foods.find_or_initialize_by(food: food)
 
     if diet_food.persisted?
-      diet_food.increment!(:quantity_grams, quantity)
+      diet_food.increment!(:quantity_grams, quantity_grams)
       message = "Quantidade de #{food.name} atualizada na dieta."
     else
       diet_food.assign_attributes(
-        quantity_grams: quantity,
+        quantity_grams: quantity_grams,
         position: @diet.diet_foods.maximum(:position).to_i + 1
       )
 
@@ -247,7 +271,6 @@ class DietsController < ApplicationController
   private
 
   def set_client
-    # ✅ OTIMIZADO: Cache do cliente
     @client = Rails.cache.fetch("user_#{current_user.id}_client_#{params[:client_id]}", expires_in: 5.minutes) do
       current_user.clients.find(params[:client_id])
     end
@@ -256,7 +279,6 @@ class DietsController < ApplicationController
   end
 
   def set_diet
-    # ✅ OTIMIZADO: Inclui associações necessárias
     @diet = @client.diets
                   .includes(diet_foods: [ :food, :food_substitutions ])
                   .find(params[:id])
@@ -272,7 +294,6 @@ class DietsController < ApplicationController
     params.permit(order: [ :id, :position ])
   end
 
-  # ✅ NOVOS MÉTODOS OTIMIZADOS
 
   def next_position
     @client.diets.maximum(:position).to_i + 1

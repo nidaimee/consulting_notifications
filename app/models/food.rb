@@ -5,7 +5,8 @@ class Food < ApplicationRecord
   has_many :diet_foods
   has_many :food_substitutions_as_original, class_name: "FoodSubstitution", foreign_key: "diet_food_id"
   has_many :food_substitutions_as_substitute, class_name: "FoodSubstitution", foreign_key: "substitute_food_id"
-
+  has_many :food_quantities, dependent: :destroy
+  accepts_nested_attributes_for :food_quantities, allow_destroy: true
   # Validações
   validates :name, presence: true
   validates :calories_per_100g, presence: true, numericality: { greater_than_or_equal_to: 0 }

@@ -301,13 +301,13 @@
           </svg>
         </div>
         <h3 class="mb-2 text-lg font-semibold text-black dark:text-white">
-          Nenhum cliente encontrado
+          Nenhum paciente encontrado
         </h3>
         <p class="mb-6 text-slate-600 dark:text-slate-400">
           <% if params[:search].present? || params[:status].present? || params[:period].present? %>
-            Não encontramos clientes com os filtros aplicados. Tente ajustar os critérios de busca.
+            Não encontramos pacientes com os filtros aplicados. Tente ajustar os critérios de busca.
           <% else %>
-            Comece criando seu primeiro cliente para gerenciar dietas e acompanhar o progresso.
+            Comece criando seu primeiro paciente para gerenciar dietas e acompanhar o progresso.
           <% end %>
         </p>
         <div class="flex flex-col gap-3 sm:flex-row sm:justify-center">
@@ -316,7 +316,7 @@
             <svg class="mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
             </svg>
-            Criar Primeiro Cliente
+            Criar Primeiro Paciente
           <% end %>
           <% if params[:search].present? || params[:status].present? || params[:period].present? %>
             <%= link_to clients_path, 
